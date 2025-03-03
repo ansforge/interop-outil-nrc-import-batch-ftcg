@@ -1,5 +1,7 @@
 import pandas as pd
 from os import path as op
+from operator import or_
+from functools import reduce
 
 CASE = {
     "900000000000448009": "ci",
@@ -35,6 +37,16 @@ def read_common_french(cf_path: str, cf_date: str) -> pd.DataFrame:
     cf_desc_path = op.join(cf_path, f"Terminology/sct2_Description_Snapshot_CommonFrench-Extension_{cf_date}.txt")
     cf_description = pd.read_csv(cf_desc_path, sep="\t", dtype=str, usecols=["id", "active", "conceptId", "typeId", "term", "caseSignificanceId"], 
                                  quoting=3, converters={"caseSignificanceId": lambda x: CASE.get(x)}, encoding="UTF-8")
+    
+    # Suppression des descriptions de concepts des hiérarchies 'environnement ou lieu géographique' et 'organisme'
+    sctid_to_del = reduce(or_, [
+        set(cf_description.loc[cf_description.loc[:, "term"].str.endswith("(lieu géographique)"), "conceptId"]),
+        set(cf_description.loc[cf_description.loc[:, "term"].str.endswith("(environnement / lieu)"), "conceptId"]),
+        set(cf_description.loc[cf_description.loc[:, "term"].str.endswith("(environnement)"), "conceptId"]),
+        set(cf_description.loc[cf_description.loc[:, "term"].str.endswith("(organisme)"), "conceptId"])
+    ])
+    cf_description = cf_description.loc[~cf_description.loc[:, "conceptId"].isin(sctid_to_del)]
+
     # Conserver seulement les synonymes actifs
     cf_description = cf_description.loc[(cf_description.loc[:, "typeId"] == "900000000000013009") & (cf_description.loc[:, "active"] == "1")]
     # Supprimer les colonnes 'active' et 'typeId' qui ne sont plus nécessaires
@@ -162,3 +174,17 @@ def get_fr_edition(fr_path: str, fr_date: str, unpub_fr_path: str) -> pd.DataFra
     published.update(inactive)
 
     return published
+
+
+def write_batch_file(cf: pd.DataFrame, path: str) -> None:
+    """Sauvegarde des traduction de la Common French à importer en batch sous forme
+    de fichier 'Description Additions'.
+    
+    args:
+        cf: Descriptions de la Common French à importer.
+        path: Emplacement et nom du fichier d'import en batch.
+    """
+    cf.columns = ["Concept ID", "Translated Term", "Case significance", "Acceptability"]
+    cf.insert(2, "Language Code", ["fr"] * len(cf))
+    cf.insert(4, "Type", ["SYNONYM"] * len(cf))
+    cf.insert(5, "Language reference set", ["French"] * len(cf))
