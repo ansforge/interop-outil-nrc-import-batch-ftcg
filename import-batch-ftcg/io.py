@@ -67,20 +67,12 @@ def _read_published_fr_edition(fr_path: str, fr_date: str) -> pd.DataFrame:
     if op.basename(op.normpath(fr_path)) != "Snapshot":
         ValueError("Le chemin vers l'édition nationale ne pointe pas vers le dossier Snapshot")
 
-    # Lecture des concepts
-    fr_concept_path = op.join(fr_path, f"Terminology/sct2_Concept_Snapshot_FR1000315_{fr_date}.txt")
-    fr_concept = pd.read_csv(fr_concept_path, sep="\t", dtype=str, usecols=["id", "active"])
-    # Conserver seulement les concepts actifs
-    fr_concept = fr_concept.loc[fr_concept.loc[:, "active"] == "1"]
-
     # Lecture des descriptions
     fr_desc_path = op.join(fr_path, f"Terminology/sct2_Description_Snapshot-fr_FR1000315_{fr_date}.txt")
     fr_description = pd.read_csv(fr_desc_path, sep="\t", dtype=str, usecols=["id", "active", "conceptId", "typeId", "term", "caseSignificanceId"], 
                                  quoting=3, converters={"caseSignificanceId": lambda x: CASE.get(x)}, encoding="UTF-8")
     # Conserver seulement les synonymes
     fr_description = fr_description.loc[fr_description.loc[:, "typeId"] == "900000000000013009"]
-    # Supprimer les possibles descriptions actives associées à un concept inactif
-    fr_description = fr_description.loc[fr_description.loc[:, "conceptId"].isin(fr_concept.loc[:, "id"].unique())]
     # Supprimer la colonne 'typeId' qui n'est plus nécessaire
     fr_description = fr_description.drop(["typeId"], axis=1)
     
