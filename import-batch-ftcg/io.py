@@ -188,3 +188,4 @@ def write_batch_file(cf: pd.DataFrame, path: str) -> None:
     cf.insert(2, "Language Code", ["fr"] * len(cf))
     cf.insert(4, "Type", ["SYNONYM"] * len(cf))
     cf.insert(5, "Language reference set", ["French"] * len(cf))
+    cf.to_csv(path, sep="\t", index=False, encoding="UTF-8")
