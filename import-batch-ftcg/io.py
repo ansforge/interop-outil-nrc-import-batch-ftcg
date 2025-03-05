@@ -119,8 +119,9 @@ def read_common_french(cf_path: str, cf_date: str) -> pd.DataFrame:
         
     # Lecture des descriptions
     cf_desc_path = op.join(cf_path, f"Terminology/sct2_Description_Snapshot_CommonFrench-Extension_{cf_date}.txt")
-    cf_description = pd.read_csv(cf_desc_path, sep="\t", dtype=str, usecols=["id", "active", "conceptId", "typeId", "term", "caseSignificanceId"], 
-                                 quoting=3, converters={"caseSignificanceId": lambda x: CASE.get(x)}, encoding="UTF-8")
+    cf_description = pd.read_csv(cf_desc_path, sep="\t", dtype={"id": str, "active": pd.CategoricalDtype(["1", "0"]), "conceptId": str, "typeId": str, "term": str},
+                                 usecols=["id", "active", "conceptId", "typeId", "term", "caseSignificanceId"], quoting=3,
+                                 converters={"caseSignificanceId": lambda x: CASE.get(x)}, encoding="UTF-8")
     
     # Conserver seulement les synonymes actifs
     cf_description = cf_description.loc[(cf_description.loc[:, "typeId"] == "900000000000013009") & (cf_description.loc[:, "active"] == "1")]
@@ -129,7 +130,7 @@ def read_common_french(cf_path: str, cf_date: str) -> pd.DataFrame:
 
     # Lecture du refset de langue
     cf_lang_path = op.join(cf_path, f"Refset/Language/der2_cRefset_LanguageSnapshot_CommonFrench-Extension_{cf_date}.txt")
-    cf_language = pd.read_csv(cf_lang_path, sep="\t", dtype=str, usecols=["referencedComponentId", "acceptabilityId"], 
+    cf_language = pd.read_csv(cf_lang_path, sep="\t", dtype={"referencedComponentId": str}, usecols=["referencedComponentId", "acceptabilityId"], 
                               converters={"acceptabilityId": lambda x: ACCEPT.get(x)}, encoding="UTF-8")
         
     # Ajouter l'acceptabilité au DataFrame des descriptions
@@ -189,8 +190,9 @@ def _read_published_fr_edition(fr_path: str, fr_date: str) -> pd.DataFrame:
 
     # Lecture des descriptions FR
     fr_desc_path = op.join(fr_path, f"Terminology/sct2_Description_Snapshot-fr_FR1000315_{fr_date}.txt")
-    fr_description = pd.read_csv(fr_desc_path, sep="\t", dtype=str, usecols=["id", "active", "conceptId", "typeId", "term", "caseSignificanceId"], 
-                                 quoting=3, converters={"caseSignificanceId": lambda x: CASE.get(x)}, encoding="UTF-8")    
+    fr_description = pd.read_csv(fr_desc_path, sep="\t", dtype={"id": str, "active": pd.CategoricalDtype(["1", "0"]), "conceptId": str, "typeId": str, "term": str},
+                                 usecols=["id", "active", "conceptId", "typeId", "term", "caseSignificanceId"], quoting=3,
+                                 converters={"caseSignificanceId": lambda x: CASE.get(x)}, encoding="UTF-8")    
     # Conserver seulement les synonymes
     fr_description = fr_description.loc[fr_description.loc[:, "typeId"] == "900000000000013009"]
     # Supprimer la colonne 'typeId' qui n'est plus nécessaire
@@ -198,7 +200,7 @@ def _read_published_fr_edition(fr_path: str, fr_date: str) -> pd.DataFrame:
     
     # Lecture du refset de langue
     fr_lang_path = op.join(fr_path, f"Refset/Language/der2_cRefset_LanguageSnapshot-fr_FR1000315_{fr_date}.txt")
-    fr_language = pd.read_csv(fr_lang_path, sep="\t", dtype=str, usecols=["referencedComponentId", "acceptabilityId"], 
+    fr_language = pd.read_csv(fr_lang_path, sep="\t", dtype={"referencedComponentId": str}, usecols=["referencedComponentId", "acceptabilityId"], 
                               converters={"acceptabilityId": lambda x: ACCEPT.get(x)}, encoding="UTF-8")
     
     # Ajouter l'acceptabilité au DataFrame des descriptions
@@ -222,8 +224,9 @@ def _read_unpublished_fr_edition(unpub_fr_path: str) -> pd.DataFrame:
         ValueError("Le fichier des modifications non-publiées de l'édition nationale est invalide.")
 
     # Lecture du fichier concepts
-    unpublished = pd.read_csv(unpub_fr_path, sep=";", dtype=str, usecols=["Id", " Description", " LangRefset", " isChanged", " wasInactivated"], 
-                                 quoting=3, converters={" wasInactivated": lambda x: ACTIVE.get(x)}, encoding="UTF-8")
+    unpublished = pd.read_csv(unpub_fr_path, sep=";", dtype={"Id": str, " Description": str, " LangRefset": str, " isChanged": str},
+                                 usecols=["Id", " Description", " LangRefset", " isChanged", " wasInactivated"], quoting=3,
+                                 converters={" wasInactivated": lambda x: ACTIVE.get(x)}, encoding="UTF-8")
     # Renommer les colonnes du fichier
     unpublished.columns = ["conceptId", "description", "language", "isChanged", "active"]
 
