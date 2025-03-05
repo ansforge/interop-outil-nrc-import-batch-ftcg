@@ -1,7 +1,91 @@
 import pandas as pd
 from os import path as op
-from operator import or_
-from functools import reduce
+
+SEMTAG = {
+    # SNOMED RT+CTV3
+    "SNOMED RT+CTV3": "root",
+    # Body structure
+    "body structure": "body structure",
+    "cell": "body structure",
+    "cell structure": "body structure",
+    "morphologic abnormality": "body structure",
+    # Clinical finding
+    "finding": "clinical finding",
+    "disorder": "clinical finding",
+    # Environment and/or geographical location
+    "environment / location": "environment",
+    "environment": "environment",
+    "geographic location": "environment",
+    # Event
+    "event": "event",
+    # Observable entity
+    "observable entity": "observable entity",
+    # Organism
+    "organism": "organism",
+    # Pharmaceutical or biological product
+    "clinical drug": "pharmaceutical",
+    "medicinal product": "pharmaceutical",
+    "medicinal product form": "pharmaceutical",
+    # Physical force
+    "physical force": "physical force",
+    # Physical object
+    "physical object": "physical object",
+    "product": "product",
+    # Procedure
+    "procedure": "procedure",
+    "regime/therapy": "procedure",
+    # Qualifier value
+    "qualifier value": "qualifier value",
+    "administration method": "qualifier value",
+    "administrative concept": "qualifier value",
+    "basic dose form": "qualifier value",
+    "disposition": "qualifier value",
+    "dose form": "qualifier value",
+    "intended site": "qualifier value",
+    "number": "qualifier value",
+    "product name": "qualifier value",
+    "release characteristic": "qualifier value",
+    "role": "qualifier value",
+    "state of matter": "qualifier value",
+    "transformation": "qualifier value",
+    "supplier": "qualifier value",
+    "unit of presentation": "qualifier value",
+    # Record artifact
+    "record artifact": "record artifact",
+    # SWEC
+    "situation": "situation",
+    # SNOMED CT Model component
+    "attribute": "model component",
+    "core metadata concept": "model component",
+    "foundation metadata concept": "model component",
+    "link assertion": "model component",
+    "linkage concept": "model component",
+    "metadata": "model component",
+    "namespace concept": "model component",
+    "OWL metadata concept": "model component",
+    # Social context
+    "social concept": "social context",
+    "ethnic group": "social context",
+    "life style": "social context",
+    "occupation": "social context",
+    "person": "social context",
+    "racial group": "social context",
+    "religion/philosophy": "social context",
+    # Special concept
+    "inactive concept": "special concept",
+    "navigational concept": "special concept",
+    "special concept": "special concept",
+    # Specimen
+    "specimen": "specimen",
+    # Staging and scales
+    "assessment scale": "staging scales",
+    "staging scale": "staging scales",
+    "staging scales": "staging scales",
+    "tumor staging": "staging scales",
+    # Substance
+    "substance": "substance",
+    "": ""
+}
 
 CASE = {
     "900000000000448009": "ci",
@@ -38,15 +122,6 @@ def read_common_french(cf_path: str, cf_date: str) -> pd.DataFrame:
     cf_description = pd.read_csv(cf_desc_path, sep="\t", dtype=str, usecols=["id", "active", "conceptId", "typeId", "term", "caseSignificanceId"], 
                                  quoting=3, converters={"caseSignificanceId": lambda x: CASE.get(x)}, encoding="UTF-8")
     
-    # Suppression des descriptions de concepts des hiérarchies 'environnement ou lieu géographique' et 'organisme'
-    sctid_to_del = reduce(or_, [
-        set(cf_description.loc[cf_description.loc[:, "term"].str.endswith("(lieu géographique)"), "conceptId"]),
-        set(cf_description.loc[cf_description.loc[:, "term"].str.endswith("(environnement / lieu)"), "conceptId"]),
-        set(cf_description.loc[cf_description.loc[:, "term"].str.endswith("(environnement)"), "conceptId"]),
-        set(cf_description.loc[cf_description.loc[:, "term"].str.endswith("(organisme)"), "conceptId"])
-    ])
-    cf_description = cf_description.loc[~cf_description.loc[:, "conceptId"].isin(sctid_to_del)]
-
     # Conserver seulement les synonymes actifs
     cf_description = cf_description.loc[(cf_description.loc[:, "typeId"] == "900000000000013009") & (cf_description.loc[:, "active"] == "1")]
     # Supprimer les colonnes 'active' et 'typeId' qui ne sont plus nécessaires
@@ -59,10 +134,43 @@ def read_common_french(cf_path: str, cf_date: str) -> pd.DataFrame:
         
     # Ajouter l'acceptabilité au DataFrame des descriptions
     cf_description = pd.merge(cf_description, cf_language, how="left", left_on="id", right_on="referencedComponentId")
-    # Supprimer les colonnes 'id' et 'referencedComponentId' qui ne sont plus nécessaires
-    cf_description = cf_description.drop(["id", "referencedComponentId"], axis=1)
+    # Supprimer la colonne 'referencedComponentId' qui n'est plus nécessaire
+    cf_description = cf_description.drop(["referencedComponentId"], axis=1)
 
     return cf_description
+
+
+def _get_fsn_semtag(fr: pd.DataFrame, fr_path: str, fr_date: str) -> pd.DataFrame:
+    """Récupérer le FSN EN et le suffixe sémantique spour les concepts traduits dans l'édition nationale.
+
+    args:
+        fr: Descriptions de l'édition nationale
+        fr_path: Chemin vers le dossier Snapshot de l'édition nationale
+        fr_date: Date de release de l'édition nationale
+    
+    returns:
+        `fr` avec deux nouvelles colonnes contenant le FSN et le suffixe sémantique du concept.
+    """
+    # Lecture des descriptions EN
+    en_desc_path = op.join(fr_path, f"Terminology/sct2_Description_Snapshot-en_FR1000315_{fr_date}.txt")
+    en_description = pd.read_csv(en_desc_path, sep="\t", dtype=str, usecols=["active", "conceptId", "typeId", "term"], quoting=3)
+    en_description.columns = ["active", "conceptId", "typeId", "fsn"]
+    
+    # Conserver seulement les FSN actifs des concepts traduits en FR
+    en_description = en_description.loc[
+        (en_description.loc[:, "typeId"] == "900000000000003001")
+        & (en_description.loc[:, "active"] == "1")
+        & (en_description.loc[:, "conceptId"].isin(fr.loc[:, "conceptId"]))
+    ]
+    
+    # Supprimer les colonnes 'active' et 'typeId' qui ne sont plus nécessaires
+    en_description = en_description.drop(["active", "typeId"], axis=1)
+
+    # Ajout des colonnes 'fsn' et 'semtag'
+    fr = pd.merge(fr, en_description, how="left", on="conceptId").fillna("")
+    fr.loc[:, "semtag"] = [SEMTAG[fsn.split("(")[-1].rstrip(")")] for fsn in fr.loc[:, "fsn"]]
+
+    return fr
 
 
 def _read_published_fr_edition(fr_path: str, fr_date: str) -> pd.DataFrame:
@@ -79,10 +187,10 @@ def _read_published_fr_edition(fr_path: str, fr_date: str) -> pd.DataFrame:
     if op.basename(op.normpath(fr_path)) != "Snapshot":
         ValueError("Le chemin vers l'édition nationale ne pointe pas vers le dossier Snapshot")
 
-    # Lecture des descriptions
+    # Lecture des descriptions FR
     fr_desc_path = op.join(fr_path, f"Terminology/sct2_Description_Snapshot-fr_FR1000315_{fr_date}.txt")
     fr_description = pd.read_csv(fr_desc_path, sep="\t", dtype=str, usecols=["id", "active", "conceptId", "typeId", "term", "caseSignificanceId"], 
-                                 quoting=3, converters={"caseSignificanceId": lambda x: CASE.get(x)}, encoding="UTF-8")
+                                 quoting=3, converters={"caseSignificanceId": lambda x: CASE.get(x)}, encoding="UTF-8")    
     # Conserver seulement les synonymes
     fr_description = fr_description.loc[fr_description.loc[:, "typeId"] == "900000000000013009"]
     # Supprimer la colonne 'typeId' qui n'est plus nécessaire
@@ -172,6 +280,11 @@ def get_fr_edition(fr_path: str, fr_date: str, unpub_fr_path: str) -> pd.DataFra
 
     # Inactivation des descriptions inactivées
     published.update(inactive)
+
+    # Récupérer les FSN et les suffixes sémantiques
+    fr_description = _get_fsn_semtag(fr_description, fr_path, fr_date)
+    # Supprimer les concepts des hiérarchies 'Environment or geographical location' et 'Organism'
+    fr_description = fr_description.loc[(fr_description.loc[:, "semtag"] != "environment") & (fr_description.loc[:, "semtag"] != "organism")]
 
     return published
 
