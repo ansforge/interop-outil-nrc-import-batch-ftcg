@@ -282,9 +282,9 @@ def get_fr_edition(fr_path: str, fr_date: str, unpub_fr_path: str) -> pd.DataFra
     published.update(inactive)
 
     # Récupérer les FSN et les suffixes sémantiques
-    fr_description = _get_fsn_semtag(fr_description, fr_path, fr_date)
+    published = _get_fsn_semtag(published, fr_path, fr_date)
     # Supprimer les concepts des hiérarchies 'Environment or geographical location' et 'Organism'
-    fr_description = fr_description.loc[(fr_description.loc[:, "semtag"] != "environment") & (fr_description.loc[:, "semtag"] != "organism")]
+    published = published.loc[(published.loc[:, "semtag"] != "environment") & (published.loc[:, "semtag"] != "organism")]
 
     return published
 
