@@ -102,13 +102,51 @@ ACTIVE = {
     "Y": "0",
     "N": "1"
 }
+
+def _get_fsn_semtag(fr_path: str, fr_date: str) -> pd.DataFrame:
+    """Récupérer le FSN EN et le suffixe sémantique pour les concepts traduits dans l'édition nationale.
+
+    args:
+        fr_path: Chemin vers le dossier Snapshot de l'édition nationale
+        fr_date: Date de release de l'édition nationale
     
-def read_common_french(cf_path: str, cf_date: str) -> pd.DataFrame:
+    returns:
+        DataFrame représentant pour chaque SCTID son FSN et son suffixe sémantique.
+    """
+    # Lecture des descriptions EN
+    en_desc_path = op.join(fr_path, f"Terminology/sct2_Description_Snapshot-en_FR1000315_{fr_date}.txt")
+    en_description = pd.read_csv(en_desc_path, sep="\t", dtype=str, usecols=["active", "conceptId", "typeId", "term"], quoting=3)
+    en_description.columns = ["active", "conceptId", "typeId", "fsn"]
+    
+    # Lecture des concepts de l'édition nationale
+    en_concept_path = op.join(fr_path, f"Terminology/sct2_Concept_Snapshot_FR1000315_{fr_date}.txt")
+    en_concept = pd.read_csv(en_concept_path, sep="\t", dtype=str, usecols=["id", "active"])
+    en_concept = en_concept.loc[en_concept.loc[:, "active"] == "1"]
+
+    # Conserver seulement les FSN actifs
+    en_description = en_description.loc[
+        (en_description.loc[:, "typeId"] == "900000000000003001")
+        & (en_description.loc[:, "active"] == "1")
+        & (en_description.loc[:, "conceptId"].isin(en_concept.loc[:, "id"]))
+    ]
+    
+    # Supprimer les colonnes 'active' et 'typeId' qui ne sont plus nécessaires
+    en_description = en_description.drop(["active", "typeId"], axis=1)
+
+    # Déduire les suffixes sémantiques des FSN
+    en_description.loc[:, "semtag"] = [SEMTAG[c.split("(")[-1].rstrip(")")] for c in en_description.loc[:, "fsn"]]
+
+    return en_description
+
+
+def read_common_french(cf_path: str, cf_date: str, fr_path: str, fr_date: str) -> pd.DataFrame:
     """Lecture de la dernière release de la Common French.
     
     args:
         cf_path: Chemin vers le dossier Snapshot de la Common French
         cf_date: Date de release de la Common French
+        fr_path: Chemin vers le dossier Snapshot de l'édition nationale
+        fr_date: Date de release de l'édition nationale
 
     returns:
         DataFrame contenant les informations de descriptions
@@ -138,40 +176,16 @@ def read_common_french(cf_path: str, cf_date: str) -> pd.DataFrame:
     # Supprimer la colonne 'referencedComponentId' qui n'est plus nécessaire
     cf_description = cf_description.drop(["referencedComponentId"], axis=1)
 
+    # Récupérer les FSN et les suffixes sémantiques
+    fsn_semtag = _get_fsn_semtag(fr_path, fr_date)
+    cf_description = pd.merge(cf_description, fsn_semtag, how="left", on="conceptId")
+
+    # Retirer les traductions des hiérarchies 'Environment or geographical location' et 'Organism'
+    cf_description = cf_description.loc[(cf_description.loc[:, "semtag"] != "environment") & (cf_description.loc[:, "semtag"] != "organism")]
+    # Retirer les concepts absents de `fsn_semtag`
+    cf_description = cf_description.loc[~cf_description.loc[:, "fsn"].isnull()]
+
     return cf_description
-
-
-def _get_fsn_semtag(fr: pd.DataFrame, fr_path: str, fr_date: str) -> pd.DataFrame:
-    """Récupérer le FSN EN et le suffixe sémantique spour les concepts traduits dans l'édition nationale.
-
-    args:
-        fr: Descriptions de l'édition nationale
-        fr_path: Chemin vers le dossier Snapshot de l'édition nationale
-        fr_date: Date de release de l'édition nationale
-    
-    returns:
-        `fr` avec deux nouvelles colonnes contenant le FSN et le suffixe sémantique du concept.
-    """
-    # Lecture des descriptions EN
-    en_desc_path = op.join(fr_path, f"Terminology/sct2_Description_Snapshot-en_FR1000315_{fr_date}.txt")
-    en_description = pd.read_csv(en_desc_path, sep="\t", dtype=str, usecols=["active", "conceptId", "typeId", "term"], quoting=3)
-    en_description.columns = ["active", "conceptId", "typeId", "fsn"]
-    
-    # Conserver seulement les FSN actifs des concepts traduits en FR
-    en_description = en_description.loc[
-        (en_description.loc[:, "typeId"] == "900000000000003001")
-        & (en_description.loc[:, "active"] == "1")
-        & (en_description.loc[:, "conceptId"].isin(fr.loc[:, "conceptId"]))
-    ]
-    
-    # Supprimer les colonnes 'active' et 'typeId' qui ne sont plus nécessaires
-    en_description = en_description.drop(["active", "typeId"], axis=1)
-
-    # Ajout des colonnes 'fsn' et 'semtag'
-    fr = pd.merge(fr, en_description, how="left", on="conceptId").fillna("")
-    fr.loc[:, "semtag"] = [SEMTAG[fsn.split("(")[-1].rstrip(")")] for fsn in fr.loc[:, "fsn"]]
-
-    return fr
 
 
 def _read_published_fr_edition(fr_path: str, fr_date: str) -> pd.DataFrame:
@@ -192,7 +206,7 @@ def _read_published_fr_edition(fr_path: str, fr_date: str) -> pd.DataFrame:
     fr_desc_path = op.join(fr_path, f"Terminology/sct2_Description_Snapshot-fr_FR1000315_{fr_date}.txt")
     fr_description = pd.read_csv(fr_desc_path, sep="\t", dtype={"id": str, "active": pd.CategoricalDtype(["1", "0"]), "conceptId": str, "typeId": str, "term": str},
                                  usecols=["id", "active", "conceptId", "typeId", "term", "caseSignificanceId"], quoting=3,
-                                 converters={"caseSignificanceId": lambda x: CASE.get(x)}, encoding="UTF-8")    
+                                 converters={"caseSignificanceId": lambda x: CASE.get(x)}, encoding="UTF-8")
     # Conserver seulement les synonymes
     fr_description = fr_description.loc[fr_description.loc[:, "typeId"] == "900000000000013009"]
     # Supprimer la colonne 'typeId' qui n'est plus nécessaire
@@ -283,11 +297,6 @@ def get_fr_edition(fr_path: str, fr_date: str, unpub_fr_path: str) -> pd.DataFra
 
     # Inactivation des descriptions inactivées
     published.update(inactive)
-
-    # Récupérer les FSN et les suffixes sémantiques
-    published = _get_fsn_semtag(published, fr_path, fr_date)
-    # Supprimer les concepts des hiérarchies 'Environment or geographical location' et 'Organism'
-    published = published.loc[(published.loc[:, "semtag"] != "environment") & (published.loc[:, "semtag"] != "organism")]
 
     return published
 
