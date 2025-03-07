@@ -103,45 +103,49 @@ ACTIVE = {
     "N": "1"
 }
 
+
 def _get_fsn_semtag(fr_path: str, fr_date: str) -> pd.DataFrame:
-    """Récupérer le FSN EN et le suffixe sémantique pour les concepts traduits dans l'édition nationale.
+    """Récupérer le FSN EN et le suffixe sémantique pour chaque concept traduit
+    dans l'édition nationale.
 
     args:
         fr_path: Chemin vers le dossier Snapshot de l'édition nationale
         fr_date: Date de release de l'édition nationale
-    
+
     returns:
-        DataFrame représentant pour chaque SCTID son FSN et son suffixe sémantique.
+        DataFrame contenant le FSN et suffixe sémantique associé à un SCTID.
     """
-    # Lecture des descriptions EN
-    en_desc_path = op.join(fr_path, f"Terminology/sct2_Description_Snapshot-en_FR1000315_{fr_date}.txt")
-    en_description = pd.read_csv(en_desc_path, sep="\t", dtype=str, usecols=["active", "conceptId", "typeId", "term"], quoting=3)
-    en_description.columns = ["active", "conceptId", "typeId", "fsn"]
-    
+    # Lecture des descriptions EN de l'édition nationale
+    path = op.join(fr_path, "Terminology/sct2_Description_Snapshot-en_FR1000315_{fr_date}.txt")
+    desc = pd.read_csv(path, sep="\t", dtype=str, quoting=3,
+                       usecols=["active", "conceptId", "typeId", "term"])
+    desc.columns = ["active", "conceptId", "typeId", "fsn"]
+
     # Lecture des concepts de l'édition nationale
-    en_concept_path = op.join(fr_path, f"Terminology/sct2_Concept_Snapshot_FR1000315_{fr_date}.txt")
-    en_concept = pd.read_csv(en_concept_path, sep="\t", dtype=str, usecols=["id", "active"])
-    en_concept = en_concept.loc[en_concept.loc[:, "active"] == "1"]
+    path = op.join(fr_path, f"Terminology/sct2_Concept_Snapshot_FR1000315_{fr_date}.txt")
+    concept = pd.read_csv(path, sep="\t", dtype=str, usecols=["id", "active"])
+    concept = concept.loc[concept.loc[:, "active"] == "1"]
 
     # Conserver seulement les FSN actifs
-    en_description = en_description.loc[
-        (en_description.loc[:, "typeId"] == "900000000000003001")
-        & (en_description.loc[:, "active"] == "1")
-        & (en_description.loc[:, "conceptId"].isin(en_concept.loc[:, "id"]))
-    ]
-    
+    desc = desc.loc[(desc.loc[:, "typeId"] == "900000000000003001")
+                    & (desc.loc[:, "active"] == "1")
+                    & (desc.loc[:, "conceptId"].isin(concept.loc[:, "id"]))]
+
     # Supprimer les colonnes 'active' et 'typeId' qui ne sont plus nécessaires
-    en_description = en_description.drop(["active", "typeId"], axis=1)
+    desc = desc.drop(["active", "typeId"], axis=1)
 
-    # Déduire les suffixes sémantiques des FSN
-    en_description.loc[:, "semtag"] = [SEMTAG[c.split("(")[-1].rstrip(")")] for c in en_description.loc[:, "fsn"]]
+    # Extraire les suffixes sémantiques des FSN
+    desc.loc[:, "semtag"] = [
+        SEMTAG[c.split("(")[-1].rstrip(")")] for c in desc.loc[:, "fsn"]
+    ]
 
-    return en_description
+    return desc
 
 
-def read_common_french(cf_path: str, cf_date: str, fr_path: str, fr_date: str) -> pd.DataFrame:
+def read_common_french(cf_path: str, cf_date: str, fr_path: str,
+                       fr_date: str) -> pd.DataFrame:
     """Lecture de la dernière release de la Common French.
-    
+
     args:
         cf_path: Chemin vers le dossier Snapshot de la Common French
         cf_date: Date de release de la Common French
@@ -153,44 +157,51 @@ def read_common_french(cf_path: str, cf_date: str, fr_path: str, fr_date: str) -
     """
     # Vérification du dossier donné en paramètre
     if op.basename(op.normpath(cf_path)) != "Snapshot":
-        ValueError("Le chemin vers la Common French ne pointe pas vers le dossier Snapshot")
-        
-    # Lecture des descriptions
-    cf_desc_path = op.join(cf_path, f"Terminology/sct2_Description_Snapshot_CommonFrench-Extension_{cf_date}.txt")
-    cf_description = pd.read_csv(cf_desc_path, sep="\t", dtype={"id": str, "active": pd.CategoricalDtype(["1", "0"]), "conceptId": str, "typeId": str, "term": str},
-                                 usecols=["id", "active", "conceptId", "typeId", "term", "caseSignificanceId"], quoting=3,
-                                 converters={"caseSignificanceId": lambda x: CASE.get(x)}, encoding="UTF-8")
-    
-    # Conserver seulement les synonymes actifs
-    cf_description = cf_description.loc[(cf_description.loc[:, "typeId"] == "900000000000013009") & (cf_description.loc[:, "active"] == "1")]
-    # Supprimer les colonnes 'active' et 'typeId' qui ne sont plus nécessaires
-    cf_description = cf_description.drop(["active", "typeId"], axis=1)
+        ValueError("Le chemin ne pointe pas vers le dossier Snapshot")
 
-    # Lecture du refset de langue
-    cf_lang_path = op.join(cf_path, f"Refset/Language/der2_cRefset_LanguageSnapshot_CommonFrench-Extension_{cf_date}.txt")
-    cf_language = pd.read_csv(cf_lang_path, sep="\t", dtype={"referencedComponentId": str}, usecols=["referencedComponentId", "acceptabilityId"], 
-                              converters={"acceptabilityId": lambda x: ACCEPT.get(x)}, encoding="UTF-8")
-        
+    # Lecture des descriptions de la Common French
+    path = op.join(cf_path, f"Terminology/sct2_Description_Snapshot_CommonFrench-Extension_{cf_date}.txt")
+    desc = pd.read_csv(path, sep="\t", quoting=3, encoding="UTF-8",
+                       dtype={"id": str, "active": pd.CategoricalDtype(["1", "0"]),
+                              "conceptId": str, "typeId": str, "term": str},
+                       usecols=["id", "active", "conceptId", "typeId", "term",
+                                "caseSignificanceId"],
+                       converters={"caseSignificanceId": lambda x: CASE.get(x)})
+
+    # Conserver seulement les synonymes actifs
+    desc = desc.loc[(desc.loc[:, "typeId"] == "900000000000013009")
+                    & (desc.loc[:, "active"] == "1")]
+    # Supprimer les colonnes 'active' et 'typeId' qui ne sont plus nécessaires
+    desc = desc.drop(["active", "typeId"], axis=1)
+
+    # Lecture du refset de langue de la Common French
+    path = op.join(cf_path, f"Refset/Language/der2_cRefset_LanguageSnapshot_CommonFrench-Extension_{cf_date}.txt")
+    lang = pd.read_csv(path, sep="\t", encoding="UTF-8", dtype={"referencedComponentId": str},
+                       usecols=["referencedComponentId", "acceptabilityId"],
+                       converters={"acceptabilityId": lambda x: ACCEPT.get(x)})
+
     # Ajouter l'acceptabilité au DataFrame des descriptions
-    cf_description = pd.merge(cf_description, cf_language, how="left", left_on="id", right_on="referencedComponentId")
+    desc = pd.merge(desc, lang, how="left", left_on="id", right_on="referencedComponentId")
     # Supprimer la colonne 'referencedComponentId' qui n'est plus nécessaire
-    cf_description = cf_description.drop(["referencedComponentId"], axis=1)
+    desc = desc.drop(["referencedComponentId"], axis=1)
 
     # Récupérer les FSN et les suffixes sémantiques
     fsn_semtag = _get_fsn_semtag(fr_path, fr_date)
-    cf_description = pd.merge(cf_description, fsn_semtag, how="left", on="conceptId")
+    desc = pd.merge(desc, fsn_semtag, how="left", on="conceptId")
 
-    # Retirer les traductions des hiérarchies 'Environment or geographical location' et 'Organism'
-    cf_description = cf_description.loc[(cf_description.loc[:, "semtag"] != "environment") & (cf_description.loc[:, "semtag"] != "organism")]
+    # Retirer les traductions des hiérarchies
+    # 'Environment or geographical location' et 'Organism'
+    desc = desc.loc[(desc.loc[:, "semtag"] != "environment")
+                    & (desc.loc[:, "semtag"] != "organism")]
     # Retirer les concepts absents de `fsn_semtag`
-    cf_description = cf_description.loc[~cf_description.loc[:, "fsn"].isnull()]
+    desc = desc.loc[~desc.loc[:, "fsn"].isnull()]
 
-    return cf_description
+    return desc
 
 
 def _read_published_fr_edition(fr_path: str, fr_date: str) -> pd.DataFrame:
     """Lecture de la dernière release publiée de l'édition nationale.
-    
+
     args:
         fr_path: Chemin vers le dossier Snapshot de l'édition nationale
         fr_date: Date de release de l'édition nationale
@@ -203,68 +214,78 @@ def _read_published_fr_edition(fr_path: str, fr_date: str) -> pd.DataFrame:
         ValueError("Le chemin vers l'édition nationale ne pointe pas vers le dossier Snapshot")
 
     # Lecture des descriptions FR
-    fr_desc_path = op.join(fr_path, f"Terminology/sct2_Description_Snapshot-fr_FR1000315_{fr_date}.txt")
-    fr_description = pd.read_csv(fr_desc_path, sep="\t", dtype={"id": str, "active": pd.CategoricalDtype(["1", "0"]), "conceptId": str, "typeId": str, "term": str},
-                                 usecols=["id", "active", "conceptId", "typeId", "term", "caseSignificanceId"], quoting=3,
-                                 converters={"caseSignificanceId": lambda x: CASE.get(x)}, encoding="UTF-8")
+    path = op.join(fr_path, f"Terminology/sct2_Description_Snapshot-fr_FR1000315_{fr_date}.txt")
+    desc = pd.read_csv(path, sep="\t", quoting=3, encoding="UTF-8",
+                       dtype={"id": str, "active": pd.CategoricalDtype(["1", "0"]),
+                              "conceptId": str, "typeId": str, "term": str},
+                       usecols=["id", "active", "conceptId", "typeId", "term",
+                                "caseSignificanceId"],
+                       converters={"caseSignificanceId": lambda x: CASE.get(x)})
     # Conserver seulement les synonymes
-    fr_description = fr_description.loc[fr_description.loc[:, "typeId"] == "900000000000013009"]
+    desc = desc.loc[desc.loc[:, "typeId"] == "900000000000013009"]
     # Supprimer la colonne 'typeId' qui n'est plus nécessaire
-    fr_description = fr_description.drop(["typeId"], axis=1)
-    
-    # Lecture du refset de langue
-    fr_lang_path = op.join(fr_path, f"Refset/Language/der2_cRefset_LanguageSnapshot-fr_FR1000315_{fr_date}.txt")
-    fr_language = pd.read_csv(fr_lang_path, sep="\t", dtype={"referencedComponentId": str}, usecols=["referencedComponentId", "acceptabilityId"], 
-                              converters={"acceptabilityId": lambda x: ACCEPT.get(x)}, encoding="UTF-8")
-    
-    # Ajouter l'acceptabilité au DataFrame des descriptions
-    fr_description = pd.merge(fr_description, fr_language, how="left", left_on="id", right_on="referencedComponentId")
-    # Supprimer la colonne 'referencedComponentId' qui n'est plus nécessaire
-    fr_description = fr_description.drop(["referencedComponentId"], axis=1)
+    desc = desc.drop(["typeId"], axis=1)
 
-    return fr_description
+    # Lecture du refset de langue
+    path = op.join(fr_path, f"Refset/Language/der2_cRefset_LanguageSnapshot-fr_FR1000315_{fr_date}.txt")
+    lang = pd.read_csv(path, sep="\t", encoding="UTF-8", dtype={"referencedComponentId": str},
+                       usecols=["referencedComponentId", "acceptabilityId"],
+                       converters={"acceptabilityId": lambda x: ACCEPT.get(x)})
+
+    # Ajouter l'acceptabilité au DataFrame des descriptions
+    desc = pd.merge(desc, lang, how="left", left_on="id", right_on="referencedComponentId")
+    # Supprimer la colonne 'referencedComponentId' qui n'est plus nécessaire
+    desc = desc.drop(["referencedComponentId"], axis=1)
+
+    return desc
 
 
 def _read_unpublished_fr_edition(unpub_fr_path: str) -> pd.DataFrame:
     """Lecture des modifications de l'édition nationale depuis la dernière relase.
-    
+
     args:
-        unpub_fr_path: Chemin vers le fichier extrait du rapport "New and change components" de SNOMED Int.
-    
+        unpub_fr_path: Chemin vers l'extrait du rapport "New and change components"
+
     returns:
         DataFrame contenant les informations de modifications
     """
     if not op.isfile(unpub_fr_path) or not op.exists(unpub_fr_path):
-        ValueError("Le fichier des modifications non-publiées de l'édition nationale est invalide.")
+        ValueError("Le chemin vers le fichier est invalide.")
 
     # Lecture du fichier concepts
-    unpublished = pd.read_csv(unpub_fr_path, sep=";", dtype={"Id": str, " Description": str, " LangRefset": str, " isChanged": str},
-                                 usecols=["Id", " Description", " LangRefset", " isChanged", " wasInactivated"], quoting=3,
-                                 converters={" wasInactivated": lambda x: ACTIVE.get(x)}, encoding="UTF-8")
+    unpub = pd.read_csv(unpub_fr_path, sep=";", quoting=3, encoding="UTF-8",
+                        dtype={"Id": str, " Description": str, " LangRefset": str,
+                               " isChanged": str},
+                        usecols=["Id", " Description", " LangRefset", " isChanged",
+                                 " wasInactivated"],
+                        converters={" wasInactivated": lambda x: ACTIVE.get(x)})
     # Renommer les colonnes du fichier
-    unpublished.columns = ["conceptId", "description", "language", "isChanged", "active"]
+    unpub.columns = ["conceptId", "description", "language", "isChanged", "active"]
 
     # Extraire les SCTID de descriptions
-    unpublished.insert(0, "id", [d.split(" ")[0].lstrip("*") for d in unpublished.loc[:, "description"]])
+    unpub.insert(0, "id", [d.split(" ")[0].lstrip("*") for d in unpub.loc[:, "description"]])
     # Extraire les descriptions
-    unpublished.insert(2, "term", [" ".join(d.split(" ")[3:-1]) for d in unpublished.loc[:, "description"]])    
+    unpub.insert(2, "term", [" ".join(d.split(" ")[3:-1]) for d in unpub.loc[:, "description"]])
     # Extraire les valeurs de casses
-    unpublished.insert(3, "caseSignificanceId", [d.split(" ")[-1][1:3] for d in unpublished.loc[:, "description"]])
+    unpub.insert(3, "caseSignificanceId",
+                 [d.split(" ")[-1][1:3] for d in unpub.loc[:, "description"]])
     # Extraire l'acceptabilité
-    unpublished.insert(4, "acceptabilityId", ["PREFERRED" if "PREFERRED" in l else "ACCEPTABLE" for l in unpublished.loc[:, "language"]])
+    unpub.insert(4, "acceptabilityId", ["PREFERRED" if "PREFERRED" in l else "ACCEPTABLE"
+                                        for l in unpub.loc[:, "language"]])
     # Supprimer les colonnes 'description' et 'language' qui ne sont plus nécessaires
-    unpublished = unpublished.drop(["description", "language"], axis=1)
+    unpub = unpub.drop(["description", "language"], axis=1)
 
-    return unpublished
+    return unpub
 
 
 def get_fr_edition(fr_path: str, fr_date: str, unpub_fr_path: str) -> pd.DataFrame:
-    """Regroupement de la dernière release publiée de l'édition nationale et de l'état actuel des modifications.
-    
+    """Regroupement de la dernière release publiée de l'édition nationale et des modifications
+    non-publiées.
+
     args:
         fr_path: Chemin vers le dossier Snapshot de l'édition nationale
         fr_date: Date de release de l'édition nationale
-        unpub_fr_path: Chemin vers le fichier extrait du rapport "New and change components" de SNOMED Int.
+        unpub_fr_path: Chemin vers l'extrait du rapport "New and change components"
 
     returns:
         DataFrame contenant les informations de description à jour
@@ -274,17 +295,20 @@ def get_fr_edition(fr_path: str, fr_date: str, unpub_fr_path: str) -> pd.DataFra
     unpublished = _read_unpublished_fr_edition(unpub_fr_path)
 
     # Division des modifications non publiées
-    new = unpublished.loc[(unpublished.loc[:, "isChanged"] == "N") & (unpublished.loc[:, "active"] == "1")]
+    new = unpublished.loc[(unpublished.loc[:, "isChanged"] == "N")
+                          & (unpublished.loc[:, "active"] == "1")]
     new = new.drop(["isChanged"], axis=1)
     changed = unpublished.loc[unpublished.loc[:, "isChanged"] == "Y"]
     changed = changed.drop(["conceptId", "term", "isChanged", "active"], axis=1)
     changed = changed.set_index("id")
-    inactive = unpublished.loc[(unpublished.loc[:, "isChanged"] == "N") & (unpublished.loc[:, "active"] == "0")]
-    inactive = inactive.drop(["conceptId", "term", "caseSignificanceId", "acceptabilityId", "isChanged"], axis=1)
+    inactive = unpublished.loc[(unpublished.loc[:, "isChanged"] == "N")
+                               & (unpublished.loc[:, "active"] == "0")]
+    inactive = inactive.drop(["conceptId", "term", "caseSignificanceId", "acceptabilityId",
+                              "isChanged"], axis=1)
     inactive = inactive.set_index("id")
     # Contrôle de perte
     if len(new) + len(changed) + len(inactive) != len(unpublished):
-        Exception("Il existe d'autres modifications que ajout, modification & inactivation dans le fichier.")
+        Exception("Il existe d'autres modifications non prises en charge dans le fichier.")
     else:
         del unpublished
 
@@ -304,7 +328,7 @@ def get_fr_edition(fr_path: str, fr_date: str, unpub_fr_path: str) -> pd.DataFra
 def write_batch_file(cf: pd.DataFrame, path: str) -> None:
     """Sauvegarde des traduction de la Common French à importer en batch sous forme
     de fichier 'Description Additions'.
-    
+
     args:
         cf: Descriptions de la Common French à importer.
         path: Emplacement et nom du fichier d'import en batch.

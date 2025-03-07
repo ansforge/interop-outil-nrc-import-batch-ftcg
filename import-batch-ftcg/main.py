@@ -1,14 +1,16 @@
 from . import io
-import pandas as pd
 import argparse
 
 if __name__ == "__main__":
     cli = argparse.ArgumentParser()
-    cli.add_argument("cf_path", type=str, help="Chemin vers le dossier Snapshot de la Common French")
+    cli.add_argument("cf_path", type=str,
+                     help="Chemin vers le dossier Snapshot de la Common French")
     cli.add_argument("cf_date", type=str, help="Date de release de la Common French")
-    cli.add_argument("fr_path", type=str, help="Chemin vers le dossier Snapshot de l'édition nationale")
+    cli.add_argument("fr_path", type=str,
+                     help="Chemin vers le dossier Snapshot de l'édition nationale")
     cli.add_argument("fr_date", type=str, help="Date de release de l'édition nationale")
-    cli.add_argument("unpub_fr_path", type=str, help='Chemin vers le fichier extrait du rapport "New and change components" de SNOMED Int.')
+    cli.add_argument("unpub_fr_path", type=str,
+                     help="Chemin vers l'extrait du rapport New and change components")
     cli.add_argument("output", type=str, help="Emplacement et nom du fichier de sortie")
     args = cli.parse_args
 
