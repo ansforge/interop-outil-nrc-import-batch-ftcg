@@ -116,7 +116,7 @@ def _get_fsn_semtag(fr_path: str, fr_date: str) -> pd.DataFrame:
         DataFrame contenant le FSN et suffixe sémantique associé à un SCTID.
     """
     # Lecture des descriptions EN de l'édition nationale
-    path = op.join(fr_path, "Terminology/sct2_Description_Snapshot-en_FR1000315_{fr_date}.txt")
+    path = op.join(fr_path, f"Terminology/sct2_Description_Snapshot-en_FR1000315_{fr_date}.txt")
     desc = pd.read_csv(path, sep="\t", dtype=str, quoting=3,
                        usecols=["active", "conceptId", "typeId", "term"])
     desc.columns = ["active", "conceptId", "typeId", "fsn"]
@@ -333,8 +333,14 @@ def write_batch_file(cf: pd.DataFrame, path: str) -> None:
         cf: Descriptions de la Common French à importer.
         path: Emplacement et nom du fichier d'import en batch.
     """
-    cf.columns = ["Concept ID", "Translated Term", "Case significance", "Acceptability"]
+    # Supprimer les colonnes inutiles
+    cf = cf.drop(["id", "fsn", "semtag"], axis=1)
+    # Renommer les colonnes pour correspondre aux colonnes du fichier d'import en batch
+    cf.columns = ["Concept ID", "Translated Term", "Case significance", "Acceptability"] + list(cf.columns[4:])
+    # Ajouter les colonnes nécessaire au respect du fichier d'import en batch
     cf.insert(2, "Language Code", ["fr"] * len(cf))
     cf.insert(4, "Type", ["SYNONYM"] * len(cf))
     cf.insert(5, "Language reference set", ["French"] * len(cf))
+    # Remplacer les valeurs NaN par des 0
+    cf.fillna("0")
     cf.to_csv(path, sep="\t", index=False, encoding="UTF-8")
