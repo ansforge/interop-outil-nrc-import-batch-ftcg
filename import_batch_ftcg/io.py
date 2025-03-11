@@ -342,5 +342,5 @@ def write_batch_file(cf: pd.DataFrame, path: str) -> None:
     cf.insert(4, "Type", ["SYNONYM"] * len(cf))
     cf.insert(5, "Language reference set", ["French"] * len(cf))
     # Remplacer les valeurs NaN par des 0
-    cf.fillna("0")
+    cf = cf.fillna("")
     cf.to_csv(path, sep="\t", index=False, encoding="UTF-8")
