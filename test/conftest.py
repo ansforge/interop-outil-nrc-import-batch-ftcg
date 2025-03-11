@@ -108,7 +108,7 @@ def bs3() -> pd.DataFrame:
          "fsn": ["knee structure", "knee structure", "knee structure", "knee structure",
                  "entire knee", "entire hip", "entire feet", "entire shoulders", "entire knee",
                  "knee part", "knee part", "test"],
-         "term": ["structure d'un genou", "genou", "genou", "structure d'un genou",
+         "term": ["genou", "structure d'un genou", "structure d'un genou", "genou",
                   "genou entier", "hanche entière", "pieds entiers", "épaules entières", "genou",
                   "partie d'un genou", "genou", "test"]}
     )
@@ -123,7 +123,7 @@ def bs3_output() -> pd.DataFrame:
          "fsn": ["knee structure", "knee structure", "knee structure", "knee structure",
                  "entire knee", "entire hip", "entire feet", "entire shoulders", "entire knee",
                  "knee part", "knee part", "test"],
-         "term": ["structure d'un genou", "genou", "genou", "structure d'un genou", "genou entier",
+         "term": ["genou", "structure d'un genou", "structure d'un genou", "genou", "genou entier",
                   "hanche entière", "pieds entiers", "épaules entières", "genou",
                   "partie d'un genou", "genou", "test"],
          "bs3": [float("nan"), "1", float("nan"), "1", float("nan"), float("nan"), float("nan"),

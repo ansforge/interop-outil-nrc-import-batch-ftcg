@@ -92,13 +92,13 @@ def _check_bs3(cf: pd.DataFrame) -> pd.DataFrame:
     id = cf.loc[(cf.loc[:, "semtag"] == "body structure")
                 & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
                 & (cf.loc[:, "fsn"].str.contains("structure", regex=False, case=False))
-                & (~cf.loc[:, "term"].str.contains("structure", regex=False, case=False)),
+                & (cf.loc[:, "term"].str.contains("structure", regex=False, case=False)),
                 "id"]
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "body structure")
                                & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
                                & (cf.loc[:, "fsn"].str.contains("structure", regex=False, case=False))
-                               & (cf.loc[:, "term"].str.contains("structure", regex=False, case=False)),
+                               & (~cf.loc[:, "term"].str.contains("structure", regex=False, case=False)),
                                "id"]])
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "body structure")
