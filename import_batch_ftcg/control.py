@@ -342,7 +342,7 @@ def _check_co6(cf: pd.DataFrame) -> pd.DataFrame:
                 "id"]
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
-                               & (cf.loc[:, "fsn"].str.contains("bellow reference range", regex=False, case=False))
+                               & (cf.loc[:, "fsn"].str.contains("below reference range", regex=False, case=False))
                                & (~cf.loc[:, "term"].str.contains("inférieure? (?:à l'intervalle|aux valeurs) de référence", case=False)),
                                "id"]])
     id = id.drop_duplicates()
