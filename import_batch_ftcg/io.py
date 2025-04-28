@@ -335,12 +335,23 @@ def write_batch_file(cf: pd.DataFrame, path: str) -> None:
     """
     # Supprimer les colonnes inutiles
     cf = cf.drop(["id", "fsn", "semtag"], axis=1)
-    # Renommer les colonnes pour correspondre aux colonnes du fichier d'import en batch
-    cf.columns = ["Concept ID", "Translated Term", "Case significance", "Acceptability"] + list(cf.columns[4:])
     # Ajouter les colonnes nécessaire au respect du fichier d'import en batch
-    cf.insert(2, "Language Code", ["fr"] * len(cf))
-    cf.insert(4, "Type", ["SYNONYM"] * len(cf))
-    cf.insert(5, "Language reference set", ["French"] * len(cf))
+    cf.insert(1, "termRef", [""] * len(cf))
+    cf.insert(2, "preferredTerm", [""] * len(cf))
+    cf.insert(4, "lang", ["fr"] * len(cf))
+    cf.insert(6, "typeId", ["SYNONYM"] * len(cf))
+    cf.insert(7, "langRefset1", ["French"] * len(cf))
+    cf.insert(9, "langRefset2", [""] * len(cf))
+    cf.insert(10, "acceptability2", [""] * len(cf))
+    cf.insert(11, "langRefset3", [""] * len(cf))
+    cf.insert(12, "acceptability3", [""] * len(cf))
+    cf.insert(13, "langRefset4", [""] * len(cf))
+    cf.insert(14, "acceptability4", [""] * len(cf))
+    cf.insert(15, "langRefset5", [""] * len(cf))
+    cf.insert(16, "acceptability5", [""] * len(cf))
+    cf.insert(17, "notes", [""] * len(cf))
+    # Renommer la colonne d'acceptabilité
+    cf.rename(columns={"acceptabilityId": "acceptability1"}, inplace=True)
     # Remplacer les valeurs NaN par des 0
     cf = cf.fillna("")
     cf.to_csv(path, sep="\t", index=False, encoding="UTF-8")
