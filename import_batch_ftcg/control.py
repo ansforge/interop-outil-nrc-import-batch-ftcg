@@ -226,7 +226,7 @@ def _check_bs9(cf: pd.DataFrame) -> pd.DataFrame:
 
 
 def _check_bs10(cf: pd.DataFrame) -> pd.DataFrame:
-    """Identifie les descriptions ne respectant pas la règle bs10.
+    """Identifie les descriptions ne respectant pas la règle bs10-FR.
 
     args:
         cf: Descriptions de la Common French à importer.
@@ -267,14 +267,14 @@ def _check_bs11(cf: pd.DataFrame) -> pd.DataFrame:
     """
     id = cf.loc[(cf.loc[:, "semtag"] == "body structure")
                 & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
-                & (cf.loc[:, "fsn"].str.contains("lower leg", regex=False, case=False))
-                & (~cf.loc[:, "term"].str.contains("partie basse d'une jambe", regex=False, case=False)),
+                & (cf.loc[:, "fsn"].str.contains("upper limb", regex=False, case=False))
+                & (~cf.loc[:, "term"].str.contains("partie supérieure du bras", regex=False, case=False)),
                 "id"]
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "body structure")
                                & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
-                               & (cf.loc[:, "fsn"].str.contains("lower leg", regex=False, case=False))
-                               & (~cf.loc[:, "term"].str.contains("(?:partie inférieure d'une jambe|jambe, du genou à la cheville)", case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("upper limb", regex=False, case=False))
+                               & (~cf.loc[:, "term"].str.contains("bras, de l'épaule au coude", regex=False, case=False)),
                                "id"]])
     id = id.drop_duplicates()
     return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "bs11": ["1"] * len(id)}),
