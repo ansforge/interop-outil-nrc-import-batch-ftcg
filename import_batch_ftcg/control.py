@@ -239,6 +239,18 @@ def _check_bs10(cf: pd.DataFrame) -> pd.DataFrame:
                 & (cf.loc[:, "fsn"].str.contains("lower limb", regex=False, case=False))
                 & (~cf.loc[:, "term"].str.contains("membre inférieur", regex=False, case=False)),
                 "id"]
+
+    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "body structure")
+                               & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
+                               & (cf.loc[:, "fsn"].str.contains("lower leg", regex=False, case=False))
+                               & (~cf.loc[:, "term"].str.contains("partie inférieure de la jambe", case=False)),
+                               "id"]])
+
+    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "body structure")
+                               & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
+                               & (cf.loc[:, "fsn"].str.contains("lower leg", regex=False, case=False))
+                               & (~cf.loc[:, "term"].str.contains("(?:partie basse de la jambe|jambe, du genou à la cheville)", case=False)),
+                               "id"]])
     return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "bs10": ["1"] * len(id)}),
                                         how="left", on="id")
 
