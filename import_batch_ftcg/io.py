@@ -1,91 +1,7 @@
 import pandas as pd
-from os import path as op
 
-SEMTAG = {
-    # SNOMED RT+CTV3
-    "SNOMED RT+CTV3": "root",
-    # Body structure
-    "body structure": "body structure",
-    "cell": "body structure",
-    "cell structure": "body structure",
-    "morphologic abnormality": "body structure",
-    # Clinical finding
-    "finding": "clinical finding",
-    "disorder": "clinical finding",
-    # Environment and/or geographical location
-    "environment / location": "environment",
-    "environment": "environment",
-    "geographic location": "environment",
-    # Event
-    "event": "event",
-    # Observable entity
-    "observable entity": "observable entity",
-    # Organism
-    "organism": "organism",
-    # Pharmaceutical or biological product
-    "clinical drug": "pharmaceutical",
-    "medicinal product": "pharmaceutical",
-    "medicinal product form": "pharmaceutical",
-    # Physical force
-    "physical force": "physical force",
-    # Physical object
-    "physical object": "physical object",
-    "product": "product",
-    # Procedure
-    "procedure": "procedure",
-    "regime/therapy": "procedure",
-    # Qualifier value
-    "qualifier value": "qualifier value",
-    "administration method": "qualifier value",
-    "administrative concept": "qualifier value",
-    "basic dose form": "qualifier value",
-    "disposition": "qualifier value",
-    "dose form": "qualifier value",
-    "intended site": "qualifier value",
-    "number": "qualifier value",
-    "product name": "qualifier value",
-    "release characteristic": "qualifier value",
-    "role": "qualifier value",
-    "state of matter": "qualifier value",
-    "transformation": "qualifier value",
-    "supplier": "qualifier value",
-    "unit of presentation": "qualifier value",
-    # Record artifact
-    "record artifact": "record artifact",
-    # SWEC
-    "situation": "situation",
-    # SNOMED CT Model component
-    "attribute": "model component",
-    "core metadata concept": "model component",
-    "foundation metadata concept": "model component",
-    "link assertion": "model component",
-    "linkage concept": "model component",
-    "metadata": "model component",
-    "namespace concept": "model component",
-    "OWL metadata concept": "model component",
-    # Social context
-    "social concept": "social context",
-    "ethnic group": "social context",
-    "life style": "social context",
-    "occupation": "social context",
-    "person": "social context",
-    "racial group": "social context",
-    "religion/philosophy": "social context",
-    # Special concept
-    "inactive concept": "special concept",
-    "navigational concept": "special concept",
-    "special concept": "special concept",
-    # Specimen
-    "specimen": "specimen",
-    # Staging and scales
-    "assessment scale": "staging scales",
-    "staging scale": "staging scales",
-    "staging scales": "staging scales",
-    "tumor staging": "staging scales",
-    # Substance
-    "substance": "substance",
-    "": ""
-}
+from import_batch_ftcg import server
+from os import path as op
 
 CASE = {
     "900000000000448009": "ci",
@@ -104,64 +20,25 @@ ACTIVE = {
 }
 
 
-def _get_fsn_semtag(fr_path: str, fr_date: str) -> pd.DataFrame:
-    """Récupérer le FSN EN et le suffixe sémantique pour chaque concept traduit
-    dans l'édition nationale.
-
-    args:
-        fr_path: Chemin vers le dossier Snapshot de l'édition nationale
-        fr_date: Date de release de l'édition nationale
-
-    returns:
-        DataFrame contenant le FSN et suffixe sémantique associé à un SCTID.
-    """
-    # Lecture des descriptions EN de l'édition nationale
-    path = op.join(fr_path, f"Terminology/sct2_Description_Snapshot-en_FR1000315_{fr_date}.txt")
-    desc = pd.read_csv(path, sep="\t", dtype=str, quoting=3,
-                       usecols=["active", "conceptId", "typeId", "term"])
-    desc.columns = ["active", "conceptId", "typeId", "fsn"]
-
-    # Lecture des concepts de l'édition nationale
-    path = op.join(fr_path, f"Terminology/sct2_Concept_Snapshot_FR1000315_{fr_date}.txt")
-    concept = pd.read_csv(path, sep="\t", dtype=str, usecols=["id", "active"])
-    concept = concept.loc[concept.loc[:, "active"] == "1"]
-
-    # Conserver seulement les FSN actifs
-    desc = desc.loc[(desc.loc[:, "typeId"] == "900000000000003001")
-                    & (desc.loc[:, "active"] == "1")
-                    & (desc.loc[:, "conceptId"].isin(concept.loc[:, "id"]))]
-
-    # Supprimer les colonnes 'active' et 'typeId' qui ne sont plus nécessaires
-    desc = desc.drop(["active", "typeId"], axis=1)
-
-    # Extraire les suffixes sémantiques des FSN
-    desc.loc[:, "semtag"] = [
-        SEMTAG[c.split("(")[-1].rstrip(")")] for c in desc.loc[:, "fsn"]
-    ]
-
-    return desc
-
-
-def read_common_french(cf_path: str, cf_date: str, fr_path: str,
-                       fr_date: str) -> pd.DataFrame:
+def read_common_french(path: str, date: str, fts: server.Fts) -> pd.DataFrame:
     """Lecture de la dernière release de la Common French.
 
     args:
-        cf_path: Chemin vers le dossier Snapshot de la Common French
-        cf_date: Date de release de la Common French
-        fr_path: Chemin vers le dossier Snapshot de l'édition nationale
-        fr_date: Date de release de l'édition nationale
+        path: Chemin vers le dossier Snapshot de la Common French
+        date: Date de release de la Common French
+        fts: Serveur de Terminologies FHIR contenant la version de l'édition
+            internationale dont dépend votre édition nationale non publiée
 
     returns:
         DataFrame contenant les informations de descriptions
     """
     # Vérification du dossier donné en paramètre
-    if op.basename(op.normpath(cf_path)) != "Snapshot":
+    if op.basename(op.normpath(path)) != "Snapshot":
         ValueError("Le chemin ne pointe pas vers le dossier Snapshot")
 
     # Lecture des descriptions de la Common French
-    path = op.join(cf_path, f"Terminology/sct2_Description_Snapshot_CommonFrench-Extension_{cf_date}.txt")
-    desc = pd.read_csv(path, sep="\t", quoting=3, encoding="UTF-8",
+    p = op.join(path, f"Terminology/sct2_Description_Snapshot_CommonFrench-Extension_{date}.txt")
+    desc = pd.read_csv(p, sep="\t", quoting=3, na_filter=False,
                        dtype={"id": str, "active": pd.CategoricalDtype(["1", "0"]),
                               "conceptId": str, "typeId": str, "term": str},
                        usecols=["id", "active", "conceptId", "typeId", "term",
@@ -175,8 +52,8 @@ def read_common_french(cf_path: str, cf_date: str, fr_path: str,
     desc = desc.drop(["active", "typeId"], axis=1)
 
     # Lecture du refset de langue de la Common French
-    path = op.join(cf_path, f"Refset/Language/der2_cRefset_LanguageSnapshot_CommonFrench-Extension_{cf_date}.txt")
-    lang = pd.read_csv(path, sep="\t", encoding="UTF-8", dtype={"referencedComponentId": str},
+    p = op.join(path, f"Refset/Language/der2_cRefset_LanguageSnapshot_CommonFrench-Extension_{date}.txt")
+    lang = pd.read_csv(p, sep="\t", dtype={"referencedComponentId": str},
                        usecols=["referencedComponentId", "acceptabilityId"],
                        converters={"acceptabilityId": lambda x: ACCEPT.get(x)})
 
@@ -185,16 +62,12 @@ def read_common_french(cf_path: str, cf_date: str, fr_path: str,
     # Supprimer la colonne 'referencedComponentId' qui n'est plus nécessaire
     desc = desc.drop(["referencedComponentId"], axis=1)
 
-    # Récupérer les FSN et les suffixes sémantiques
-    fsn_semtag = _get_fsn_semtag(fr_path, fr_date)
-    desc = pd.merge(desc, fsn_semtag, how="left", on="conceptId")
-
     # Retirer les traductions des hiérarchies
     # 'Environment or geographical location' et 'Organism'
-    desc = desc.loc[(desc.loc[:, "semtag"] != "environment")
-                    & (desc.loc[:, "semtag"] != "organism")]
-    # Retirer les concepts absents de `fsn_semtag`
-    desc = desc.loc[~desc.loc[:, "fsn"].isnull()]
+    env = fts.get_descendants("308916002")
+    org = fts.get_descendants("410607006")
+    desc = desc.loc[(~desc.loc[:, "conceptId"].isin(env))
+                    & (~desc.loc[:, "conceptId"].isin(org))]
 
     return desc
 
