@@ -15,7 +15,7 @@ class Fts:
             endpoint: Endpoint de votre serveur de Terminologies FHIR
         """
         self.endpoint = endpoint
-        self.ecl_base_url = f"{endpoint}/ValueSet/$expand?url=http://snomed.info/sct/900000000000207008?fhir_vs=ecl/"  # no-qa
+        self.ecl_base_url = f"{endpoint}/ValueSet/$expand?url=http://snomed.info/sct/900000000000207008?fhir_vs=ecl/" # noqa
 
     def _ecl(self, ecl: str) -> List[str]:
         """Envoie une requête ECL au FTS

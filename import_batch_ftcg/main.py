@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
-from import_batch_ftcg import io
-from import_batch_ftcg import control
-from import_batch_ftcg import server
 import argparse
+
+from import_batch_ftcg import control
+from import_batch_ftcg import io
+from import_batch_ftcg import server
 
 if __name__ == "__main__":
     cli = argparse.ArgumentParser()
