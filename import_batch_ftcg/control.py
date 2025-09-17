@@ -298,12 +298,18 @@ def _check_bs11(cf: pd.DataFrame) -> pd.DataFrame:
     id = cf.loc[(cf.loc[:, "semtag"] == "body structure")
                 & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
                 & (cf.loc[:, "fsn"].str.contains("upper limb", regex=False, case=False))
-                & (~cf.loc[:, "term"].str.contains("partie supérieure du bras", regex=False, case=False)), # noqa
+                & (~cf.loc[:, "term"].str.contains("membre supérieur", regex=False, case=False)), # noqa
                 "id"]
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "body structure")
+                               & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
+                               & (cf.loc[:, "fsn"].str.contains("upper arm", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("partie supérieure du bras", regex=False, case=False)), # noqa
+                               "id"]])
+
+    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "body structure")
                                & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
-                               & (cf.loc[:, "fsn"].str.contains("upper limb", regex=False, case=False)) # noqa
+                               & (cf.loc[:, "fsn"].str.contains("upper arm", regex=False, case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("bras, de l'épaule au coude", regex=False, case=False)), # noqa
                                "id"]])
     id = id.drop_duplicates()

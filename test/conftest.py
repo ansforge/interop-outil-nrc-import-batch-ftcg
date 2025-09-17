@@ -252,21 +252,28 @@ def bs9_output() -> pd.DataFrame:
 @pytest.fixture
 def bs10() -> pd.DataFrame:
     return pd.DataFrame(
-        {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["body structure"] * 2 + ["test"],
-         "fsn": ["lower limb", "lower limb", "test"],
-         "term": ["membre inférieur", "jambe", "test"]}
+        {"id": [str(i) for i in range(1, 8)],
+         "semtag": ["body structure"] * 6 + ["test"],
+         "acceptabilityId": ["PREFERRED"] * 4 + ["ACCEPTABLE"] * 3,
+         "fsn": ["lower limb"] * 2 + ["lower leg"] * 4 + ["test"],
+         "term": ["membre inférieur", "jambe", "partie inférieure de la jambe",
+                  "partie basse de la jambe", "partie basse de la jambe",
+                  "jambe, du genou à la cheville", "test"]}
     )
 
 
 @pytest.fixture
 def bs10_output() -> pd.DataFrame:
     return pd.DataFrame(
-        {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["body structure"] * 2 + ["test"],
-         "fsn": ["lower limb", "lower limb", "test"],
-         "term": ["membre inférieur", "jambe", "test"],
-         "bs10": [float("nan"), "1", float("nan")]}
+        {"id": [str(i) for i in range(1, 8)],
+         "semtag": ["body structure"] * 6 + ["test"],
+         "acceptabilityId": ["PREFERRED"] * 4 + ["ACCEPTABLE"] * 3,
+         "fsn": ["lower limb"] * 2 + ["lower leg"] * 4 + ["test"],
+         "term": ["membre inférieur", "jambe", "partie inférieure de la jambe",
+                  "partie basse de la jambe", "partie basse de la jambe",
+                  "jambe, du genou à la cheville", "test"],
+         "bs10": [float("nan"), "1", float("nan"), "1", float("nan"), float("nan"),
+                  float("nan")]}
     )
 
 
@@ -275,11 +282,11 @@ def bs11() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 7)],
          "semtag": ["body structure"] * 5 + ["test"],
-         "acceptabilityId": ["PREFERRED"] * 2 + ["ACCEPTABLE"] * 4,
-         "fsn": ["lower leg", "lower leg", "lower leg", "lower leg", "lower leg",
+         "acceptabilityId": ["PREFERRED"] * 4 + ["ACCEPTABLE"] * 2,
+         "fsn": ["upper limb", "upper limb", "upper arm", "upper arm", "upper arm",
                  "test"],
-         "term": ["partie basse d'une jambe", "jambe", "partie inférieure d'une jambe",
-                  "jambe, du genou à la cheville", "jambe", "test"]}
+         "term": ["membre supérieur", "bras", "partie supérieure du bras",
+                  "bras, de l'épaule au coude", "bras, de l'épaule au coude", "test"]}
     )
 
 
@@ -288,12 +295,12 @@ def bs11_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 7)],
          "semtag": ["body structure"] * 5 + ["test"],
-         "acceptabilityId": ["PREFERRED"] * 2 + ["ACCEPTABLE"] * 4,
-         "fsn": ["lower leg", "lower leg", "lower leg", "lower leg", "lower leg",
+         "acceptabilityId": ["PREFERRED"] * 4 + ["ACCEPTABLE"] * 2,
+         "fsn": ["upper limb", "upper limb", "upper arm", "upper arm", "upper arm",
                  "test"],
-         "term": ["partie basse d'une jambe", "jambe", "partie inférieure d'une jambe",
-                  "jambe, du genou à la cheville", "jambe", "test"],
-         "bs11": [float("nan"), "1", float("nan"), float("nan"), "1", float("nan")]}
+         "term": ["membre supérieur", "bras", "partie supérieure du bras",
+                  "bras, de l'épaule au coude", "bras, de l'épaule au coude", "test"],
+         "bs11": [float("nan"), "1", float("nan"), "1", float("nan"), float("nan")]}
     )
 
 
