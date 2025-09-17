@@ -24,22 +24,25 @@ if __name__ == "__main__":
     # Initialisation de la classe de gestion du FTS
     fts = server.Fts(args.endpoint)
     # Lecture et pré-processus de la Common French
+    print("\nExtraction Common French...", end="\r")
     cf = io.read_common_french(args.cf_path, args.cf_date, fts)
-    print(f"\nCommon French extraite : {len(cf)} lignes.")
+    print(f"Extraction Common French ({len(cf)} lignes) - OK")
     # Lecture et pré-processus de l'édition nationale
+    print("Extraction édition nationale...", end="\r")
     fr = io.get_fr_edition(args.fr_path, args.unpub_fr_path)
-    print(f"Edition nationale extraite : {len(fr)} lignes.")
+    print(f"Extraction édition nationale ({len(fr)} SCTID) - OK")
 
     # Conserve seulement les traductions de la Common French pour des concepts dans
     # l'édition nationale n'ayant pas de description FR (active ou inactive)
     cf = cf.loc[~cf.loc[:, "conceptId"].isin(fr)]
-    print(f"Réduction de la Common French à importer : {len(cf)} lignes d'intérêt.")
+    print(f"\nRéduction de la Common French à importer ({len(cf)} lignes) - OK")
 
     # Vérification des règles pour relecture
-    print("\nVérification du respect des règles éditoriales en cours...")
+    print("\nVérification du respect des règles éditoriales...", end="\r")
     cf = control.run_quality_control(cf)
-    print("Vérification terminée")
+    print("Vérification du respect des règles éditoriales - OK")
 
     # Ecriture du fichier d'import
+    print("\nSauvegarde du fichier d'import...", end="\r")
     io.write_batch_file(cf, args.output)
-    print(f"\nFichier final sauvegardé : {args.output}")
+    print(f"Sauvegarde du fichier d'import ({args.output}) - OK")
