@@ -6,8 +6,8 @@ from import_batch_ftcg import control
 # Tests de bs2 #
 ################
 def test_no_bs2(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_bs2 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_bs2 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'bs2
@@ -29,8 +29,8 @@ def test_check_bs2(bs2: pd.DataFrame, bs2_output: pd.DataFrame) -> None:
 # Tests de bs3 #
 ################
 def test_no_bs3(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_bs3 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_bs3 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'bs3
@@ -52,8 +52,8 @@ def test_check_bs3(bs3: pd.DataFrame, bs3_output: pd.DataFrame) -> None:
 # Tests de bs5 #
 ################
 def test_no_bs5(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_bs5 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_bs5 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'bs5
@@ -75,8 +75,8 @@ def test_check_bs5(bs5: pd.DataFrame, bs5_output: pd.DataFrame) -> None:
 # Tests de bs6 #
 ################
 def test_no_bs6(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_bs6 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_bs6 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'bs6
@@ -98,8 +98,8 @@ def test_check_bs6(bs6: pd.DataFrame, bs6_output: pd.DataFrame) -> None:
 # Tests de bs7 #
 ################
 def test_no_bs7(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_bs7 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_bs7 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'bs7
@@ -121,8 +121,8 @@ def test_check_bs7(bs7: pd.DataFrame, bs7_output: pd.DataFrame) -> None:
 # Tests de bs8 #
 ################
 def test_no_bs8(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_bs8 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_bs8 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'bs8
@@ -144,8 +144,8 @@ def test_check_bs8(bs8: pd.DataFrame, bs8_output: pd.DataFrame) -> None:
 # Tests de bs9 #
 ################
 def test_no_bs9(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_bs9 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_bs9 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'bs9
@@ -167,8 +167,8 @@ def test_check_bs9(bs9: pd.DataFrame, bs9_output: pd.DataFrame) -> None:
 # Tests de bs10 #
 #################
 def test_no_bs10(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_bs10 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_bs10 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'bs10
@@ -190,8 +190,8 @@ def test_check_bs10(bs10: pd.DataFrame, bs10_output: pd.DataFrame) -> None:
 # Tests de bs11 #
 #################
 def test_no_bs11(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_bs11 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_bs11 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'bs11
@@ -213,8 +213,8 @@ def test_check_bs11(bs11: pd.DataFrame, bs11_output: pd.DataFrame) -> None:
 # Tests de bs12 #
 #################
 def test_no_bs12(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_bs12 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_bs12 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'bs12
@@ -236,8 +236,8 @@ def test_check_bs12(bs12: pd.DataFrame, bs12_output: pd.DataFrame) -> None:
 # Tests de bs13 #
 #################
 def test_no_bs13(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_bs13 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_bs13 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'bs13

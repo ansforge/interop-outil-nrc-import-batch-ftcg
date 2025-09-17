@@ -6,8 +6,8 @@ from import_batch_ftcg import control
 # Tests de co2 #
 ################
 def test_no_co2(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_co2 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_co2 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'co2
@@ -29,8 +29,8 @@ def test_check_co2(co2: pd.DataFrame, co2_output: pd.DataFrame) -> None:
 # Tests de co6 #
 ################
 def test_no_co6(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_co6 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_co6 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'co6
@@ -52,8 +52,8 @@ def test_check_co6(co6: pd.DataFrame, co6_output: pd.DataFrame) -> None:
 # Tests de pa4 #
 ################
 def test_no_pa4(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_pa4 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_pa4 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'pa4
@@ -75,8 +75,8 @@ def test_check_pa4(pa4: pd.DataFrame, pa4_output: pd.DataFrame) -> None:
 # Tests de pa6 #
 ################
 def test_no_pa6(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_pa6 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_pa6 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'pa6
@@ -98,8 +98,8 @@ def test_check_pa6(pa6: pd.DataFrame, pa6_output: pd.DataFrame) -> None:
 # Tests de pa7 #
 ################
 def test_no_pa7(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_pa7 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_pa7 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'pa7
@@ -121,8 +121,8 @@ def test_check_pa7(pa7: pd.DataFrame, pa7_output: pd.DataFrame) -> None:
 # Tests de pa8 #
 ################
 def test_no_pa8(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_pa8 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_pa8 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'pa8
@@ -144,8 +144,8 @@ def test_check_pa8(pa8: pd.DataFrame, pa8_output: pd.DataFrame) -> None:
 # Tests de pa9 #
 ################
 def test_no_pa9(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_pa9 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_pa9 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'pa9

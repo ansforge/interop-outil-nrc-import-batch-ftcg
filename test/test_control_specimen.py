@@ -6,8 +6,8 @@ from import_batch_ftcg import control
 # Tests de ec2 #
 ################
 def test_no_ec2(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_ec2 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_ec2 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'ec2
@@ -29,8 +29,8 @@ def test_check_ec2(ec2: pd.DataFrame, ec2_output: pd.DataFrame) -> None:
 # Tests de ec4 #
 ################
 def test_no_ec4(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_ec4 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_ec4 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'ec4

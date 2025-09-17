@@ -6,8 +6,8 @@ from import_batch_ftcg import control
 # Tests de pr2 #
 ################
 def test_no_pr2(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_pr2 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_pr2 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'pr2
@@ -29,8 +29,8 @@ def test_check_pr2(pr2: pd.DataFrame, pr2_output: pd.DataFrame) -> None:
 # Tests de pr3 #
 ################
 def test_no_pr3(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_pr3 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_pr3 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'pr3
@@ -52,8 +52,8 @@ def test_check_pr3(pr3: pd.DataFrame, pr3_output: pd.DataFrame) -> None:
 # Tests de pr4 #
 ################
 def test_no_pr4(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_pr4 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_pr4 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'pr4
@@ -75,8 +75,8 @@ def test_check_pr4(pr4: pd.DataFrame, pr4_output: pd.DataFrame) -> None:
 # Tests de pr9 #
 ################
 def test_no_pr9(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_pr9 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_pr9 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'pr9
@@ -98,8 +98,8 @@ def test_check_pr9(pr9: pd.DataFrame, pr9_output: pd.DataFrame) -> None:
 # Tests de pr10 #
 ################
 def test_no_pr10(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_pr10 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_pr10 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'pr10
@@ -121,8 +121,8 @@ def test_check_pr10(pr10: pd.DataFrame, pr10_output: pd.DataFrame) -> None:
 # Tests de pr12 #
 ################
 def test_no_pr12(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_pr12 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_pr12 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'pr12
@@ -144,8 +144,8 @@ def test_check_pr12(pr12: pd.DataFrame, pr12_output: pd.DataFrame) -> None:
 # Tests de pr13 #
 ################
 def test_no_pr13(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_pr13 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_pr13 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'pr13
@@ -167,8 +167,8 @@ def test_check_pr13(pr13: pd.DataFrame, pr13_output: pd.DataFrame) -> None:
 # Tests de pr14 #
 ################
 def test_no_pr14(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_pr14 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_pr14 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'pr14

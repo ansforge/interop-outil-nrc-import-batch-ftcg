@@ -19,8 +19,8 @@ def test_get_correct_case(case: pd.DataFrame, case_output: pd.DataFrame) -> None
 # Tests de ar2 #
 ################
 def test_no_ar2(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_ar2 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_ar2 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'ar2
@@ -42,8 +42,8 @@ def test_check_ar2(ar2: pd.DataFrame, ar2_output: pd.DataFrame) -> None:
 # Tests de ar6 #
 ################
 def test_no_ar6(null: pd.DataFrame) -> None:
-    """Vérifie que la fonction control._check_ar6 renvoit le DataFrame original si aucune ligne ne
-    correspond aux critères
+    """Vérifie que la fonction control._check_ar6 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
 
     args:
         null: DataFrame de test ne correspondant pas aux critères d'ar6

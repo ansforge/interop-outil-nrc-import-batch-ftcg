@@ -37,8 +37,11 @@ def _check_ar2(cf: pd.DataFrame) -> pd.DataFrame:
         descriptions ne respectant pas la règle ar2.
     """
     id = cf.loc[cf.loc[:, "term"].str.contains("^(?:les?|la|une?) ", case=False), "id"]
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "ar2": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "ar2": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_ar6(cf: pd.DataFrame) -> pd.DataFrame:
@@ -52,10 +55,13 @@ def _check_ar6(cf: pd.DataFrame) -> pd.DataFrame:
         descriptions ne respectant pas la règle ar6.
     """
     id = cf.loc[(cf.loc[:, "semtag"] == "physical object")
-                & (cf.loc[:, "term"].str.contains(" (?:les?|la|une?|d'une?) ", case=False)),
+                & (cf.loc[:, "term"].str.contains(" (?:les?|la|une?|d'une?) ", case=False)), # noqa
                 "id"]
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "ar6": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "ar6": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 #########################
@@ -73,10 +79,13 @@ def _check_bs2(cf: pd.DataFrame) -> pd.DataFrame:
     """
     id = cf.loc[(cf.loc[:, "semtag"] == "body structure")
                 & (cf.loc[:, "fsn"].str.contains("joint", regex=False, case=False))
-                & (~cf.loc[:, "term"].str.contains("(?:articulation|articulaire)", case=False)),
+                & (~cf.loc[:, "term"].str.contains("(?:articulation|articulaire)", case=False)), # noqa
                 "id"]
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "bs2": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "bs2": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_bs3(cf: pd.DataFrame) -> pd.DataFrame:
@@ -92,27 +101,30 @@ def _check_bs3(cf: pd.DataFrame) -> pd.DataFrame:
     id = cf.loc[(cf.loc[:, "semtag"] == "body structure")
                 & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
                 & (cf.loc[:, "fsn"].str.contains("structure", regex=False, case=False))
-                & (cf.loc[:, "term"].str.contains("structure", regex=False, case=False)),
+                & (cf.loc[:, "term"].str.contains("structure", regex=False, case=False)), # noqa
                 "id"]
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "body structure")
                                & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
-                               & (cf.loc[:, "fsn"].str.contains("structure", regex=False, case=False))
-                               & (~cf.loc[:, "term"].str.contains("structure", regex=False, case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("structure", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("structure", regex=False, case=False)), # noqa
                                "id"]])
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "body structure")
-                               & (cf.loc[:, "fsn"].str.contains("entire", regex=False, case=False))
-                               & (~cf.loc[:, "term"].str.contains("(?:entiers?|entières?)", case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("entire", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("(?:entiers?|entières?)", case=False)), # noqa
                                "id"]])
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "body structure")
-                               & (cf.loc[:, "fsn"].str.contains("part", regex=False, case=False))
-                               & (~cf.loc[:, "term"].str.contains("partie", regex=False, case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("part", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("partie", regex=False, case=False)), # noqa
                                "id"]])
     id = id.drop_duplicates()
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "bs3": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "bs3": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_bs5(cf: pd.DataFrame) -> pd.DataFrame:
@@ -129,8 +141,11 @@ def _check_bs5(cf: pd.DataFrame) -> pd.DataFrame:
                 & (cf.loc[:, "fsn"].str.contains("region", regex=False, case=False))
                 & (~cf.loc[:, "term"].str.contains("région", regex=False, case=False)),
                 "id"]
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "bs5": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "bs5": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_bs6(cf: pd.DataFrame) -> pd.DataFrame:
@@ -149,12 +164,15 @@ def _check_bs6(cf: pd.DataFrame) -> pd.DataFrame:
                 "id"]
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "body structure")
-                               & (cf.loc[:, "fsn"].str.contains("area", regex=False, case=False))
-                               & (~cf.loc[:, "term"].str.contains("(?:zone|surface|aire)", case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("area", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("(?:zone|surface|aire)", case=False)), # noqa
                                "id"]])
     id = id.drop_duplicates()
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "bs6": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "bs6": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_bs7(cf: pd.DataFrame) -> pd.DataFrame:
@@ -169,10 +187,13 @@ def _check_bs7(cf: pd.DataFrame) -> pd.DataFrame:
     """
     id = cf.loc[(cf.loc[:, "semtag"] == "body structure")
                 & (cf.loc[:, "fsn"].str.contains("proper", regex=False, case=False))
-                & (~cf.loc[:, "term"].str.contains("(?:propre|proprement dite?)", case=False)),
+                & (~cf.loc[:, "term"].str.contains("(?:propre|proprement dite?)", case=False)), # noqa
                 "id"]
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "bs7": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "bs7": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_bs8(cf: pd.DataFrame) -> pd.DataFrame:
@@ -193,12 +214,15 @@ def _check_bs8(cf: pd.DataFrame) -> pd.DataFrame:
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "body structure")
                                & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
-                               & (cf.loc[:, "fsn"].str.contains("apex", regex=False, case=False))
-                               & (~cf.loc[:, "term"].str.contains("(?:pointe|bout|cime)", case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("apex", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("(?:pointe|bout|cime)", case=False)), # noqa
                                "id"]])
     id = id.drop_duplicates()
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "bs8": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "bs8": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_bs9(cf: pd.DataFrame) -> pd.DataFrame:
@@ -213,16 +237,19 @@ def _check_bs9(cf: pd.DataFrame) -> pd.DataFrame:
     """
     id = cf.loc[(cf.loc[:, "semtag"] == "body structure")
                 & (cf.loc[:, "fsn"].str.contains("lesser toe", regex=False, case=False))
-                & (~cf.loc[:, "term"].str.contains("orteil excepté l'hallux", regex=False, case=False)),
+                & (~cf.loc[:, "term"].str.contains("orteil excepté l'hallux", regex=False, case=False)), # noqa
                 "id"]
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "body structure")
-                               & (cf.loc[:, "fsn"].str.contains("lesser toe", regex=False, case=False))
-                               & (cf.loc[:, "term"].str.contains("petit orteil", case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("lesser toe", regex=False, case=False)) # noqa
+                               & (cf.loc[:, "term"].str.contains("petit orteil", case=False)), # noqa
                                "id"]])
     id = id.drop_duplicates()
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "bs9": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "bs9": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_bs10(cf: pd.DataFrame) -> pd.DataFrame:
@@ -237,22 +264,25 @@ def _check_bs10(cf: pd.DataFrame) -> pd.DataFrame:
     """
     id = cf.loc[(cf.loc[:, "semtag"] == "body structure")
                 & (cf.loc[:, "fsn"].str.contains("lower limb", regex=False, case=False))
-                & (~cf.loc[:, "term"].str.contains("membre inférieur", regex=False, case=False)),
+                & (~cf.loc[:, "term"].str.contains("membre inférieur", regex=False, case=False)), # noqa
                 "id"]
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "body structure")
                                & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
-                               & (cf.loc[:, "fsn"].str.contains("lower leg", regex=False, case=False))
-                               & (~cf.loc[:, "term"].str.contains("partie inférieure de la jambe", case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("lower leg", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("partie inférieure de la jambe", case=False)), # noqa
                                "id"]])
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "body structure")
                                & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
-                               & (cf.loc[:, "fsn"].str.contains("lower leg", regex=False, case=False))
-                               & (~cf.loc[:, "term"].str.contains("(?:partie basse de la jambe|jambe, du genou à la cheville)", case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("lower leg", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("(?:partie basse de la jambe|jambe, du genou à la cheville)", case=False)), # noqa
                                "id"]])
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "bs10": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "bs10": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_bs11(cf: pd.DataFrame) -> pd.DataFrame:
@@ -268,17 +298,20 @@ def _check_bs11(cf: pd.DataFrame) -> pd.DataFrame:
     id = cf.loc[(cf.loc[:, "semtag"] == "body structure")
                 & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
                 & (cf.loc[:, "fsn"].str.contains("upper limb", regex=False, case=False))
-                & (~cf.loc[:, "term"].str.contains("partie supérieure du bras", regex=False, case=False)),
+                & (~cf.loc[:, "term"].str.contains("partie supérieure du bras", regex=False, case=False)), # noqa
                 "id"]
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "body structure")
                                & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
-                               & (cf.loc[:, "fsn"].str.contains("upper limb", regex=False, case=False))
-                               & (~cf.loc[:, "term"].str.contains("bras, de l'épaule au coude", regex=False, case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("upper limb", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("bras, de l'épaule au coude", regex=False, case=False)), # noqa
                                "id"]])
     id = id.drop_duplicates()
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "bs11": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "bs11": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_bs12(cf: pd.DataFrame) -> pd.DataFrame:
@@ -295,8 +328,11 @@ def _check_bs12(cf: pd.DataFrame) -> pd.DataFrame:
                 & (cf.loc[:, "fsn"].str.contains("cerebrum", regex=False, case=False))
                 & (~cf.loc[:, "term"].str.contains("cerveau", regex=False, case=False)),
                 "id"]
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "bs12": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "bs12": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_bs13(cf: pd.DataFrame) -> pd.DataFrame:
@@ -311,10 +347,13 @@ def _check_bs13(cf: pd.DataFrame) -> pd.DataFrame:
     """
     id = cf.loc[(cf.loc[:, "semtag"] == "body structure")
                 & (cf.loc[:, "fsn"].str.contains("brain", regex=False, case=False))
-                & (~cf.loc[:, "term"].str.contains("encéphale", regex=False, case=False)),
+                & (~cf.loc[:, "term"].str.contains("encéphale", regex=False, case=False)), # noqa
                 "id"]
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "bs13": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "bs13": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 ###########################
@@ -332,10 +371,13 @@ def _check_co2(cf: pd.DataFrame) -> pd.DataFrame:
     """
     id = cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
                 & (cf.loc[:, "fsn"].str.contains(" finding", regex=False, case=False))
-                & (~cf.loc[:, "term"].str.contains("constatation", regex=False, case=False)),
+                & (~cf.loc[:, "term"].str.contains("constatation", regex=False, case=False)), # noqa
                 "id"]
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "co2": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "co2": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_co6(cf: pd.DataFrame) -> pd.DataFrame:
@@ -349,17 +391,20 @@ def _check_co6(cf: pd.DataFrame) -> pd.DataFrame:
         descriptions ne respectant pas la règle co6-FR.
     """
     id = cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
-                & (cf.loc[:, "fsn"].str.contains("above reference range", regex=False, case=False))
-                & (~cf.loc[:, "term"].str.contains("supérieure? (?:à l'intervalle|aux valeurs) de référence", case=False)),
+                & (cf.loc[:, "fsn"].str.contains("above reference range", regex=False, case=False)) # noqa
+                & (~cf.loc[:, "term"].str.contains("supérieure? (?:à l'intervalle|aux valeurs) de référence", case=False)), # noqa
                 "id"]
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
-                               & (cf.loc[:, "fsn"].str.contains("below reference range", regex=False, case=False))
-                               & (~cf.loc[:, "term"].str.contains("inférieure? (?:à l'intervalle|aux valeurs) de référence", case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("below reference range", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("inférieure? (?:à l'intervalle|aux valeurs) de référence", case=False)), # noqa
                                "id"]])
     id = id.drop_duplicates()
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "co6": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "co6": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_pa4(cf: pd.DataFrame) -> pd.DataFrame:
@@ -374,21 +419,24 @@ def _check_pa4(cf: pd.DataFrame) -> pd.DataFrame:
     """
     id = cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
                 & (cf.loc[:, "fsn"].str.contains("epilepsy", regex=False, case=False))
-                & (~cf.loc[:, "term"].str.contains("épilepsie", regex=False, case=False)),
+                & (~cf.loc[:, "term"].str.contains("épilepsie", regex=False, case=False)), # noqa
                 "id"]
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
-                               & (cf.loc[:, "fsn"].str.contains("seizure", regex=False, case=False))
-                               & (~cf.loc[:, "term"].str.contains("(?:crise|convulsion)", case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("seizure", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("(?:crise|convulsion)", case=False)), # noqa
                                "id"]])
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
-                               & (cf.loc[:, "fsn"].str.contains("convulsion", regex=False, case=False))
-                               & (~cf.loc[:, "term"].str.contains("convulsion", regex=False, case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("convulsion", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("convulsion", regex=False, case=False)), # noqa
                                "id"]])
     id = id.drop_duplicates()
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "pa4": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "pa4": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_pa6(cf: pd.DataFrame) -> pd.DataFrame:
@@ -403,10 +451,13 @@ def _check_pa6(cf: pd.DataFrame) -> pd.DataFrame:
     """
     id = cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
                 & (cf.loc[:, "fsn"].str.contains("impairment", regex=False, case=False))
-                & (~cf.loc[:, "term"].str.contains("atteinte", regex=False, case=False)),
+                & (~cf.loc[:, "term"].str.contains("atteinte", regex=False, case=False)), # noqa
                 "id"]
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "pa6": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "pa6": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_pa7(cf: pd.DataFrame) -> pd.DataFrame:
@@ -421,10 +472,13 @@ def _check_pa7(cf: pd.DataFrame) -> pd.DataFrame:
     """
     id = cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
                 & (cf.loc[:, "fsn"].str.contains("primary", regex=False, case=False))
-                & (~cf.loc[:, "term"].str.contains("(?:primitif|primaire)", case=False)),
+                & (~cf.loc[:, "term"].str.contains("(?:primitif|primaire)", case=False)), # noqa
                 "id"]
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "pa7": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "pa7": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_pa8(cf: pd.DataFrame) -> pd.DataFrame:
@@ -439,21 +493,24 @@ def _check_pa8(cf: pd.DataFrame) -> pd.DataFrame:
     """
     id = cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
                 & (cf.loc[:, "fsn"].str.contains("chilblain", regex=False, case=False))
-                & (~cf.loc[:, "term"].str.contains("engelure", regex=False, case=False)),
+                & (~cf.loc[:, "term"].str.contains("engelure", regex=False, case=False)), # noqa
                 "id"]
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
-                               & (cf.loc[:, "fsn"].str.contains("(?<!superficial) frostbite", case=False))
-                               & (~cf.loc[:, "term"].str.contains("(?:^| )gelure", case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("(?<!superficial) frostbite", case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("(?:^| )gelure", case=False)), # noqa
                                "id"]])
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
-                               & (cf.loc[:, "fsn"].str.contains("superficial frostbite", regex=False, case=False))
-                               & (~cf.loc[:, "term"].str.contains("(?:^| )gelure superficielle", case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("superficial frostbite", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("(?:^| )gelure superficielle", case=False)), # noqa
                                "id"]])
     id = id.drop_duplicates()
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "pa8": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "pa8": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_pa9(cf: pd.DataFrame) -> pd.DataFrame:
@@ -472,17 +529,20 @@ def _check_pa9(cf: pd.DataFrame) -> pd.DataFrame:
                 "id"]
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
-                               & (cf.loc[:, "fsn"].str.contains("(?:furuncle|boil)", case=False))
-                               & (~cf.loc[:, "term"].str.contains("(?:furoncle|folliculite nécrotique|clou)", case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("(?:furuncle|boil)", case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("(?:furoncle|folliculite nécrotique|clou)", case=False)), # noqa
                                "id"]])
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
-                               & (cf.loc[:, "fsn"].str.contains("anthrax", regex=False, case=False))
-                               & (~cf.loc[:, "term"].str.contains("maladie du charbon", regex=False, case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("anthrax", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("maladie du charbon", regex=False, case=False)), # noqa
                                "id"]])
     id = id.drop_duplicates()
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "pa9": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "pa9": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 ##############################################
@@ -499,11 +559,14 @@ def _check_me1(cf: pd.DataFrame) -> pd.DataFrame:
         descriptions ne respectant pas la règle me1.
     """
     id = cf.loc[(cf.loc[:, "semtag"] == "pharmaceutical")
-                & (cf.loc[:, "fsn"].str.contains("product containing (?!only)", case=False))
-                & (~cf.loc[:, "term"].str.contains("produit contenant (?!uniquement)", case=False)),
+                & (cf.loc[:, "fsn"].str.contains("product containing (?!only)", case=False)) # noqa
+                & (~cf.loc[:, "term"].str.contains("produit contenant (?!uniquement)", case=False)), # noqa
                 "id"]
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "me1": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "me1": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_me2(cf: pd.DataFrame) -> pd.DataFrame:
@@ -517,11 +580,14 @@ def _check_me2(cf: pd.DataFrame) -> pd.DataFrame:
         descriptions ne respectant pas la règle me2.
     """
     id = cf.loc[(cf.loc[:, "semtag"] == "pharmaceutical")
-                & (cf.loc[:, "fsn"].str.contains("product containing only", regex=False, case=False))
-                & (~cf.loc[:, "term"].str.contains("produit contenant uniquement", regex=False, case=False)),
+                & (cf.loc[:, "fsn"].str.contains("product containing only", regex=False, case=False)) # noqa
+                & (~cf.loc[:, "term"].str.contains("produit contenant uniquement", regex=False, case=False)), # noqa
                 "id"]
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "me2": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "me2": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_me3(cf: pd.DataFrame) -> pd.DataFrame:
@@ -536,10 +602,13 @@ def _check_me3(cf: pd.DataFrame) -> pd.DataFrame:
     """
     id = cf.loc[(cf.loc[:, "semtag"] == "pharmaceutical")
                 & (cf.loc[:, "fsn"].str.endswith("(clinical drug)"))
-                & (~cf.loc[:, "term"].str.contains("produit contenant précisément", regex=False, case=False)),
+                & (~cf.loc[:, "term"].str.contains("produit contenant précisément", regex=False, case=False)), # noqa
                 "id"]
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "me3": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "me3": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_me4(cf: pd.DataFrame) -> pd.DataFrame:
@@ -553,10 +622,13 @@ def _check_me4(cf: pd.DataFrame) -> pd.DataFrame:
         descriptions ne respectant pas la règle me4.
     """
     id = cf.loc[(cf.loc[:, "semtag"] == "pharmaceutical")
-                & (cf.loc[:, "term"].str.contains("libération conventionnelle", regex=False, case=False)),
+                & (cf.loc[:, "term"].str.contains("libération conventionnelle", regex=False, case=False)), # noqa
                 "id"]
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "me4": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "me4": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 ##########################
@@ -573,11 +645,14 @@ def _check_sb1(cf: pd.DataFrame) -> pd.DataFrame:
         descriptions ne respectant pas la règle sb1.
     """
     id = cf.loc[(cf.loc[:, "semtag"] == "physical object")
-                & (cf.loc[:, "fsn"].str.contains(r"evacuated [\w\s]+ collection tube", case=False))
-                & (~cf.loc[:, "term"].str.contains(r"tube sous vide [\w\s]+ pour prélèvement", case=False)),
+                & (cf.loc[:, "fsn"].str.contains(r"evacuated [\w\s]+ collection tube", case=False)) # noqa
+                & (~cf.loc[:, "term"].str.contains(r"tube sous vide [\w\s]+ pour prélèvement", case=False)), # noqa
                 "id"]
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "sb1": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "sb1": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_sb2(cf: pd.DataFrame) -> pd.DataFrame:
@@ -591,11 +666,14 @@ def _check_sb2(cf: pd.DataFrame) -> pd.DataFrame:
         descriptions ne respectant pas la règle sb2.
     """
     id = cf.loc[(cf.loc[:, "semtag"] == "physical object")
-                & (cf.loc[:, "fsn"].str.contains(r"evacuated [\w\s]+ specimen container", case=False))
-                & (~cf.loc[:, "term"].str.contains(r"support sous vide [\w\s]+ pour prélèvement", case=False)),
+                & (cf.loc[:, "fsn"].str.contains(r"evacuated [\w\s]+ specimen container", case=False)) # noqa
+                & (~cf.loc[:, "term"].str.contains(r"support sous vide [\w\s]+ pour prélèvement", case=False)), # noqa
                 "id"]
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "sb2": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "sb2": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_sb3(cf: pd.DataFrame) -> pd.DataFrame:
@@ -611,17 +689,20 @@ def _check_sb3(cf: pd.DataFrame) -> pd.DataFrame:
     id = cf.loc[(cf.loc[:, "semtag"] == "physical object")
                 & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
                 & (cf.loc[:, "fsn"].str.contains("stent", regex=False, case=False))
-                & (~cf.loc[:, "term"].str.contains("endoprothèse", regex=False, case=False)),
+                & (~cf.loc[:, "term"].str.contains("endoprothèse", regex=False, case=False)), # noqa
                 "id"]
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "physical object")
                                & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
-                               & (cf.loc[:, "fsn"].str.contains("stent", regex=False, case=False))
-                               & (~cf.loc[:, "term"].str.contains("stent", regex=False, case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("stent", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("stent", regex=False, case=False)), # noqa
                                "id"]])
     id = id.drop_duplicates()
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "sb3": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "sb3": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 ####################
@@ -640,29 +721,32 @@ def _check_pr2(cf: pd.DataFrame) -> pd.DataFrame:
     id = cf.loc[(cf.loc[:, "semtag"] == "procedure")
                 & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
                 & (cf.loc[:, "fsn"].str.contains(" procedure", regex=False, case=False))
-                & (~cf.loc[:, "term"].str.contains("(?:procédure|intervention chirurgicale)", case=False)),
+                & (~cf.loc[:, "term"].str.contains("(?:procédure|intervention chirurgicale)", case=False)), # noqa
                 "id"]
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "procedure")
                                & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
-                               & (cf.loc[:, "fsn"].str.contains("operation", regex=False, case=False))
-                               & (~cf.loc[:, "term"].str.contains("intervention chirurgicale", regex=False, case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("operation", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("intervention chirurgicale", regex=False, case=False)), # noqa
                                "id"]])
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "procedure")
                                & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
-                               & (cf.loc[:, "fsn"].str.contains(" procedure", regex=False, case=False))
-                               & (~cf.loc[:, "term"].str.contains("(?:intervention|opération|chirurgie)", case=False)),
+                               & (cf.loc[:, "fsn"].str.contains(" procedure", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("(?:intervention|opération|chirurgie)", case=False)), # noqa
                                "id"]])
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "procedure")
                                & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
-                               & (cf.loc[:, "fsn"].str.contains("operation", regex=False, case=False))
-                               & (~cf.loc[:, "term"].str.contains("(?:opération|chirurgie)", case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("operation", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("(?:opération|chirurgie)", case=False)), # noqa
                                "id"]])
     id = id.drop_duplicates()
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "pr2": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "pr2": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_pr3(cf: pd.DataFrame) -> pd.DataFrame:
@@ -676,11 +760,14 @@ def _check_pr3(cf: pd.DataFrame) -> pd.DataFrame:
         descriptions ne respectant pas la règle pr3.
     """
     id = cf.loc[(cf.loc[:, "semtag"] == "procedure")
-                & (cf.loc[:, "fsn"].str.contains("consultation", regex=False, case=False))
-                & (~cf.loc[:, "term"].str.contains("consultation", regex=False, case=False)),
+                & (cf.loc[:, "fsn"].str.contains("consultation", regex=False, case=False)) # noqa
+                & (~cf.loc[:, "term"].str.contains("consultation", regex=False, case=False)), # noqa
                 "id"]
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "pr3": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "pr3": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_pr4(cf: pd.DataFrame) -> pd.DataFrame:
@@ -694,24 +781,27 @@ def _check_pr4(cf: pd.DataFrame) -> pd.DataFrame:
         descriptions ne respectant pas la règle pr4.
     """
     id = cf.loc[(cf.loc[:, "semtag"] == "procedure")
-                & (cf.loc[:, "fsn"].str.contains("removal of foreign body", regex=False, case=False))
-                & (~cf.loc[:, "term"].str.contains("retrait d'un corps étranger", regex=False, case=False)),
+                & (cf.loc[:, "fsn"].str.contains("removal of foreign body", regex=False, case=False)) # noqa
+                & (~cf.loc[:, "term"].str.contains("retrait d'un corps étranger", regex=False, case=False)), # noqa
                 "id"]
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "procedure")
                                & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
-                               & (cf.loc[:, "fsn"].str.contains("magnet extraction", regex=False, case=False))
-                               & (~cf.loc[:, "term"].str.contains("extraction avec un aimant", regex=False, case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("magnet extraction", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("extraction avec un aimant", regex=False, case=False)), # noqa
                                "id"]])
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "procedure")
                                & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
-                               & (cf.loc[:, "fsn"].str.contains("magnet extraction", regex=False, case=False))
-                               & (~cf.loc[:, "term"].str.contains(r"retrait d'un corps étranger [\w\s]+ à l'aide d'un aimant", case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("magnet extraction", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains(r"retrait d'un corps étranger [\w\s]+ à l'aide d'un aimant", case=False)), # noqa
                                "id"]])
     id = id.drop_duplicates()
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "pr4": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "pr4": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_pr9(cf: pd.DataFrame) -> pd.DataFrame:
@@ -726,18 +816,21 @@ def _check_pr9(cf: pd.DataFrame) -> pd.DataFrame:
     """
     id = cf.loc[(cf.loc[:, "semtag"] == "procedure")
                 & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
-                & (cf.loc[:, "fsn"].str.contains("excisional biopsy", regex=False, case=False))
-                & (~cf.loc[:, "term"].str.contains("biopsie-exérèse", regex=False, case=False)),
+                & (cf.loc[:, "fsn"].str.contains("excisional biopsy", regex=False, case=False)) # noqa
+                & (~cf.loc[:, "term"].str.contains("biopsie-exérèse", regex=False, case=False)), # noqa
                 "id"]
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "procedure")
                                & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
-                               & (cf.loc[:, "fsn"].str.contains("excisional biopsy", regex=False, case=False))
-                               & (~cf.loc[:, "term"].str.contains("biopsie excisionnelle", regex=False, case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("excisional biopsy", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("biopsie excisionnelle", regex=False, case=False)), # noqa
                                "id"]])
     id = id.drop_duplicates()
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "pr9": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "pr9": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_pr10(cf: pd.DataFrame) -> pd.DataFrame:
@@ -751,11 +844,14 @@ def _check_pr10(cf: pd.DataFrame) -> pd.DataFrame:
         descriptions ne respectant pas la règle pr10.
     """
     id = cf.loc[(cf.loc[:, "semtag"] == "procedure")
-                & (cf.loc[:, "fsn"].str.contains("incisional biopsy", regex=False, case=False))
-                & (~cf.loc[:, "term"].str.contains("biopsie incisionnelle", regex=False, case=False)),
+                & (cf.loc[:, "fsn"].str.contains("incisional biopsy", regex=False, case=False)) # noqa # noqa
+                & (~cf.loc[:, "term"].str.contains("biopsie incisionnelle", regex=False, case=False)), # noqa # noqa
                 "id"]
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "pr10": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "pr10": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_pr12(cf: pd.DataFrame) -> pd.DataFrame:
@@ -777,23 +873,26 @@ def _check_pr12(cf: pd.DataFrame) -> pd.DataFrame:
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "procedure")
                                & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
                                & (cf.loc[:, "fsn"].str.contains("MRI", regex=False))
-                               & (~cf.loc[:, "term"].str.contains("imagerie par résonance magnétique", regex=False, case=False)),
+                               & (~cf.loc[:, "term"].str.contains("imagerie par résonance magnétique", regex=False, case=False)), # noqa # noqa
                                "id"]])
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "procedure")
                                & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
-                               & (cf.loc[:, "fsn"].str.contains("magnetic resonance angiography", regex=False, case=False))
-                               & (~cf.loc[:, "term"].str.contains("angiographie par IRM", regex=False, case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("magnetic resonance angiography", regex=False, case=False)) # noqa # noqa
+                               & (~cf.loc[:, "term"].str.contains("angiographie par IRM", regex=False, case=False)), # noqa # noqa
                                "id"]])
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "procedure")
                                & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
-                               & (cf.loc[:, "fsn"].str.contains("magnetic resonance angiography", regex=False, case=False))
-                               & (~cf.loc[:, "term"].str.contains("angiographie par imagerie par résonance magnétique", regex=False, case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("magnetic resonance angiography", regex=False, case=False)) # noqa # noqa
+                               & (~cf.loc[:, "term"].str.contains("angiographie par imagerie par résonance magnétique", regex=False, case=False)), # noqa # noqa
                                "id"]])
     id = id.drop_duplicates()
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "pr12": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "pr12": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_pr13(cf: pd.DataFrame) -> pd.DataFrame:
@@ -814,12 +913,15 @@ def _check_pr13(cf: pd.DataFrame) -> pd.DataFrame:
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "procedure")
                                & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
-                               & (cf.loc[:, "fsn"].str.contains("guided", regex=False, case=False))
-                               & (~cf.loc[:, "term"].str.contains("sous guidage", regex=False, case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("guided", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("sous guidage", regex=False, case=False)), # noqa
                                "id"]])
     id = id.drop_duplicates()
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "pr13": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "pr13": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_pr14(cf: pd.DataFrame) -> pd.DataFrame:
@@ -834,30 +936,33 @@ def _check_pr14(cf: pd.DataFrame) -> pd.DataFrame:
     """
     id = cf.loc[(cf.loc[:, "semtag"] == "procedure")
                 & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
-                & (cf.loc[:, "fsn"].str.contains(r"(?:fluoroscopy|fluoroscopic)(?![\w\s]*guided)", case=False))
+                & (cf.loc[:, "fsn"].str.contains(r"(?:fluoroscopy|fluoroscopic)(?![\w\s]*guided)", case=False)) # noqa
                 & (~cf.loc[:, "term"].str.contains("radioscopie", case=False)),
                 "id"]
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "procedure")
                                & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
-                               & (cf.loc[:, "fsn"].str.contains(r"(?:fluoroscopy|fluoroscopic)(?![\w\s]*guided)", case=False))
-                               & (~cf.loc[:, "term"].str.contains("fluoroscopie", regex=False, case=False)),
+                               & (cf.loc[:, "fsn"].str.contains(r"(?:fluoroscopy|fluoroscopic)(?![\w\s]*guided)", case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("fluoroscopie", regex=False, case=False)), # noqa
                                "id"]])
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "procedure")
                                & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
-                               & (cf.loc[:, "fsn"].str.contains(r"(?:fluoroscopy|fluoroscopic)[\w\s]*guided", case=False))
-                               & (~cf.loc[:, "term"].str.contains("guidée? par radioscopie", case=False)),
+                               & (cf.loc[:, "fsn"].str.contains(r"(?:fluoroscopy|fluoroscopic)[\w\s]*guided", case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("guidée? par radioscopie", case=False)), # noqa
                                "id"]])
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "procedure")
                                & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
-                               & (cf.loc[:, "fsn"].str.contains(r"(?:fluoroscopy|fluoroscopic)[\w\s]*guided", case=False))
-                               & (~cf.loc[:, "term"].str.contains("(?:sous guidage radioscopique|guidée? par fluoroscopie)", case=False)),
+                               & (cf.loc[:, "fsn"].str.contains(r"(?:fluoroscopy|fluoroscopic)[\w\s]*guided", case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("(?:sous guidage radioscopique|guidée? par fluoroscopie)", case=False)), # noqa
                                "id"]])
     id = id.drop_duplicates()
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "pr14": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "pr14": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 ###################
@@ -874,22 +979,25 @@ def _check_ec2(cf: pd.DataFrame) -> pd.DataFrame:
         descriptions ne respectant pas la règle ec2.
     """
     id = cf.loc[(cf.loc[:, "semtag"] == "specimen")
-                & (cf.loc[:, "fsn"].str.contains("submitted as specimen", regex=False, case=False))
-                & (~cf.loc[:, "term"].str.contains("présentée? comme échantillon", case=False)),
+                & (cf.loc[:, "fsn"].str.contains("submitted as specimen", regex=False, case=False)) # noqa
+                & (~cf.loc[:, "term"].str.contains("présentée? comme échantillon", case=False)), # noqa
                 "id"]
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "specimen")
-                               & (cf.loc[:, "fsn"].str.contains("washings", regex=False, case=False))
-                               & (~cf.loc[:, "term"].str.contains("liquide de lavage", regex=False, case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("washings", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("liquide de lavage", regex=False, case=False)), # noqa
                                "id"]])
 
     id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "specimen")
-                               & (cf.loc[:, "fsn"].str.contains("cytologic material", regex=False, case=False))
-                               & (~cf.loc[:, "term"].str.contains("matériel cytologique", regex=False, case=False)),
+                               & (cf.loc[:, "fsn"].str.contains("cytologic material", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("matériel cytologique", regex=False, case=False)), # noqa
                                "id"]])
     id = id.drop_duplicates()
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "ec2": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "ec2": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def _check_ec4(cf: pd.DataFrame) -> pd.DataFrame:
@@ -903,16 +1011,19 @@ def _check_ec4(cf: pd.DataFrame) -> pd.DataFrame:
         descriptions ne respectant pas la règle ec4.
     """
     id = cf.loc[(cf.loc[:, "semtag"] == "specimen")
-                & (cf.loc[:, "fsn"].str.contains("fluid sample", regex=False, case=False))
-                & (~cf.loc[:, "term"].str.contains("échantillon de liquide", regex=False, case=False)),
+                & (cf.loc[:, "fsn"].str.contains("fluid sample", regex=False, case=False)) # noqa
+                & (~cf.loc[:, "term"].str.contains("échantillon de liquide", regex=False, case=False)), # noqa
                 "id"]
-    return cf if id.empty else pd.merge(cf, pd.DataFrame(data={"id": id, "ec4": ["1"] * len(id)}),
-                                        how="left", on="id")
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "ec4": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
 
 
 def run_quality_control(cf: pd.DataFrame) -> pd.DataFrame:
-    """Lance l'ensemble des contrôles qualité et correction automatiques sur les traduction à
-    importer.
+    """Lance l'ensemble des contrôles qualité et correction automatiques sur les
+    traduction à importer.
 
     args:
         cf: Descriptions de la Common French à importer.
