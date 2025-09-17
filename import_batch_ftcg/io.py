@@ -2,6 +2,7 @@ import pandas as pd
 
 from import_batch_ftcg import server
 from os import path as op
+from typing import Set
 
 CASE = {
     "900000000000448009": "ci",
@@ -12,11 +13,6 @@ CASE = {
 ACCEPT = {
     "900000000000548007": "PREFERRED",
     "900000000000549004": "ACCEPTABLE"
-}
-
-ACTIVE = {
-    "Y": "0",
-    "N": "1"
 }
 
 
@@ -74,134 +70,33 @@ def read_common_french(path: str, date: str, fts: server.Fts) -> pd.DataFrame:
     return desc
 
 
-def _read_published_fr_edition(path: str, date: str) -> pd.DataFrame:
-    """Lecture de la dernière release publiée de l'édition nationale.
+def get_fr_edition(path: str, unpub_path: str) -> Set[str]:
+    """Liste les SCTID de concepts ayant des descriptions FR actives ou non, mise à
+    jour avec les modifications non-publiées.
 
     args:
-        path: Chemin vers le dossier Snapshot de l'édition nationale
-        date: Date de release de l'édition nationale
-
-    returns:
-        DataFrame contenant les informations de descriptions
-    """
-    # Vérification du dossier donné en paramètre
-    if op.basename(op.normpath(path)) != "Snapshot":
-        ValueError("Le chemin vers l'édition nationale ne pointe pas vers le dossier Snapshot") # noqa
-
-    # Lecture des descriptions FR
-    p = op.join(path, f"Terminology/sct2_Description_Snapshot-fr_FR1000315_{date}.txt")
-    desc = pd.read_csv(p, sep="\t", quoting=3, na_filter=False,
-                       dtype={"id": str, "active": pd.CategoricalDtype(["1", "0"]),
-                              "conceptId": str, "typeId": str, "term": str},
-                       usecols=["id", "active", "conceptId", "typeId", "term",
-                                "caseSignificanceId"],
-                       converters={"caseSignificanceId": lambda x: CASE.get(x)})
-    # Conserver seulement les synonymes
-    desc = desc.loc[desc.loc[:, "typeId"] == "900000000000013009"]
-    # Supprimer la colonne 'typeId' qui n'est plus nécessaire
-    desc = desc.drop(["typeId"], axis=1)
-
-    # Lecture du refset de langue
-    p = op.join(path, f"Refset/Language/der2_cRefset_LanguageSnapshot-fr_FR1000315_{date}.txt") # noqa
-    lang = pd.read_csv(p, sep="\t", na_filter=False,
-                       dtype={"referencedComponentId": str},
-                       usecols=["referencedComponentId", "acceptabilityId"],
-                       converters={"acceptabilityId": lambda x: ACCEPT.get(x)})
-
-    # Ajouter l'acceptabilité au DataFrame des descriptions
-    desc = pd.merge(desc, lang, how="left", left_on="id",
-                    right_on="referencedComponentId")
-    # Supprimer la colonne 'referencedComponentId' qui n'est plus nécessaire
-    desc = desc.drop(["referencedComponentId"], axis=1)
-
-    return desc
-
-
-def _read_unpublished_fr_edition(path: str) -> pd.DataFrame:
-    """Lecture des modifications de l'édition nationale depuis la dernière relase.
-
-    args:
-        path: Chemin vers l'extrait du rapport "New and change components"
-
-    returns:
-        DataFrame contenant les informations de modifications
-    """
-    if not op.isfile(path) or not op.exists(path):
-        ValueError("Le chemin vers le fichier est invalide.")
-
-    # Lecture du fichier concepts
-    unpub = pd.read_csv(path, sep=";", quoting=3, na_filter=False,
-                        dtype={"Id": str, " Description": str, " LangRefset": str,
-                               " isChanged": str},
-                        usecols=["Id", " Description", " LangRefset", " isChanged",
-                                 " wasInactivated"],
-                        converters={" wasInactivated": lambda x: ACTIVE.get(x)})
-    # Renommer les colonnes du fichier
-    unpub.columns = ["conceptId", "description", "language", "isChanged", "active"]
-
-    # Extraire les SCTID de descriptions
-    unpub.insert(0, "id",
-                 [d.split(" ")[0].lstrip("*") for d in unpub.loc[:, "description"]])
-    # Extraire les descriptions
-    unpub.insert(2, "term",
-                 [" ".join(d.split(" ")[3:-1]) for d in unpub.loc[:, "description"]])
-    # Extraire les valeurs de casses
-    unpub.insert(3, "caseSignificanceId",
-                 [d.split(" ")[-1][1:3] for d in unpub.loc[:, "description"]])
-    # Extraire l'acceptabilité
-    unpub.insert(4, "acceptabilityId",
-                 ["PREFERRED" if "PREFERRED" in l else "ACCEPTABLE" for l in unpub.loc[:, "language"]]) # noqa
-    # Supprimer les colonnes 'description' et 'language' qui ne sont plus nécessaires
-    unpub = unpub.drop(["description", "language"], axis=1)
-
-    return unpub
-
-
-def get_fr_edition(path: str, date: str, unpub_path: str) -> pd.DataFrame:
-    """Regroupement de la dernière release publiée de l'édition nationale et des
-    modifications non-publiées.
-
-    args:
-        path: Chemin vers le dossier Snapshot de l'édition nationale
-        date: Date de release de l'édition nationale
+        path: Chemin vers le fichier des descriptions FR de l'édition nationale
         unpub_path: Chemin vers l'extrait du rapport "New and change components"
 
     returns:
-        DataFrame contenant les informations de description à jour
+        Liste de SCITD
     """
-    # Lecture des fichiers
-    published = _read_published_fr_edition(path, date)
-    unpublished = _read_unpublished_fr_edition(unpub_path)
+    # Vérification des chemins donné en paramètre
+    if not op.isfile(path) or not op.exists(path):
+        ValueError("Le chemin vers le fichier de descriptions est invalide.")
+    if not op.isfile(unpub_path) or not op.exists(unpub_path):
+        ValueError("Le chemin vers le fichier de modifications est invalide.")
 
-    # Division des modifications non publiées
-    new = unpublished.loc[(unpublished.loc[:, "isChanged"] == "N")
-                          & (unpublished.loc[:, "active"] == "1")]
-    new = new.drop(["isChanged"], axis=1)
-    changed = unpublished.loc[unpublished.loc[:, "isChanged"] == "Y"]
-    changed = changed.drop(["conceptId", "term", "isChanged", "active"], axis=1)
-    changed = changed.set_index("id")
-    inactive = unpublished.loc[(unpublished.loc[:, "isChanged"] == "N")
-                               & (unpublished.loc[:, "active"] == "0")]
-    inactive = inactive.drop(["conceptId", "term", "caseSignificanceId",
-                              "acceptabilityId", "isChanged"], axis=1)
-    inactive = inactive.set_index("id")
-    # Contrôle de perte
-    if len(new) + len(changed) + len(inactive) != len(unpublished):
-        Exception("Il existe d'autres modifications non prises en charge.")
-    else:
-        del unpublished
+    # Lecture de l'édition nationale publiée
+    df = pd.read_csv(path, sep="\t", na_filter=False, dtype=str, usecols=["conceptId"])
+    published = set(df.loc[:, "conceptId"].unique())
 
-    # Ajout des nouvelles descriptions
-    published = pd.concat([published, new])
+    # Lecture des modifications non publiées de l'édition nationale
+    unpub = pd.read_csv(unpub_path, sep="\t", na_filter=False, dtype=str,
+                        usecols=["Id", "isNew"])
 
-    # Application des modifications des descriptions existantes
-    published = published.set_index("id")
-    published.update(changed)
-
-    # Inactivation des descriptions inactivées
-    published.update(inactive)
-
-    return published
+    # Ajout des SCTID de nouvelles descriptions
+    return published.union(list(unpub.loc[unpub.loc[:, "isNew"] == "Y", "Id"]))
 
 
 def write_batch_file(cf: pd.DataFrame, path: str) -> None:

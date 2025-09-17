@@ -11,9 +11,10 @@ if __name__ == "__main__":
     cli.add_argument("cf_path", type=str,
                      help="Chemin vers le dossier Snapshot de la Common French")
     cli.add_argument("cf_date", type=str, help="Date de release de la Common French")
-    cli.add_argument("fr_path", type=str,
+    cli.add_argument("fr_path", type=str, help="Chemin vers le fichier de descriptions \
+                     FR de l'édition nationale")
+    cli.add_argument("unpub_fr_path", type=str,
                      help="Chemin vers l'extrait du rapport New and change components")
-    cli.add_argument("fr_date", type=str, help="Date de release de l'édition nationale")
     cli.add_argument("endpoint", type=str,
                      help="Endpoint du FTS contenant l'édition internationale dont \
                         dépend l'édition nationale non publiée")
@@ -26,12 +27,12 @@ if __name__ == "__main__":
     cf = io.read_common_french(args.cf_path, args.cf_date, fts)
     print(f"\nCommon French extraite : {len(cf)} lignes.")
     # Lecture et pré-processus de l'édition nationale
-    fr = io.get_fr_edition(args.fr_path, args.fr_date, args.unpub_fr_path)
+    fr = io.get_fr_edition(args.fr_path, args.unpub_fr_path)
     print(f"Edition nationale extraite : {len(fr)} lignes.")
 
     # Conserve seulement les traductions de la Common French pour des concepts dans
     # l'édition nationale n'ayant pas de description FR (active ou inactive)
-    cf = cf.loc[~cf.loc[:, "conceptId"].isin(fr.loc[:, "conceptId"])]
+    cf = cf.loc[~cf.loc[:, "conceptId"].isin(fr)]
     print(f"Réduction de la Common French à importer : {len(cf)} lignes d'intérêt.")
 
     # Vérification des règles pour relecture
