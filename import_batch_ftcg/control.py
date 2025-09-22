@@ -1032,18 +1032,15 @@ def _check_ec2(cf: pd.DataFrame) -> pd.DataFrame:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle ec2.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "specimen")
-                & (cf.loc[:, "fsn"].str.contains("submitted as specimen", regex=False, case=False)) # noqa
+    id = cf.loc[(cf.loc[:, "fsn"].str.contains("submitted as specimen", regex=False, case=False)) # noqa
                 & (~cf.loc[:, "term"].str.contains("présentée? comme échantillon", case=False)), # noqa
                 "id"]
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "specimen")
-                               & (cf.loc[:, "fsn"].str.contains("washings", regex=False, case=False)) # noqa
+    id = pd.concat([id, cf.loc[(cf.loc[:, "fsn"].str.contains("washings", regex=False, case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("liquide de lavage", regex=False, case=False)), # noqa
                                "id"]])
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "specimen")
-                               & (cf.loc[:, "fsn"].str.contains("cytologic material", regex=False, case=False)) # noqa
+    id = pd.concat([id, cf.loc[(cf.loc[:, "fsn"].str.contains("cytologic material", regex=False, case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("matériel cytologique", regex=False, case=False)), # noqa
                                "id"]])
     id = id.drop_duplicates()
@@ -1064,8 +1061,7 @@ def _check_ec4(cf: pd.DataFrame) -> pd.DataFrame:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle ec4.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "specimen")
-                & (cf.loc[:, "fsn"].str.contains("fluid sample", regex=False, case=False)) # noqa
+    id = cf.loc[(cf.loc[:, "fsn"].str.contains("fluid sample", regex=False, case=False)) # noqa
                 & (~cf.loc[:, "term"].str.contains("échantillon de liquide", regex=False, case=False)), # noqa
                 "id"]
     if not id.empty:
