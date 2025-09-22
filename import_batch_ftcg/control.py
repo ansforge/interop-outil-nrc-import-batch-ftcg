@@ -771,36 +771,34 @@ def _check_sb3(cf: pd.DataFrame, pt: pd.Series, syn: pd.Series) -> pd.DataFrame:
 ####################
 # Règles Procedure #
 ####################
-def _check_pr2(cf: pd.DataFrame) -> pd.DataFrame:
+def _check_pr2(cf: pd.DataFrame, pt: pd.Series, syn: pd.Series) -> pd.DataFrame:
     """Identifie les descriptions ne respectant pas la règle pr2.
 
     args:
         cf: Descriptions de la Common French à importer.
+        pt: Filtre sur les termes préférés de `cf`.
+        syn: Filtre sur les synonymes acceptables de `cf`.
 
     returns:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle pr2.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "procedure")
-                & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
+    id = cf.loc[pt
                 & (cf.loc[:, "fsn"].str.contains(" procedure", regex=False, case=False))
                 & (~cf.loc[:, "term"].str.contains("(?:procédure|intervention chirurgicale)", case=False)), # noqa
                 "id"]
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "procedure")
-                               & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
+    id = pd.concat([id, cf.loc[pt
                                & (cf.loc[:, "fsn"].str.contains("operation", regex=False, case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("intervention chirurgicale", regex=False, case=False)), # noqa
                                "id"]])
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "procedure")
-                               & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
+    id = pd.concat([id, cf.loc[syn
                                & (cf.loc[:, "fsn"].str.contains(" procedure", regex=False, case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("(?:intervention|opération|chirurgie)", case=False)), # noqa
                                "id"]])
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "procedure")
-                               & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
+    id = pd.concat([id, cf.loc[syn
                                & (cf.loc[:, "fsn"].str.contains("operation", regex=False, case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("(?:opération|chirurgie)", case=False)), # noqa
                                "id"]])
@@ -822,8 +820,7 @@ def _check_pr3(cf: pd.DataFrame) -> pd.DataFrame:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle pr3.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "procedure")
-                & (cf.loc[:, "fsn"].str.contains("consultation", regex=False, case=False)) # noqa
+    id = cf.loc[(cf.loc[:, "fsn"].str.contains("consultation", regex=False, case=False)) # noqa
                 & (~cf.loc[:, "term"].str.contains("consultation", regex=False, case=False)), # noqa
                 "id"]
     if not id.empty:
@@ -833,29 +830,28 @@ def _check_pr3(cf: pd.DataFrame) -> pd.DataFrame:
     return cf
 
 
-def _check_pr4(cf: pd.DataFrame) -> pd.DataFrame:
+def _check_pr4(cf: pd.DataFrame, pt: pd.Series, syn: pd.Series) -> pd.DataFrame:
     """Identifie les descriptions ne respectant pas la règle pr4.
 
     args:
         cf: Descriptions de la Common French à importer.
+        pt: Filtre sur les termes préférés de `cf`.
+        syn: Filtre sur les synonymes acceptables de `cf`.
 
     returns:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle pr4.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "procedure")
-                & (cf.loc[:, "fsn"].str.contains("removal of foreign body", regex=False, case=False)) # noqa
+    id = cf.loc[(cf.loc[:, "fsn"].str.contains("removal of foreign body", regex=False, case=False)) # noqa
                 & (~cf.loc[:, "term"].str.contains("retrait d'un corps étranger", regex=False, case=False)), # noqa
                 "id"]
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "procedure")
-                               & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
+    id = pd.concat([id, cf.loc[pt
                                & (cf.loc[:, "fsn"].str.contains("magnet extraction", regex=False, case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("extraction avec un aimant", regex=False, case=False)), # noqa
                                "id"]])
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "procedure")
-                               & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
+    id = pd.concat([id, cf.loc[syn
                                & (cf.loc[:, "fsn"].str.contains("magnet extraction", regex=False, case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains(r"retrait d'un corps étranger [\w\s]+ à l'aide d'un aimant", case=False)), # noqa
                                "id"]])
@@ -867,24 +863,24 @@ def _check_pr4(cf: pd.DataFrame) -> pd.DataFrame:
     return cf
 
 
-def _check_pr9(cf: pd.DataFrame) -> pd.DataFrame:
+def _check_pr9(cf: pd.DataFrame, pt: pd.Series, syn: pd.Series) -> pd.DataFrame:
     """Identifie les descriptions ne respectant pas la règle pr9.
 
     args:
         cf: Descriptions de la Common French à importer.
+        pt: Filtre sur les termes préférés de `cf`.
+        syn: Filtre sur les synonymes acceptables de `cf`.
 
     returns:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle pr9.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "procedure")
-                & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
+    id = cf.loc[pt
                 & (cf.loc[:, "fsn"].str.contains("excisional biopsy", regex=False, case=False)) # noqa
                 & (~cf.loc[:, "term"].str.contains("biopsie-exérèse", regex=False, case=False)), # noqa
                 "id"]
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "procedure")
-                               & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
+    id = pd.concat([id, cf.loc[syn
                                & (cf.loc[:, "fsn"].str.contains("excisional biopsy", regex=False, case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("biopsie excisionnelle", regex=False, case=False)), # noqa
                                "id"]])
@@ -906,9 +902,8 @@ def _check_pr10(cf: pd.DataFrame) -> pd.DataFrame:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle pr10.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "procedure")
-                & (cf.loc[:, "fsn"].str.contains("incisional biopsy", regex=False, case=False)) # noqa # noqa
-                & (~cf.loc[:, "term"].str.contains("biopsie incisionnelle", regex=False, case=False)), # noqa # noqa
+    id = cf.loc[(cf.loc[:, "fsn"].str.contains("incisional biopsy", regex=False, case=False)) # noqa
+                & (~cf.loc[:, "term"].str.contains("biopsie incisionnelle", regex=False, case=False)), # noqa
                 "id"]
     if not id.empty:
         cf = pd.merge(cf, pd.DataFrame(data={"id": id, "pr10": ["1"] * len(id)}),
@@ -917,38 +912,36 @@ def _check_pr10(cf: pd.DataFrame) -> pd.DataFrame:
     return cf
 
 
-def _check_pr12(cf: pd.DataFrame) -> pd.DataFrame:
+def _check_pr12(cf: pd.DataFrame, pt: pd.Series, syn: pd.Series) -> pd.DataFrame:
     """Identifie les descriptions ne respectant pas la règle pr12.
 
     args:
         cf: Descriptions de la Common French à importer.
+        pt: Filtre sur les termes préférés de `cf`.
+        syn: Filtre sur les synonymes acceptables de `cf`.
 
     returns:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle pr12.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "procedure")
-                & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
+    id = cf.loc[pt
                 & (cf.loc[:, "fsn"].str.contains("MRI", regex=False))
                 & (~cf.loc[:, "term"].str.contains("IRM", regex=False, case=False)),
                 "id"]
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "procedure")
-                               & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
+    id = pd.concat([id, cf.loc[syn
                                & (cf.loc[:, "fsn"].str.contains("MRI", regex=False))
-                               & (~cf.loc[:, "term"].str.contains("imagerie par résonance magnétique", regex=False, case=False)), # noqa # noqa
+                               & (~cf.loc[:, "term"].str.contains("imagerie par résonance magnétique", regex=False, case=False)), # noqa
                                "id"]])
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "procedure")
-                               & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
-                               & (cf.loc[:, "fsn"].str.contains("magnetic resonance angiography", regex=False, case=False)) # noqa # noqa
-                               & (~cf.loc[:, "term"].str.contains("angiographie par IRM", regex=False, case=False)), # noqa # noqa
+    id = pd.concat([id, cf.loc[pt
+                               & (cf.loc[:, "fsn"].str.contains("magnetic resonance angiography", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("angiographie par IRM", regex=False, case=False)), # noqa
                                "id"]])
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "procedure")
-                               & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
-                               & (cf.loc[:, "fsn"].str.contains("magnetic resonance angiography", regex=False, case=False)) # noqa # noqa
-                               & (~cf.loc[:, "term"].str.contains("angiographie par imagerie par résonance magnétique", regex=False, case=False)), # noqa # noqa
+    id = pd.concat([id, cf.loc[syn
+                               & (cf.loc[:, "fsn"].str.contains("magnetic resonance angiography", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("angiographie par imagerie par résonance magnétique", regex=False, case=False)), # noqa
                                "id"]])
     id = id.drop_duplicates()
     if not id.empty:
@@ -958,24 +951,24 @@ def _check_pr12(cf: pd.DataFrame) -> pd.DataFrame:
     return cf
 
 
-def _check_pr13(cf: pd.DataFrame) -> pd.DataFrame:
+def _check_pr13(cf: pd.DataFrame, pt: pd.Series, syn: pd.Series) -> pd.DataFrame:
     """Identifie les descriptions ne respectant pas la règle pr13.
 
     args:
         cf: Descriptions de la Common French à importer.
+        pt: Filtre sur les termes préférés de `cf`.
+        syn: Filtre sur les synonymes acceptables de `cf`.
 
     returns:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle pr13.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "procedure")
-                & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
+    id = cf.loc[pt
                 & (cf.loc[:, "fsn"].str.contains("guided", regex=False, case=False))
                 & (~cf.loc[:, "term"].str.contains("guidée? par", case=False)),
                 "id"]
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "procedure")
-                               & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
+    id = pd.concat([id, cf.loc[syn
                                & (cf.loc[:, "fsn"].str.contains("guided", regex=False, case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("sous guidage", regex=False, case=False)), # noqa
                                "id"]])
@@ -987,36 +980,34 @@ def _check_pr13(cf: pd.DataFrame) -> pd.DataFrame:
     return cf
 
 
-def _check_pr14(cf: pd.DataFrame) -> pd.DataFrame:
+def _check_pr14(cf: pd.DataFrame, pt: pd.Series, syn: pd.Series) -> pd.DataFrame:
     """Identifie les descriptions ne respectant pas la règle pr14.
 
     args:
         cf: Descriptions de la Common French à importer.
+        pt: Filtre sur les termes préférés de `cf`.
+        syn: Filtre sur les synonymes acceptables de `cf`.
 
     returns:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle pr14.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "procedure")
-                & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
+    id = cf.loc[pt
                 & (cf.loc[:, "fsn"].str.contains(r"(?:fluoroscopy|fluoroscopic)(?![\w\s]*guided)", case=False)) # noqa
                 & (~cf.loc[:, "term"].str.contains("radioscopie", case=False)),
                 "id"]
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "procedure")
-                               & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
+    id = pd.concat([id, cf.loc[syn
                                & (cf.loc[:, "fsn"].str.contains(r"(?:fluoroscopy|fluoroscopic)(?![\w\s]*guided)", case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("fluoroscopie", regex=False, case=False)), # noqa
                                "id"]])
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "procedure")
-                               & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
+    id = pd.concat([id, cf.loc[pt
                                & (cf.loc[:, "fsn"].str.contains(r"(?:fluoroscopy|fluoroscopic)[\w\s]*guided", case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("guidée? par radioscopie", case=False)), # noqa
                                "id"]])
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "procedure")
-                               & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
+    id = pd.concat([id, cf.loc[syn
                                & (cf.loc[:, "fsn"].str.contains(r"(?:fluoroscopy|fluoroscopic)[\w\s]*guided", case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("(?:sous guidage radioscopique|guidée? par fluoroscopie)", case=False)), # noqa
                                "id"]])

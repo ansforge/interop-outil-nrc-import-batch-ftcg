@@ -5,14 +5,16 @@ from import_batch_ftcg import control
 ################
 # Tests de pr2 #
 ################
-def test_no_pr2(null: pd.DataFrame) -> None:
+def test_no_pr2(null: pd.DataFrame, null_pt: pd.Series, null_syn: pd.Series) -> None:
     """Vérifie que la fonction control._check_pr2 renvoit le DataFrame original si
     aucune ligne ne correspond aux critères
 
     args:
-        null: DataFrame de test ne correspondant pas aux critères d'pr2
+        null: DataFrame de test ne correspondant pas aux critères de pr2
+        null_pt: Filtre de test sur les termes préférés de `null`
+        null_pt: Filtre de test sur les synonymes acceptables de `null`
     """
-    pd.testing.assert_frame_equal(control._check_pr2(null), null)
+    pd.testing.assert_frame_equal(control._check_pr2(null, null_pt, null_syn), null)
 
 
 def test_check_pr2(pr2: pd.DataFrame, pr2_output: pd.DataFrame) -> None:
@@ -22,7 +24,9 @@ def test_check_pr2(pr2: pd.DataFrame, pr2_output: pd.DataFrame) -> None:
         pr2: DataFrame de test à corriger
         pr2_output: DataFrame corrigé attendu
     """
-    pd.testing.assert_frame_equal(control._check_pr2(pr2), pr2_output)
+    pt = (pr2.loc[:, "acceptabilityId"] == "PREFERRED")
+    syn = (pr2.loc[:, "acceptabilityId"] == "ACCEPTABLE")
+    pd.testing.assert_frame_equal(control._check_pr2(pr2, pt, syn), pr2_output)
 
 
 ################
@@ -33,7 +37,7 @@ def test_no_pr3(null: pd.DataFrame) -> None:
     aucune ligne ne correspond aux critères
 
     args:
-        null: DataFrame de test ne correspondant pas aux critères d'pr3
+        null: DataFrame de test ne correspondant pas aux critères de pr3
     """
     pd.testing.assert_frame_equal(control._check_pr3(null), null)
 
@@ -51,14 +55,16 @@ def test_check_pr3(pr3: pd.DataFrame, pr3_output: pd.DataFrame) -> None:
 ################
 # Tests de pr4 #
 ################
-def test_no_pr4(null: pd.DataFrame) -> None:
+def test_no_pr4(null: pd.DataFrame, null_pt: pd.Series, null_syn: pd.Series) -> None:
     """Vérifie que la fonction control._check_pr4 renvoit le DataFrame original si
     aucune ligne ne correspond aux critères
 
     args:
-        null: DataFrame de test ne correspondant pas aux critères d'pr4
+        null: DataFrame de test ne correspondant pas aux critères de pr4
+        null_pt: Filtre de test sur les termes préférés de `null`
+        null_pt: Filtre de test sur les synonymes acceptables de `null`
     """
-    pd.testing.assert_frame_equal(control._check_pr4(null), null)
+    pd.testing.assert_frame_equal(control._check_pr4(null, null_pt, null_syn), null)
 
 
 def test_check_pr4(pr4: pd.DataFrame, pr4_output: pd.DataFrame) -> None:
@@ -68,20 +74,24 @@ def test_check_pr4(pr4: pd.DataFrame, pr4_output: pd.DataFrame) -> None:
         pr4: DataFrame de test à corriger
         pr4_output: DataFrame corrigé attendu
     """
-    pd.testing.assert_frame_equal(control._check_pr4(pr4), pr4_output)
+    pt = (pr4.loc[:, "acceptabilityId"] == "PREFERRED")
+    syn = (pr4.loc[:, "acceptabilityId"] == "ACCEPTABLE")
+    pd.testing.assert_frame_equal(control._check_pr4(pr4, pt, syn), pr4_output)
 
 
 ################
 # Tests de pr9 #
 ################
-def test_no_pr9(null: pd.DataFrame) -> None:
+def test_no_pr9(null: pd.DataFrame, null_pt: pd.Series, null_syn: pd.Series) -> None:
     """Vérifie que la fonction control._check_pr9 renvoit le DataFrame original si
     aucune ligne ne correspond aux critères
 
     args:
-        null: DataFrame de test ne correspondant pas aux critères d'pr9
+        null: DataFrame de test ne correspondant pas aux critères de pr9
+        null_pt: Filtre de test sur les termes préférés de `null`
+        null_pt: Filtre de test sur les synonymes acceptables de `null`
     """
-    pd.testing.assert_frame_equal(control._check_pr9(null), null)
+    pd.testing.assert_frame_equal(control._check_pr9(null, null_pt, null_syn), null)
 
 
 def test_check_pr9(pr9: pd.DataFrame, pr9_output: pd.DataFrame) -> None:
@@ -91,7 +101,9 @@ def test_check_pr9(pr9: pd.DataFrame, pr9_output: pd.DataFrame) -> None:
         pr9: DataFrame de test à corriger
         pr9_output: DataFrame corrigé attendu
     """
-    pd.testing.assert_frame_equal(control._check_pr9(pr9), pr9_output)
+    pt = (pr9.loc[:, "acceptabilityId"] == "PREFERRED")
+    syn = (pr9.loc[:, "acceptabilityId"] == "ACCEPTABLE")
+    pd.testing.assert_frame_equal(control._check_pr9(pr9, pt, syn), pr9_output)
 
 
 ################
@@ -102,7 +114,7 @@ def test_no_pr10(null: pd.DataFrame) -> None:
     aucune ligne ne correspond aux critères
 
     args:
-        null: DataFrame de test ne correspondant pas aux critères d'pr10
+        null: DataFrame de test ne correspondant pas aux critères de pr10
     """
     pd.testing.assert_frame_equal(control._check_pr10(null), null)
 
@@ -120,14 +132,16 @@ def test_check_pr10(pr10: pd.DataFrame, pr10_output: pd.DataFrame) -> None:
 ################
 # Tests de pr12 #
 ################
-def test_no_pr12(null: pd.DataFrame) -> None:
+def test_no_pr12(null: pd.DataFrame, null_pt: pd.Series, null_syn: pd.Series) -> None:
     """Vérifie que la fonction control._check_pr12 renvoit le DataFrame original si
     aucune ligne ne correspond aux critères
 
     args:
-        null: DataFrame de test ne correspondant pas aux critères d'pr12
+        null: DataFrame de test ne correspondant pas aux critères de pr12
+        null_pt: Filtre de test sur les termes préférés de `null`
+        null_pt: Filtre de test sur les synonymes acceptables de `null`
     """
-    pd.testing.assert_frame_equal(control._check_pr12(null), null)
+    pd.testing.assert_frame_equal(control._check_pr12(null, null_pt, null_syn), null)
 
 
 def test_check_pr12(pr12: pd.DataFrame, pr12_output: pd.DataFrame) -> None:
@@ -137,20 +151,24 @@ def test_check_pr12(pr12: pd.DataFrame, pr12_output: pd.DataFrame) -> None:
         pr12: DataFrame de test à corriger
         pr12_output: DataFrame corrigé attendu
     """
-    pd.testing.assert_frame_equal(control._check_pr12(pr12), pr12_output)
+    pt = (pr12.loc[:, "acceptabilityId"] == "PREFERRED")
+    syn = (pr12.loc[:, "acceptabilityId"] == "ACCEPTABLE")
+    pd.testing.assert_frame_equal(control._check_pr12(pr12, pt, syn), pr12_output)
 
 
 ################
 # Tests de pr13 #
 ################
-def test_no_pr13(null: pd.DataFrame) -> None:
+def test_no_pr13(null: pd.DataFrame, null_pt: pd.Series, null_syn: pd.Series) -> None:
     """Vérifie que la fonction control._check_pr13 renvoit le DataFrame original si
     aucune ligne ne correspond aux critères
 
     args:
-        null: DataFrame de test ne correspondant pas aux critères d'pr13
+        null: DataFrame de test ne correspondant pas aux critères de pr13
+        null_pt: Filtre de test sur les termes préférés de `null`
+        null_pt: Filtre de test sur les synonymes acceptables de `null`
     """
-    pd.testing.assert_frame_equal(control._check_pr13(null), null)
+    pd.testing.assert_frame_equal(control._check_pr13(null, null_pt, null_syn), null)
 
 
 def test_check_pr13(pr13: pd.DataFrame, pr13_output: pd.DataFrame) -> None:
@@ -160,20 +178,24 @@ def test_check_pr13(pr13: pd.DataFrame, pr13_output: pd.DataFrame) -> None:
         pr13: DataFrame de test à corriger
         pr13_output: DataFrame corrigé attendu
     """
-    pd.testing.assert_frame_equal(control._check_pr13(pr13), pr13_output)
+    pt = (pr13.loc[:, "acceptabilityId"] == "PREFERRED")
+    syn = (pr13.loc[:, "acceptabilityId"] == "ACCEPTABLE")
+    pd.testing.assert_frame_equal(control._check_pr13(pr13, pt, syn), pr13_output)
 
 
 ################
 # Tests de pr14 #
 ################
-def test_no_pr14(null: pd.DataFrame) -> None:
+def test_no_pr14(null: pd.DataFrame, null_pt: pd.Series, null_syn: pd.Series) -> None:
     """Vérifie que la fonction control._check_pr14 renvoit le DataFrame original si
     aucune ligne ne correspond aux critères
 
     args:
-        null: DataFrame de test ne correspondant pas aux critères d'pr14
+        null: DataFrame de test ne correspondant pas aux critères de pr14
+        null_pt: Filtre de test sur les termes préférés de `null`
+        null_pt: Filtre de test sur les synonymes acceptables de `null`
     """
-    pd.testing.assert_frame_equal(control._check_pr14(null), null)
+    pd.testing.assert_frame_equal(control._check_pr14(null, null_pt, null_syn), null)
 
 
 def test_check_pr14(pr14: pd.DataFrame, pr14_output: pd.DataFrame) -> None:
@@ -183,4 +205,6 @@ def test_check_pr14(pr14: pd.DataFrame, pr14_output: pd.DataFrame) -> None:
         pr14: DataFrame de test à corriger
         pr14_output: DataFrame corrigé attendu
     """
-    pd.testing.assert_frame_equal(control._check_pr14(pr14), pr14_output)
+    pt = (pr14.loc[:, "acceptabilityId"] == "PREFERRED")
+    syn = (pr14.loc[:, "acceptabilityId"] == "ACCEPTABLE")
+    pd.testing.assert_frame_equal(control._check_pr14(pr14, pt, syn), pr14_output)
