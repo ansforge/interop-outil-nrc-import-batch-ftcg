@@ -51,14 +51,16 @@ def test_check_sb2(sb2: pd.DataFrame, sb2_output: pd.DataFrame) -> None:
 ################
 # Tests de sb3 #
 ################
-def test_no_sb3(null: pd.DataFrame) -> None:
+def test_no_sb3(null: pd.DataFrame, null_pt: pd.Series, null_syn: pd.Series) -> None:
     """Vérifie que la fonction control._check_sb3 renvoit le DataFrame original si
     aucune ligne ne correspond aux critères
 
     args:
-        null: DataFrame de test ne correspondant pas aux critères d'sb3
+        null: DataFrame de test ne correspondant pas aux critères de sb3
+        null_pt: Filtre de test sur les termes préférés de `null`
+        null_pt: Filtre de test sur les synonymes acceptables de `null`
     """
-    pd.testing.assert_frame_equal(control._check_sb3(null), null)
+    pd.testing.assert_frame_equal(control._check_sb3(null, null_pt, null_syn), null)
 
 
 def test_check_sb3(sb3: pd.DataFrame, sb3_output: pd.DataFrame) -> None:
@@ -68,4 +70,6 @@ def test_check_sb3(sb3: pd.DataFrame, sb3_output: pd.DataFrame) -> None:
         sb3: DataFrame de test à corriger
         sb3_output: DataFrame corrigé attendu
     """
-    pd.testing.assert_frame_equal(control._check_sb3(sb3), sb3_output)
+    pt = (sb3.loc[:, "acceptabilityId"] == "PREFERRED")
+    syn = (sb3.loc[:, "acceptabilityId"] == "ACCEPTABLE")
+    pd.testing.assert_frame_equal(control._check_sb3(sb3, pt, syn), sb3_output)

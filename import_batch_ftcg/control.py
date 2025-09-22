@@ -709,8 +709,7 @@ def _check_sb1(cf: pd.DataFrame) -> pd.DataFrame:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle sb1.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "physical object")
-                & (cf.loc[:, "fsn"].str.contains(r"evacuated [\w\s]+ collection tube", case=False)) # noqa
+    id = cf.loc[(cf.loc[:, "fsn"].str.contains(r"evacuated [\w\s]+ collection tube", case=False)) # noqa
                 & (~cf.loc[:, "term"].str.contains(r"tube sous vide [\w\s]+ pour prélèvement", case=False)), # noqa
                 "id"]
     if not id.empty:
@@ -730,8 +729,7 @@ def _check_sb2(cf: pd.DataFrame) -> pd.DataFrame:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle sb2.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "physical object")
-                & (cf.loc[:, "fsn"].str.contains(r"evacuated [\w\s]+ specimen container", case=False)) # noqa
+    id = cf.loc[(cf.loc[:, "fsn"].str.contains(r"evacuated [\w\s]+ specimen container", case=False)) # noqa
                 & (~cf.loc[:, "term"].str.contains(r"support sous vide [\w\s]+ pour prélèvement", case=False)), # noqa
                 "id"]
     if not id.empty:
@@ -741,24 +739,24 @@ def _check_sb2(cf: pd.DataFrame) -> pd.DataFrame:
     return cf
 
 
-def _check_sb3(cf: pd.DataFrame) -> pd.DataFrame:
+def _check_sb3(cf: pd.DataFrame, pt: pd.Series, syn: pd.Series) -> pd.DataFrame:
     """Identifie les descriptions ne respectant pas la règle sb3.
 
     args:
         cf: Descriptions de la Common French à importer.
+        pt: Filtre sur les termes préférés de `cf`.
+        syn: Filtre sur les synonymes acceptables de `cf`.
 
     returns:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle sb3.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "physical object")
-                & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
+    id = cf.loc[pt
                 & (cf.loc[:, "fsn"].str.contains("stent", regex=False, case=False))
                 & (~cf.loc[:, "term"].str.contains("endoprothèse", regex=False, case=False)), # noqa
                 "id"]
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "physical object")
-                               & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
+    id = pd.concat([id, cf.loc[syn
                                & (cf.loc[:, "fsn"].str.contains("stent", regex=False, case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("stent", regex=False, case=False)), # noqa
                                "id"]])
@@ -1153,7 +1151,7 @@ def run_quality_control(cf: pd.DataFrame, fts: server.Fts) -> pd.DataFrame:
     if not cf.loc[cf.loc[:, "semtag"] == "physical object"].empty:
         cf = _check_sb1(cf)
         cf = _check_sb2(cf)
-        cf = _check_sb3(cf)
+        cf = _check_sb3(cf, pt, syn)
 
     # Contrôles des règles de Procedure
     if not cf.loc[cf.loc[:, "semtag"] == "procedure"].empty:
