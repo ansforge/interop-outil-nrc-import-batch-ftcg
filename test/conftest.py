@@ -5,9 +5,26 @@ import pandas as pd
 @pytest.fixture
 def null() -> pd.DataFrame:
     return pd.DataFrame(
-        {"id": ["1"], "acceptabilityId": ["PREFERRED"], "semtag": ["test"],
+        {"id": ["1"], "conceptId": ["C1"], "acceptabilityId": ["PREFERRED"],
          "fsn": ["test"], "term": ["test"]}
     )
+
+
+@pytest.fixture
+def null_pt() -> pd.Series:
+    return pd.Series([True], name="acceptabilityId")
+
+
+@pytest.fixture
+def null_syn() -> pd.Series:
+    return pd.Series([False], name="acceptabilityId")
+
+
+@pytest.fixture
+def semtag() -> pd.Series:
+    def generate_series(n: int):
+        return pd.Series([True] * (n - 1) + [False])
+    return generate_series
 
 
 @pytest.fixture
@@ -50,7 +67,6 @@ def ar2_output() -> pd.DataFrame:
 def ar6() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 11)],
-         "semtag": ["physical object"] * 9 + ["test"],
          "term": ["prothèse pour les hanches", "prothèse pour le bras",
                   "prothèse de la hanche", "prothèse pour un bras",
                   "prothèse pour une hanche", "prothèse d'un bras",
@@ -63,7 +79,6 @@ def ar6() -> pd.DataFrame:
 def ar6_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 11)],
-         "semtag": ["physical object"] * 9 + ["test"],
          "term": ["prothèse pour les hanches", "prothèse pour le bras",
                   "prothèse de la hanche", "prothèse pour un bras",
                   "prothèse pour une hanche", "prothèse d'un bras",
@@ -81,7 +96,6 @@ def ar6_output() -> pd.DataFrame:
 def bs2() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 5)],
-         "semtag": ["body structure"] * 3 + ["test"],
          "fsn": ["femur joint", "joint pain", "knee joint", "test"],
          "term": ["articulation fémorale", "douleur articulaire", "genou", "test"]}
     )
@@ -91,7 +105,6 @@ def bs2() -> pd.DataFrame:
 def bs2_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 5)],
-         "semtag": ["body structure"] * 3 + ["test"],
          "fsn": ["femur joint", "joint pain", "knee joint", "test"],
          "term": ["articulation fémorale", "douleur articulaire", "genou", "test"],
          "bs2": [float("nan"), float("nan"), "1", float("nan")]}
@@ -102,8 +115,8 @@ def bs2_output() -> pd.DataFrame:
 def bs3() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 13)],
+         "conceptId": [f"C{i}" for i in range(1, 13)],
          "acceptabilityId": ["PREFERRED"] * 2 + ["ACCEPTABLE"] * 10,
-         "semtag": ["body structure"] * 11 + ["test"],
          "fsn": ["knee structure", "knee structure", "knee structure", "knee structure",
                  "entire knee", "entire hip", "entire feet", "entire shoulders",
                  "entire knee", "knee part", "knee part", "test"],
@@ -117,8 +130,8 @@ def bs3() -> pd.DataFrame:
 def bs3_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 13)],
+         "conceptId": [f"C{i}" for i in range(1, 13)],
          "acceptabilityId": ["PREFERRED"] * 2 + ["ACCEPTABLE"] * 10,
-         "semtag": ["body structure"] * 11 + ["test"],
          "fsn": ["knee structure", "knee structure", "knee structure", "knee structure",
                  "entire knee", "entire hip", "entire feet", "entire shoulders",
                  "entire knee", "knee part", "knee part", "test"],
@@ -134,7 +147,7 @@ def bs3_output() -> pd.DataFrame:
 def bs5() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["body structure"] * 2 + ["test"],
+         "conceptId": [f"C{i}" for i in range(1, 4)],
          "fsn": ["knee region", "knee region", "test"],
          "term": ["région d'un genou", "genou", "test"]}
     )
@@ -144,7 +157,7 @@ def bs5() -> pd.DataFrame:
 def bs5_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["body structure"] * 2 + ["test"],
+         "conceptId": [f"C{i}" for i in range(1, 4)],
          "fsn": ["knee region", "knee region", "test"],
          "term": ["région d'un genou", "genou", "test"],
          "bs5": [float("nan"), "1", float("nan")]}
@@ -155,7 +168,7 @@ def bs5_output() -> pd.DataFrame:
 def bs6() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 8)],
-         "semtag": ["body structure"] * 6 + ["test"],
+         "conceptId": [f"C{i}" for i in range(1, 8)],
          "fsn": ["knee zone", "knee zone", "knee area", "knee area", "knee area",
                  "knee area", "test"],
          "term": ["zone d'un genou", "genou", "zone d'un genou", "surface d'un genou",
@@ -167,7 +180,7 @@ def bs6() -> pd.DataFrame:
 def bs6_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 8)],
-         "semtag": ["body structure"] * 6 + ["test"],
+         "conceptId": [f"C{i}" for i in range(1, 8)],
          "fsn": ["knee zone", "knee zone", "knee area", "knee area", "knee area",
                  "knee area", "test"],
          "term": ["zone d'un genou", "genou", "zone d'un genou", "surface d'un genou",
@@ -181,7 +194,7 @@ def bs6_output() -> pd.DataFrame:
 def bs7() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 6)],
-         "semtag": ["body structure"] * 4 + ["test"],
+         "conceptId": [f"C{i}" for i in range(1, 6)],
          "fsn": ["eye proper", "eye proper", "mouth proper", "eye proper", "test"],
          "term": ["oeil propre", "oeil proprement dit", "bouche proprement dite",
                   "oeil", "test"]}
@@ -192,7 +205,7 @@ def bs7() -> pd.DataFrame:
 def bs7_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 6)],
-         "semtag": ["body structure"] * 4 + ["test"],
+         "conceptId": [f"C{i}" for i in range(1, 6)],
          "fsn": ["eye proper", "eye proper", "mouth proper", "eye proper", "test"],
          "term": ["oeil propre", "oeil proprement dit", "bouche proprement dite",
                   "oeil", "test"],
@@ -205,7 +218,6 @@ def bs8() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 8)],
          "acceptabilityId": ["PREFERRED"] * 2 + ["ACCEPTABLE"] * 5,
-         "semtag": ["body structure"] * 6 + ["test"],
          "fsn": ["heart apex", "heart apex", "heart apex", "heart apex", "heart apex",
                  "heart apex", "test"],
          "term": ["apex du coeur", "coeur", "pointe du coeur", "bout du coeur",
@@ -218,7 +230,6 @@ def bs8_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 8)],
          "acceptabilityId": ["PREFERRED"] * 2 + ["ACCEPTABLE"] * 5,
-         "semtag": ["body structure"] * 6 + ["test"],
          "fsn": ["heart apex", "heart apex", "heart apex", "heart apex", "heart apex",
                  "heart apex", "test"],
          "term": ["apex du coeur", "coeur", "pointe du coeur", "bout du coeur",
@@ -232,7 +243,6 @@ def bs8_output() -> pd.DataFrame:
 def bs9() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 5)],
-         "semtag": ["body structure"] * 3 + ["test"],
          "fsn": ["lesser toe", "lesser toe", "lesser toe", "test"],
          "term": ["orteil excepté l'hallux", "orteil", "petit orteil", "test"]}
     )
@@ -242,7 +252,6 @@ def bs9() -> pd.DataFrame:
 def bs9_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 5)],
-         "semtag": ["body structure"] * 3 + ["test"],
          "fsn": ["lesser toe", "lesser toe", "lesser toe", "test"],
          "term": ["orteil excepté l'hallux", "orteil", "petit orteil", "test"],
          "bs9": [float("nan"), "1", "1", float("nan")]}
@@ -253,7 +262,6 @@ def bs9_output() -> pd.DataFrame:
 def bs10() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 8)],
-         "semtag": ["body structure"] * 6 + ["test"],
          "acceptabilityId": ["PREFERRED"] * 4 + ["ACCEPTABLE"] * 3,
          "fsn": ["lower limb"] * 2 + ["lower leg"] * 4 + ["test"],
          "term": ["membre inférieur", "jambe", "partie inférieure de la jambe",
@@ -266,7 +274,6 @@ def bs10() -> pd.DataFrame:
 def bs10_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 8)],
-         "semtag": ["body structure"] * 6 + ["test"],
          "acceptabilityId": ["PREFERRED"] * 4 + ["ACCEPTABLE"] * 3,
          "fsn": ["lower limb"] * 2 + ["lower leg"] * 4 + ["test"],
          "term": ["membre inférieur", "jambe", "partie inférieure de la jambe",
@@ -281,7 +288,6 @@ def bs10_output() -> pd.DataFrame:
 def bs11() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 7)],
-         "semtag": ["body structure"] * 5 + ["test"],
          "acceptabilityId": ["PREFERRED"] * 4 + ["ACCEPTABLE"] * 2,
          "fsn": ["upper limb", "upper limb", "upper arm", "upper arm", "upper arm",
                  "test"],
@@ -294,7 +300,6 @@ def bs11() -> pd.DataFrame:
 def bs11_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 7)],
-         "semtag": ["body structure"] * 5 + ["test"],
          "acceptabilityId": ["PREFERRED"] * 4 + ["ACCEPTABLE"] * 2,
          "fsn": ["upper limb", "upper limb", "upper arm", "upper arm", "upper arm",
                  "test"],
@@ -308,7 +313,6 @@ def bs11_output() -> pd.DataFrame:
 def bs12() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["body structure"] * 2 + ["test"],
          "fsn": ["cerebrum", "cerebrum", "test"],
          "term": ["cerveau", "encéphale", "test"]}
     )
@@ -318,7 +322,6 @@ def bs12() -> pd.DataFrame:
 def bs12_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["body structure"] * 2 + ["test"],
          "fsn": ["cerebrum", "cerebrum", "test"],
          "term": ["cerveau", "encéphale", "test"],
          "bs12": [float("nan"), "1", float("nan")]}
@@ -329,7 +332,6 @@ def bs12_output() -> pd.DataFrame:
 def bs13() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["body structure"] * 2 + ["test"],
          "fsn": ["brain", "brain", "test"],
          "term": ["encéphale", "cerveau", "test"]}
     )
@@ -339,7 +341,6 @@ def bs13() -> pd.DataFrame:
 def bs13_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["body structure"] * 2 + ["test"],
          "fsn": ["brain", "brain", "test"],
          "term": ["encéphale", "cerveau", "test"],
          "bs13": [float("nan"), "1", float("nan")]}
@@ -353,7 +354,6 @@ def bs13_output() -> pd.DataFrame:
 def co2() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 5)],
-         "semtag": ["clinical finding"] * 3 + ["test"],
          "fsn": ["test (finding)", "head finding", "head finding", "test"],
          "term": ["test (constatation)", "constatation sur la tête",
                   "observation sur la tête", "test"]}
@@ -364,7 +364,6 @@ def co2() -> pd.DataFrame:
 def co2_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 5)],
-         "semtag": ["clinical finding"] * 3 + ["test"],
          "fsn": ["test (finding)", "head finding", "head finding", "test"],
          "term": ["test (constatation)", "constatation sur la tête",
                   "observation sur la tête", "test"],
@@ -376,7 +375,6 @@ def co2_output() -> pd.DataFrame:
 def co6() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 10)],
-         "semtag": ["clinical finding"] * 8 + ["test"],
          "fsn": ["calcium above reference range", "protein above reference range",
                  "calcium above reference range", "calcium above reference range",
                  "calcium below reference range", "protein below reference range",
@@ -396,7 +394,6 @@ def co6() -> pd.DataFrame:
 def co6_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 10)],
-         "semtag": ["clinical finding"] * 8 + ["test"],
          "fsn": ["calcium above reference range", "protein above reference range",
                  "calcium above reference range", "calcium above reference range",
                  "calcium below reference range", "protein below reference range",
@@ -418,7 +415,6 @@ def co6_output() -> pd.DataFrame:
 def pa4() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 9)],
-         "semtag": ["clinical finding"] * 7 + ["test"],
          "fsn": ["epilepsy", "epilepsy", "seizure", "seizure", "seizure", "convulsion",
                  "convulsion", "test"],
          "term": ["épilepsie", "crise", "crise", "convulsion", "épilepsie",
@@ -430,7 +426,6 @@ def pa4() -> pd.DataFrame:
 def pa4_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 9)],
-         "semtag": ["clinical finding"] * 7 + ["test"],
          "fsn": ["epilepsy", "epilepsy", "seizure", "seizure", "seizure", "convulsion",
                  "convulsion", "test"],
          "term": ["épilepsie", "crise", "crise", "convulsion", "épilepsie",
@@ -444,7 +439,6 @@ def pa4_output() -> pd.DataFrame:
 def pa6() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["clinical finding"] * 2 + ["test"],
          "fsn": ["impairment", "impairment", "test"],
          "term": ["atteinte", "impairment", "test"]}
     )
@@ -454,7 +448,6 @@ def pa6() -> pd.DataFrame:
 def pa6_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["clinical finding"] * 2 + ["test"],
          "fsn": ["impairment", "impairment", "test"],
          "term": ["atteinte", "impairment", "test"],
          "pa6": [float("nan"), "1", float("nan")]}
@@ -465,7 +458,6 @@ def pa6_output() -> pd.DataFrame:
 def pa7() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 5)],
-         "semtag": ["clinical finding"] * 3 + ["test"],
          "fsn": ["primary", "primary", "primary", "test"],
          "term": ["primitif", "primaire", "primordial", "test"]}
     )
@@ -475,7 +467,6 @@ def pa7() -> pd.DataFrame:
 def pa7_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 5)],
-         "semtag": ["clinical finding"] * 3 + ["test"],
          "fsn": ["primary", "primary", "primary", "test"],
          "term": ["primitif", "primaire", "primordial", "test"],
          "pa7": [float("nan"), float("nan"), "1", float("nan")]}
@@ -486,7 +477,6 @@ def pa7_output() -> pd.DataFrame:
 def pa8() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 8)],
-         "semtag": ["clinical finding"] * 6 + ["test"],
          "fsn": ["chilblain", "chilblain", "a frostbite", "a frostbite",
                  "superficial frostbite", "superficial frostbite", "test"],
          "term": ["engelure", "gelure", "gelure", "engelure", "gelure superficielle",
@@ -498,7 +488,6 @@ def pa8() -> pd.DataFrame:
 def pa8_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 8)],
-         "semtag": ["clinical finding"] * 6 + ["test"],
          "fsn": ["chilblain", "chilblain", "a frostbite", "a frostbite",
                  "superficial frostbite", "superficial frostbite", "test"],
          "term": ["engelure", "gelure", "gelure", "engelure", "gelure superficielle",
@@ -511,7 +500,6 @@ def pa8_output() -> pd.DataFrame:
 def pa9() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 13)],
-         "semtag": ["clinical finding"] * 11 + ["test"],
          "fsn": ["carbuncle", "carbuncle", "furuncle", "furuncle", "furuncle",
                  "furuncle", "furuncle", "furuncle", "furuncle", "anthrax", "anthrax",
                  "test"],
@@ -526,7 +514,6 @@ def pa9() -> pd.DataFrame:
 def pa9_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 13)],
-         "semtag": ["clinical finding"] * 11 + ["test"],
          "fsn": ["carbuncle", "carbuncle", "furuncle", "furuncle", "furuncle",
                  "furuncle", "furuncle", "furuncle", "furuncle", "anthrax", "anthrax",
                  "test"],
@@ -547,7 +534,6 @@ def pa9_output() -> pd.DataFrame:
 def me1() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["pharmaceutical"] * 2 + ["test"],
          "fsn": ["product containing x", "product containing x", "test"],
          "term": ["produit contenant x", "produit contenant uniquement x", "test"]}
     )
@@ -557,7 +543,6 @@ def me1() -> pd.DataFrame:
 def me1_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["pharmaceutical"] * 2 + ["test"],
          "fsn": ["product containing x", "product containing x", "test"],
          "term": ["produit contenant x", "produit contenant uniquement x", "test"],
          "me1": [float("nan"), "1", float("nan")]}
@@ -568,7 +553,6 @@ def me1_output() -> pd.DataFrame:
 def me2() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["pharmaceutical"] * 2 + ["test"],
          "fsn": ["product containing only", "product containing only", "test"],
          "term": ["produit contenant uniquement", "produit contenant", "test"]}
     )
@@ -578,7 +562,6 @@ def me2() -> pd.DataFrame:
 def me2_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["pharmaceutical"] * 2 + ["test"],
          "fsn": ["product containing only", "product containing only", "test"],
          "term": ["produit contenant uniquement", "produit contenant", "test"],
          "me2": [float("nan"), "1", float("nan")]}
@@ -589,7 +572,6 @@ def me2_output() -> pd.DataFrame:
 def me3() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["pharmaceutical"] * 2 + ["test"],
          "fsn": ["x (clinical drug)", "x (clinical drug)", "test"],
          "term": ["produit contenant précisément x", "x", "test"]}
     )
@@ -599,7 +581,6 @@ def me3() -> pd.DataFrame:
 def me3_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["pharmaceutical"] * 2 + ["test"],
          "fsn": ["x (clinical drug)", "x (clinical drug)", "test"],
          "term": ["produit contenant précisément x", "x", "test"],
          "me3": [float("nan"), "1", float("nan")]}
@@ -610,7 +591,6 @@ def me3_output() -> pd.DataFrame:
 def me4() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["pharmaceutical"] * 2 + ["test"],
          "term": ["x", "x libération conventionnelle", "test"]}
     )
 
@@ -619,7 +599,6 @@ def me4() -> pd.DataFrame:
 def me4_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["pharmaceutical"] * 2 + ["test"],
          "term": ["x", "x libération conventionnelle", "test"],
          "me4": [float("nan"), "1", float("nan")]}
     )
@@ -632,7 +611,6 @@ def me4_output() -> pd.DataFrame:
 def sb1() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["physical object"] * 2 + ["test"],
          "fsn": ["evacuated x collection tube", "evacuated x collection tube", "test"],
          "term": ["tube sous vide x pour prélèvement", "échantillon x", "test"]}
     )
@@ -642,7 +620,6 @@ def sb1() -> pd.DataFrame:
 def sb1_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["physical object"] * 2 + ["test"],
          "fsn": ["evacuated x collection tube", "evacuated x collection tube", "test"],
          "term": ["tube sous vide x pour prélèvement", "échantillon x", "test"],
          "sb1": [float("nan"), "1", float("nan")]}
@@ -653,7 +630,6 @@ def sb1_output() -> pd.DataFrame:
 def sb2() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["physical object"] * 2 + ["test"],
          "fsn": ["evacuated x specimen container", "evacuated x specimen container",
                  "test"],
          "term": ["support sous vide x pour prélèvement", "échantillon x", "test"]}
@@ -664,7 +640,6 @@ def sb2() -> pd.DataFrame:
 def sb2_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["physical object"] * 2 + ["test"],
          "fsn": ["evacuated x specimen container", "evacuated x specimen container",
                  "test"],
          "term": ["support sous vide x pour prélèvement", "échantillon x", "test"],
@@ -676,7 +651,6 @@ def sb2_output() -> pd.DataFrame:
 def sb3() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 6)],
-         "semtag": ["physical object"] * 4 + ["test"],
          "acceptabilityId": ["PREFERRED"] * 2 + ["ACCEPTABLE"] * 3,
          "fsn": ["stent", "stent", "stent", "stent", "test"],
          "term": ["endoprothèse", "stent", "stent", "endoprothèse", "test"]}
@@ -687,7 +661,6 @@ def sb3() -> pd.DataFrame:
 def sb3_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 6)],
-         "semtag": ["physical object"] * 4 + ["test"],
          "acceptabilityId": ["PREFERRED"] * 2 + ["ACCEPTABLE"] * 3,
          "fsn": ["stent", "stent", "stent", "stent", "test"],
          "term": ["endoprothèse", "stent", "stent", "endoprothèse", "test"],
@@ -702,7 +675,6 @@ def sb3_output() -> pd.DataFrame:
 def pr2() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 15)],
-         "semtag": ["procedure"] * 13 + ["test"],
          "acceptabilityId": ["PREFERRED"] * 6 + ["ACCEPTABLE"] * 8,
          "fsn": ["test (procedure)", "imaging procedure", "surgical procedure",
                  "imaging procedure", "operation", "operation", "imaging procedure",
@@ -720,7 +692,6 @@ def pr2() -> pd.DataFrame:
 def pr2_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 15)],
-         "semtag": ["procedure"] * 13 + ["test"],
          "acceptabilityId": ["PREFERRED"] * 6 + ["ACCEPTABLE"] * 8,
          "fsn": ["test (procedure)", "imaging procedure", "surgical procedure",
                  "imaging procedure", "operation", "operation", "imaging procedure",
@@ -741,7 +712,6 @@ def pr2_output() -> pd.DataFrame:
 def pr3() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["procedure"] * 2 + ["test"],
          "fsn": ["consultation", "consultation", "test"],
          "term": ["consultation", "x", "test"]}
     )
@@ -751,7 +721,6 @@ def pr3() -> pd.DataFrame:
 def pr3_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["procedure"] * 2 + ["test"],
          "fsn": ["consultation", "consultation", "test"],
          "term": ["consultation", "x", "test"],
          "pr3": [float("nan"), "1", float("nan")]}
@@ -762,7 +731,6 @@ def pr3_output() -> pd.DataFrame:
 def pr4() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 8)],
-         "semtag": ["procedure"] * 6 + ["test"],
          "acceptabilityId": ["PREFERRED"] * 4 + ["ACCEPTABLE"] * 3,
          "fsn": ["removal of foreign body", "removal of foreign body",
                  "magnet extraction", "magnet extraction", "magnet extraction",
@@ -778,7 +746,6 @@ def pr4() -> pd.DataFrame:
 def pr4_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 8)],
-         "semtag": ["procedure"] * 6 + ["test"],
          "acceptabilityId": ["PREFERRED"] * 4 + ["ACCEPTABLE"] * 3,
          "fsn": ["removal of foreign body", "removal of foreign body",
                  "magnet extraction", "magnet extraction", "magnet extraction",
@@ -795,7 +762,6 @@ def pr4_output() -> pd.DataFrame:
 def pr9() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 6)],
-         "semtag": ["procedure"] * 4 + ["test"],
          "acceptabilityId": ["PREFERRED"] * 2 + ["ACCEPTABLE"] * 3,
          "fsn": ["excisional biopsy", "excisional biopsy", "excisional biopsy",
                  "excisional biopsy", "test"],
@@ -808,7 +774,6 @@ def pr9() -> pd.DataFrame:
 def pr9_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 6)],
-         "semtag": ["procedure"] * 4 + ["test"],
          "acceptabilityId": ["PREFERRED"] * 2 + ["ACCEPTABLE"] * 3,
          "fsn": ["excisional biopsy", "excisional biopsy", "excisional biopsy",
                  "excisional biopsy", "test"],
@@ -822,7 +787,6 @@ def pr9_output() -> pd.DataFrame:
 def pr10() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["procedure"] * 2 + ["test"],
          "fsn": ["incisional biopsy", "incisional biopsy", "test"],
          "term": ["biopsie incisionnelle", "biopsie", "test"]}
     )
@@ -832,7 +796,6 @@ def pr10() -> pd.DataFrame:
 def pr10_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["procedure"] * 2 + ["test"],
          "fsn": ["incisional biopsy", "incisional biopsy", "test"],
          "term": ["biopsie incisionnelle", "biopsie", "test"],
          "pr10": [float("nan"), "1", float("nan")]}
@@ -843,7 +806,6 @@ def pr10_output() -> pd.DataFrame:
 def pr12() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 10)],
-         "semtag": ["procedure"] * 8 + ["test"],
          "acceptabilityId": ["PREFERRED"] * 4 + ["ACCEPTABLE"] * 5,
          "fsn": ["MRI", "MRI", "magnetic resonance angiography",
                  "magnetic resonance angiography", "MRI", "MRI",
@@ -862,7 +824,6 @@ def pr12() -> pd.DataFrame:
 def pr12_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 10)],
-         "semtag": ["procedure"] * 8 + ["test"],
          "acceptabilityId": ["PREFERRED"] * 4 + ["ACCEPTABLE"] * 5,
          "fsn": ["MRI", "MRI", "magnetic resonance angiography",
                  "magnetic resonance angiography", "MRI", "MRI",
@@ -883,7 +844,6 @@ def pr12_output() -> pd.DataFrame:
 def pr13() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 8)],
-         "semtag": ["procedure"] * 6 + ["test"],
          "acceptabilityId": ["PREFERRED"] * 3 + ["ACCEPTABLE"] * 4,
          "fsn": ["procedure guided by imaging", "act guided by imaging",
                  "act guided by imaging", "procedure guided by imaging",
@@ -900,7 +860,6 @@ def pr13() -> pd.DataFrame:
 def pr13_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 8)],
-         "semtag": ["procedure"] * 6 + ["test"],
          "acceptabilityId": ["PREFERRED"] * 3 + ["ACCEPTABLE"] * 4,
          "fsn": ["procedure guided by imaging", "act guided by imaging",
                  "act guided by imaging", "procedure guided by imaging",
@@ -918,7 +877,6 @@ def pr13_output() -> pd.DataFrame:
 def pr14() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 14)],
-         "semtag": ["procedure"] * 12 + ["test"],
          "acceptabilityId": ["PREFERRED"] * 6 + ["ACCEPTABLE"] * 7,
          "fsn": ["fluoroscopy of knee", "fluoroscopic procedure of knee",
                  "fluoroscopy of knee", "fluoroscopy guided procedure",
@@ -941,7 +899,6 @@ def pr14() -> pd.DataFrame:
 def pr14_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 14)],
-         "semtag": ["procedure"] * 12 + ["test"],
          "acceptabilityId": ["PREFERRED"] * 6 + ["ACCEPTABLE"] * 7,
          "fsn": ["fluoroscopy of knee", "fluoroscopic procedure of knee",
                  "fluoroscopy of knee", "fluoroscopy guided procedure",
@@ -971,7 +928,6 @@ def pr14_output() -> pd.DataFrame:
 def ec2() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 9)],
-         "semtag": ["specimen"] * 7 + ["test"],
          "fsn": ["implant submitted as specimen", "plaque submitted as specimen",
                  "implant submitted as specimen", "washings", "washings",
                  "cytologic material", "cytologic material", "test"],
@@ -986,7 +942,6 @@ def ec2() -> pd.DataFrame:
 def ec2_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 9)],
-         "semtag": ["specimen"] * 7 + ["test"],
          "fsn": ["implant submitted as specimen", "plaque submitted as specimen",
                  "implant submitted as specimen", "washings", "washings",
                  "cytologic material", "cytologic material", "test"],
@@ -1003,7 +958,6 @@ def ec2_output() -> pd.DataFrame:
 def ec4() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["specimen"] * 2 + ["test"],
          "fsn": ["fluid sample", "fluid sample", "test"],
          "term": ["échantillon de liquide", "liquide", "test"]}
     )
@@ -1013,7 +967,6 @@ def ec4() -> pd.DataFrame:
 def ec4_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "semtag": ["specimen"] * 2 + ["test"],
          "fsn": ["fluid sample", "fluid sample", "test"],
          "term": ["échantillon de liquide", "liquide", "test"],
          "ec4": [float("nan"), "1", float("nan")]}

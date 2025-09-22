@@ -1,4 +1,5 @@
 import pandas as pd
+
 from import_batch_ftcg import control
 
 
@@ -10,7 +11,7 @@ def test_no_bs2(null: pd.DataFrame) -> None:
     aucune ligne ne correspond aux critères
 
     args:
-        null: DataFrame de test ne correspondant pas aux critères d'bs2
+        null: DataFrame de test ne correspondant pas aux critères de bs2
     """
     pd.testing.assert_frame_equal(control._check_bs2(null), null)
 
@@ -28,106 +29,133 @@ def test_check_bs2(bs2: pd.DataFrame, bs2_output: pd.DataFrame) -> None:
 ################
 # Tests de bs3 #
 ################
-def test_no_bs3(null: pd.DataFrame) -> None:
+def test_no_bs3(null: pd.DataFrame, null_pt: pd.Series, null_syn: pd.Series,
+                semtag: pd.Series) -> None:
     """Vérifie que la fonction control._check_bs3 renvoit le DataFrame original si
     aucune ligne ne correspond aux critères
 
     args:
-        null: DataFrame de test ne correspondant pas aux critères d'bs3
+        null: DataFrame de test ne correspondant pas aux critères de bs3
+        null_pt: Filtre de test sur les termes préférés de `null`
+        null_pt: Filtre de test sur les synonymes acceptables de `null`
+        semtag: Filtre de test sur les Body structure de `null`
     """
-    pd.testing.assert_frame_equal(control._check_bs3(null), null)
+    bs = semtag(len(null))
+    pd.testing.assert_frame_equal(control._check_bs3(null, null_pt, null_syn, bs), null)
 
 
-def test_check_bs3(bs3: pd.DataFrame, bs3_output: pd.DataFrame) -> None:
+def test_check_bs3(bs3: pd.DataFrame, bs3_output: pd.DataFrame,
+                   semtag: pd.Series) -> None:
     """Vérifie le bon fonctionnement de control._check_bs3.
 
     args:
         bs3: DataFrame de test à corriger
         bs3_output: DataFrame corrigé attendu
+        semtag: Filtre de test sur les Body structure de `bs3`
     """
-    pd.testing.assert_frame_equal(control._check_bs3(bs3), bs3_output)
+    bs = semtag(len(bs3))
+    pt = (bs3.loc[:, "acceptabilityId"] == "PREFERRED")
+    syn = (bs3.loc[:, "acceptabilityId"] == "ACCEPTABLE")
+    pd.testing.assert_frame_equal(control._check_bs3(bs3, bs, pt, syn), bs3_output)
 
 
 ################
 # Tests de bs5 #
 ################
-def test_no_bs5(null: pd.DataFrame) -> None:
+def test_no_bs5(null: pd.DataFrame, semtag: pd.Series) -> None:
     """Vérifie que la fonction control._check_bs5 renvoit le DataFrame original si
     aucune ligne ne correspond aux critères
 
     args:
-        null: DataFrame de test ne correspondant pas aux critères d'bs5
+        null: DataFrame de test ne correspondant pas aux critères de bs5
+        semtag: Filtre de test sur les Body structure de `null`
     """
-    pd.testing.assert_frame_equal(control._check_bs5(null), null)
+    bs = semtag(len(null))
+    pd.testing.assert_frame_equal(control._check_bs5(null, bs), null)
 
 
-def test_check_bs5(bs5: pd.DataFrame, bs5_output: pd.DataFrame) -> None:
+def test_check_bs5(bs5: pd.DataFrame, bs5_output: pd.DataFrame,
+                   semtag: pd.Series) -> None:
     """Vérifie le bon fonctionnement de control._check_bs5.
 
     args:
         bs5: DataFrame de test à corriger
         bs5_output: DataFrame corrigé attendu
+        semtag: Filtre de test sur les Body structure de `bs5`
     """
-    pd.testing.assert_frame_equal(control._check_bs5(bs5), bs5_output)
+    bs = semtag(len(bs5))
+    pd.testing.assert_frame_equal(control._check_bs5(bs5, bs), bs5_output)
 
 
 ################
 # Tests de bs6 #
 ################
-def test_no_bs6(null: pd.DataFrame) -> None:
+def test_no_bs6(null: pd.DataFrame, semtag: pd.Series) -> None:
     """Vérifie que la fonction control._check_bs6 renvoit le DataFrame original si
     aucune ligne ne correspond aux critères
 
     args:
-        null: DataFrame de test ne correspondant pas aux critères d'bs6
+        null: DataFrame de test ne correspondant pas aux critères de bs6
+        semtag: Filtre de test sur les Body structure de `null`
     """
-    pd.testing.assert_frame_equal(control._check_bs6(null), null)
+    bs = semtag(len(null))
+    pd.testing.assert_frame_equal(control._check_bs6(null, bs), null)
 
 
-def test_check_bs6(bs6: pd.DataFrame, bs6_output: pd.DataFrame) -> None:
+def test_check_bs6(bs6: pd.DataFrame, bs6_output: pd.DataFrame,
+                   semtag: pd.Series) -> None:
     """Vérifie le bon fonctionnement de control._check_bs6.
 
     args:
         bs6: DataFrame de test à corriger
         bs6_output: DataFrame corrigé attendu
+        semtag: Filtre de test sur les Body structure de `bs6`
     """
-    pd.testing.assert_frame_equal(control._check_bs6(bs6), bs6_output)
+    bs = semtag(len(bs6))
+    pd.testing.assert_frame_equal(control._check_bs6(bs6, bs), bs6_output)
 
 
 ################
 # Tests de bs7 #
 ################
-def test_no_bs7(null: pd.DataFrame) -> None:
+def test_no_bs7(null: pd.DataFrame, semtag: pd.Series) -> None:
     """Vérifie que la fonction control._check_bs7 renvoit le DataFrame original si
     aucune ligne ne correspond aux critères
 
     args:
-        null: DataFrame de test ne correspondant pas aux critères d'bs7
+        null: DataFrame de test ne correspondant pas aux critères de bs7
+        semtag: Filtre de test sur les Body structure de `null`
     """
-    pd.testing.assert_frame_equal(control._check_bs7(null), null)
+    bs = semtag(len(null))
+    pd.testing.assert_frame_equal(control._check_bs7(null, bs), null)
 
 
-def test_check_bs7(bs7: pd.DataFrame, bs7_output: pd.DataFrame) -> None:
+def test_check_bs7(bs7: pd.DataFrame, bs7_output: pd.DataFrame,
+                   semtag: pd.Series) -> None:
     """Vérifie le bon fonctionnement de control._check_bs7.
 
     args:
         bs7: DataFrame de test à corriger
         bs7_output: DataFrame corrigé attendu
+        semtag: Filtre de test sur les Body structure de `bs7`
     """
-    pd.testing.assert_frame_equal(control._check_bs7(bs7), bs7_output)
+    bs = semtag(len(bs7))
+    pd.testing.assert_frame_equal(control._check_bs7(bs7, bs), bs7_output)
 
 
 ################
 # Tests de bs8 #
 ################
-def test_no_bs8(null: pd.DataFrame) -> None:
+def test_no_bs8(null: pd.DataFrame, null_pt: pd.Series, null_syn: pd.Series) -> None:
     """Vérifie que la fonction control._check_bs8 renvoit le DataFrame original si
     aucune ligne ne correspond aux critères
 
     args:
-        null: DataFrame de test ne correspondant pas aux critères d'bs8
+        null: DataFrame de test ne correspondant pas aux critères de bs8
+        null_pt: Filtre de test sur les termes préférés de `null`
+        null_pt: Filtre de test sur les synonymes acceptables de `null`
     """
-    pd.testing.assert_frame_equal(control._check_bs8(null), null)
+    pd.testing.assert_frame_equal(control._check_bs10(null, null_pt, null_syn), null)
 
 
 def test_check_bs8(bs8: pd.DataFrame, bs8_output: pd.DataFrame) -> None:
@@ -137,7 +165,9 @@ def test_check_bs8(bs8: pd.DataFrame, bs8_output: pd.DataFrame) -> None:
         bs8: DataFrame de test à corriger
         bs8_output: DataFrame corrigé attendu
     """
-    pd.testing.assert_frame_equal(control._check_bs8(bs8), bs8_output)
+    pt = (bs8.loc[:, "acceptabilityId"] == "PREFERRED")
+    syn = (bs8.loc[:, "acceptabilityId"] == "ACCEPTABLE")
+    pd.testing.assert_frame_equal(control._check_bs8(bs8, pt, syn), bs8_output)
 
 
 ################
@@ -148,7 +178,7 @@ def test_no_bs9(null: pd.DataFrame) -> None:
     aucune ligne ne correspond aux critères
 
     args:
-        null: DataFrame de test ne correspondant pas aux critères d'bs9
+        null: DataFrame de test ne correspondant pas aux critères de bs9
     """
     pd.testing.assert_frame_equal(control._check_bs9(null), null)
 
@@ -166,14 +196,16 @@ def test_check_bs9(bs9: pd.DataFrame, bs9_output: pd.DataFrame) -> None:
 #################
 # Tests de bs10 #
 #################
-def test_no_bs10(null: pd.DataFrame) -> None:
+def test_no_bs10(null: pd.DataFrame, null_pt: pd.Series, null_syn: pd.Series) -> None:
     """Vérifie que la fonction control._check_bs10 renvoit le DataFrame original si
     aucune ligne ne correspond aux critères
 
     args:
-        null: DataFrame de test ne correspondant pas aux critères d'bs10
+        null: DataFrame de test ne correspondant pas aux critères de bs10
+        null_pt: Filtre de test sur les termes préférés de `null`
+        null_pt: Filtre de test sur les synonymes acceptables de `null`
     """
-    pd.testing.assert_frame_equal(control._check_bs10(null), null)
+    pd.testing.assert_frame_equal(control._check_bs10(null, null_pt, null_syn), null)
 
 
 def test_check_bs10(bs10: pd.DataFrame, bs10_output: pd.DataFrame) -> None:
@@ -183,20 +215,24 @@ def test_check_bs10(bs10: pd.DataFrame, bs10_output: pd.DataFrame) -> None:
         bs10: DataFrame de test à corriger
         bs10_output: DataFrame corrigé attendu
     """
-    pd.testing.assert_frame_equal(control._check_bs10(bs10), bs10_output)
+    pt = (bs10.loc[:, "acceptabilityId"] == "PREFERRED")
+    syn = (bs10.loc[:, "acceptabilityId"] == "ACCEPTABLE")
+    pd.testing.assert_frame_equal(control._check_bs10(bs10, pt, syn), bs10_output)
 
 
 #################
 # Tests de bs11 #
 #################
-def test_no_bs11(null: pd.DataFrame) -> None:
+def test_no_bs11(null: pd.DataFrame, null_pt: pd.Series, null_syn: pd.Series) -> None:
     """Vérifie que la fonction control._check_bs11 renvoit le DataFrame original si
     aucune ligne ne correspond aux critères
 
     args:
-        null: DataFrame de test ne correspondant pas aux critères d'bs11
+        null: DataFrame de test ne correspondant pas aux critères de bs11
+        null_pt: Filtre de test sur les termes préférés de `null`
+        null_pt: Filtre de test sur les synonymes acceptables de `null`
     """
-    pd.testing.assert_frame_equal(control._check_bs11(null), null)
+    pd.testing.assert_frame_equal(control._check_bs11(null, null_pt, null_syn), null)
 
 
 def test_check_bs11(bs11: pd.DataFrame, bs11_output: pd.DataFrame) -> None:
@@ -206,7 +242,9 @@ def test_check_bs11(bs11: pd.DataFrame, bs11_output: pd.DataFrame) -> None:
         bs11: DataFrame de test à corriger
         bs11_output: DataFrame corrigé attendu
     """
-    pd.testing.assert_frame_equal(control._check_bs11(bs11), bs11_output)
+    pt = (bs11.loc[:, "acceptabilityId"] == "PREFERRED")
+    syn = (bs11.loc[:, "acceptabilityId"] == "ACCEPTABLE")
+    pd.testing.assert_frame_equal(control._check_bs11(bs11, pt, syn), bs11_output)
 
 
 #################
@@ -217,7 +255,7 @@ def test_no_bs12(null: pd.DataFrame) -> None:
     aucune ligne ne correspond aux critères
 
     args:
-        null: DataFrame de test ne correspondant pas aux critères d'bs12
+        null: DataFrame de test ne correspondant pas aux critères de bs12
     """
     pd.testing.assert_frame_equal(control._check_bs12(null), null)
 
@@ -240,7 +278,7 @@ def test_no_bs13(null: pd.DataFrame) -> None:
     aucune ligne ne correspond aux critères
 
     args:
-        null: DataFrame de test ne correspondant pas aux critères d'bs13
+        null: DataFrame de test ne correspondant pas aux critères de bs13
     """
     pd.testing.assert_frame_equal(control._check_bs13(null), null)
 

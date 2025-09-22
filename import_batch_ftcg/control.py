@@ -1,7 +1,6 @@
 import pandas as pd
-from collections import defaultdict
 
-RULES = defaultdict(list)
+from import_batch_ftcg import server
 
 
 def _get_correct_case(cf_cs: pd.DataFrame) -> pd.DataFrame:
@@ -77,8 +76,7 @@ def _check_bs2(cf: pd.DataFrame) -> pd.DataFrame:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle bs2.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "body structure")
-                & (cf.loc[:, "fsn"].str.contains("joint", regex=False, case=False))
+    id = cf.loc[(cf.loc[:, "fsn"].str.contains("joint", regex=False, case=False))
                 & (~cf.loc[:, "term"].str.contains("(?:articulation|articulaire)", case=False)), # noqa
                 "id"]
     if not id.empty:
@@ -88,34 +86,36 @@ def _check_bs2(cf: pd.DataFrame) -> pd.DataFrame:
     return cf
 
 
-def _check_bs3(cf: pd.DataFrame) -> pd.DataFrame:
+def _check_bs3(cf: pd.DataFrame, bs: pd.Series, pt: pd.Series,
+               syn: pd.Series) -> pd.DataFrame:
     """Identifie les descriptions ne respectant pas la règle bs3.
 
     args:
         cf: Descriptions de la Common French à importer.
+        bs: Filtre sur les Body structure de `cf`.
+        pt: Filtre sur les termes préférés de `cf`.
+        syn: Filtre sur les synonymes acceptables de `cf`.
 
     returns:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle bs3.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "body structure")
-                & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
+    id = cf.loc[bs & pt
                 & (cf.loc[:, "fsn"].str.contains("structure", regex=False, case=False))
                 & (cf.loc[:, "term"].str.contains("structure", regex=False, case=False)), # noqa
                 "id"]
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "body structure")
-                               & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
+    id = pd.concat([id, cf.loc[bs & syn
                                & (cf.loc[:, "fsn"].str.contains("structure", regex=False, case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("structure", regex=False, case=False)), # noqa
                                "id"]])
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "body structure")
+    id = pd.concat([id, cf.loc[bs
                                & (cf.loc[:, "fsn"].str.contains("entire", regex=False, case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("(?:entiers?|entières?)", case=False)), # noqa
                                "id"]])
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "body structure")
+    id = pd.concat([id, cf.loc[bs
                                & (cf.loc[:, "fsn"].str.contains("part", regex=False, case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("partie", regex=False, case=False)), # noqa
                                "id"]])
@@ -127,17 +127,18 @@ def _check_bs3(cf: pd.DataFrame) -> pd.DataFrame:
     return cf
 
 
-def _check_bs5(cf: pd.DataFrame) -> pd.DataFrame:
+def _check_bs5(cf: pd.DataFrame, bs: pd.Series) -> pd.DataFrame:
     """Identifie les descriptions ne respectant pas la règle bs5.
 
     args:
         cf: Descriptions de la Common French à importer.
+        bs: Filtre sur les Body structure de `cf`.
 
     returns:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle bs5.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "body structure")
+    id = cf.loc[bs
                 & (cf.loc[:, "fsn"].str.contains("region", regex=False, case=False))
                 & (~cf.loc[:, "term"].str.contains("région", regex=False, case=False)),
                 "id"]
@@ -148,22 +149,23 @@ def _check_bs5(cf: pd.DataFrame) -> pd.DataFrame:
     return cf
 
 
-def _check_bs6(cf: pd.DataFrame) -> pd.DataFrame:
+def _check_bs6(cf: pd.DataFrame, bs: pd.Series) -> pd.DataFrame:
     """Identifie les descriptions ne respectant pas la règle bs6.
 
     args:
         cf: Descriptions de la Common French à importer.
+        bs: Filtre sur les Body structure de `cf`.
 
     returns:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle bs6.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "body structure")
+    id = cf.loc[bs
                 & (cf.loc[:, "fsn"].str.contains("zone", regex=False, case=False))
                 & (~cf.loc[:, "term"].str.contains("zone", regex=False, case=False)),
                 "id"]
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "body structure")
+    id = pd.concat([id, cf.loc[bs
                                & (cf.loc[:, "fsn"].str.contains("area", regex=False, case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("(?:zone|surface|aire)", case=False)), # noqa
                                "id"]])
@@ -175,17 +177,18 @@ def _check_bs6(cf: pd.DataFrame) -> pd.DataFrame:
     return cf
 
 
-def _check_bs7(cf: pd.DataFrame) -> pd.DataFrame:
+def _check_bs7(cf: pd.DataFrame, bs: pd.Series) -> pd.DataFrame:
     """Identifie les descriptions ne respectant pas la règle bs7.
 
     args:
         cf: Descriptions de la Common French à importer.
+        bs: Filtre sur les Body structure de `cf`.
 
     returns:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle bs7.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "body structure")
+    id = cf.loc[bs
                 & (cf.loc[:, "fsn"].str.contains("proper", regex=False, case=False))
                 & (~cf.loc[:, "term"].str.contains("(?:propre|proprement dite?)", case=False)), # noqa
                 "id"]
@@ -196,24 +199,24 @@ def _check_bs7(cf: pd.DataFrame) -> pd.DataFrame:
     return cf
 
 
-def _check_bs8(cf: pd.DataFrame) -> pd.DataFrame:
+def _check_bs8(cf: pd.DataFrame, pt: pd.Series, syn: pd.Series) -> pd.DataFrame:
     """Identifie les descriptions ne respectant pas la règle bs8.
 
     args:
         cf: Descriptions de la Common French à importer.
+        pt: Filtre sur les termes préférés de `cf`.
+        syn: Filtre sur les synonymes acceptables de `cf`.
 
     returns:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle bs8.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "body structure")
-                & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
+    id = cf.loc[pt
                 & (cf.loc[:, "fsn"].str.contains("apex", regex=False, case=False))
                 & (~cf.loc[:, "term"].str.contains("apex", regex=False, case=False)),
                 "id"]
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "body structure")
-                               & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
+    id = pd.concat([id, cf.loc[syn
                                & (cf.loc[:, "fsn"].str.contains("apex", regex=False, case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("(?:pointe|bout|cime)", case=False)), # noqa
                                "id"]])
@@ -235,13 +238,11 @@ def _check_bs9(cf: pd.DataFrame) -> pd.DataFrame:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle bs9.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "body structure")
-                & (cf.loc[:, "fsn"].str.contains("lesser toe", regex=False, case=False))
+    id = cf.loc[(cf.loc[:, "fsn"].str.contains("lesser toe", regex=False, case=False))
                 & (~cf.loc[:, "term"].str.contains("orteil excepté l'hallux", regex=False, case=False)), # noqa
                 "id"]
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "body structure")
-                               & (cf.loc[:, "fsn"].str.contains("lesser toe", regex=False, case=False)) # noqa
+    id = pd.concat([id, cf.loc[(cf.loc[:, "fsn"].str.contains("lesser toe", regex=False, case=False)) # noqa
                                & (cf.loc[:, "term"].str.contains("petit orteil", case=False)), # noqa
                                "id"]])
     id = id.drop_duplicates()
@@ -252,29 +253,28 @@ def _check_bs9(cf: pd.DataFrame) -> pd.DataFrame:
     return cf
 
 
-def _check_bs10(cf: pd.DataFrame) -> pd.DataFrame:
+def _check_bs10(cf: pd.DataFrame, pt: pd.Series, syn: pd.Series) -> pd.DataFrame:
     """Identifie les descriptions ne respectant pas la règle bs10-FR.
 
     args:
         cf: Descriptions de la Common French à importer.
+        pt: Filtre sur les termes préférés de `cf`.
+        syn: Filtre sur les synonymes acceptables de `cf`.
 
     returns:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle bs10.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "body structure")
-                & (cf.loc[:, "fsn"].str.contains("lower limb", regex=False, case=False))
+    id = cf.loc[(cf.loc[:, "fsn"].str.contains("lower limb", regex=False, case=False))
                 & (~cf.loc[:, "term"].str.contains("membre inférieur", regex=False, case=False)), # noqa
                 "id"]
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "body structure")
-                               & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
+    id = pd.concat([id, cf.loc[pt
                                & (cf.loc[:, "fsn"].str.contains("lower leg", regex=False, case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("partie inférieure de la jambe", case=False)), # noqa
                                "id"]])
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "body structure")
-                               & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
+    id = pd.concat([id, cf.loc[syn
                                & (cf.loc[:, "fsn"].str.contains("lower leg", regex=False, case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("(?:partie basse de la jambe|jambe, du genou à la cheville)", case=False)), # noqa
                                "id"]])
@@ -285,30 +285,28 @@ def _check_bs10(cf: pd.DataFrame) -> pd.DataFrame:
     return cf
 
 
-def _check_bs11(cf: pd.DataFrame) -> pd.DataFrame:
+def _check_bs11(cf: pd.DataFrame, pt: pd.Series, syn: pd.Series) -> pd.DataFrame:
     """Identifie les descriptions ne respectant pas la règle bs11-FR.
 
     args:
         cf: Descriptions de la Common French à importer.
+        pt: Filtre sur les termes préférés de `cf`.
+        syn: Filtre sur les synonymes acceptables de `cf`.
 
     returns:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle bs11-FR.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "body structure")
-                & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
-                & (cf.loc[:, "fsn"].str.contains("upper limb", regex=False, case=False))
+    id = cf.loc[(cf.loc[:, "fsn"].str.contains("upper limb", regex=False, case=False))
                 & (~cf.loc[:, "term"].str.contains("membre supérieur", regex=False, case=False)), # noqa
                 "id"]
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "body structure")
-                               & (cf.loc[:, "acceptabilityId"] == "PREFERRED")
+    id = pd.concat([id, cf.loc[pt
                                & (cf.loc[:, "fsn"].str.contains("upper arm", regex=False, case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("partie supérieure du bras", regex=False, case=False)), # noqa
                                "id"]])
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "body structure")
-                               & (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
+    id = pd.concat([id, cf.loc[syn
                                & (cf.loc[:, "fsn"].str.contains("upper arm", regex=False, case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("bras, de l'épaule au coude", regex=False, case=False)), # noqa
                                "id"]])
@@ -330,8 +328,7 @@ def _check_bs12(cf: pd.DataFrame) -> pd.DataFrame:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle bs12.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "body structure")
-                & (cf.loc[:, "fsn"].str.contains("cerebrum", regex=False, case=False))
+    id = cf.loc[(cf.loc[:, "fsn"].str.contains("cerebrum", regex=False, case=False))
                 & (~cf.loc[:, "term"].str.contains("cerveau", regex=False, case=False)),
                 "id"]
     if not id.empty:
@@ -351,8 +348,7 @@ def _check_bs13(cf: pd.DataFrame) -> pd.DataFrame:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle bs13.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "body structure")
-                & (cf.loc[:, "fsn"].str.contains("brain", regex=False, case=False))
+    id = cf.loc[(cf.loc[:, "fsn"].str.contains("brain", regex=False, case=False))
                 & (~cf.loc[:, "term"].str.contains("encéphale", regex=False, case=False)), # noqa
                 "id"]
     if not id.empty:
@@ -1027,16 +1023,22 @@ def _check_ec4(cf: pd.DataFrame) -> pd.DataFrame:
     return cf
 
 
-def run_quality_control(cf: pd.DataFrame) -> pd.DataFrame:
+def run_quality_control(cf: pd.DataFrame, fts: server.Fts) -> pd.DataFrame:
     """Lance l'ensemble des contrôles qualité et correction automatiques sur les
     traduction à importer.
 
     args:
         cf: Descriptions de la Common French à importer.
+        fts: Serveur de Terminologies FHIR contenant la version de l'édition
+            internationale dont dépend votre édition nationale non publiée
 
     returns:
         DataFrame avec les traductions à importer prête pour la relecture.
     """
+    # Précalcul des lignes PT et SYN
+    pt = (cf.loc[:, "acceptabilityId"] == "PREFERRED")
+    syn = (cf.loc[:, "acceptabilityId"] == "ACCEPTABLE")
+
     # Correction sur les casses
     correction = _get_correct_case(
         cf.loc[cf.loc[:, "caseSignificanceId"] == "CS"])
@@ -1049,16 +1051,17 @@ def run_quality_control(cf: pd.DataFrame) -> pd.DataFrame:
     cf = _check_ar6(cf)
 
     # Contrôles des règles de Body Structure
+    bs = (cf.loc[:, "conceptId"].isin(fts.get_descendants("123037004")))
     if not cf.loc[cf.loc[:, "semtag"] == "body structure"].empty:
         cf = _check_bs2(cf)
-        cf = _check_bs3(cf)
-        cf = _check_bs5(cf)
-        cf = _check_bs6(cf)
-        cf = _check_bs7(cf)
-        cf = _check_bs8(cf)
+        cf = _check_bs3(cf, bs, pt, syn)
+        cf = _check_bs5(cf, bs)
+        cf = _check_bs6(cf, bs)
+        cf = _check_bs7(cf, bs)
+        cf = _check_bs8(cf, pt, syn)
         cf = _check_bs9(cf)
-        cf = _check_bs10(cf)
-        cf = _check_bs11(cf)
+        cf = _check_bs10(cf, pt, syn)
+        cf = _check_bs11(cf, pt, syn)
         cf = _check_bs12(cf)
         cf = _check_bs13(cf)
 
