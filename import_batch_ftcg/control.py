@@ -609,17 +609,18 @@ def _check_pa9(cf: pd.DataFrame) -> pd.DataFrame:
 ##############################################
 # Règles Pharmaceutical / biological product #
 ##############################################
-def _check_me1(cf: pd.DataFrame) -> pd.DataFrame:
+def _check_me1(cf: pd.DataFrame, me: pd.Series) -> pd.DataFrame:
     """Identifie les descriptions ne respectant pas la règle me1.
 
     args:
         cf: Descriptions de la Common French à importer.
+        me: Filtre sur les Pharmaceutical / biological product de `cf`.
 
     returns:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle me1.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "pharmaceutical")
+    id = cf.loc[me
                 & (cf.loc[:, "fsn"].str.contains("product containing (?!only)", case=False)) # noqa
                 & (~cf.loc[:, "term"].str.contains("produit contenant (?!uniquement)", case=False)), # noqa
                 "id"]
@@ -630,17 +631,18 @@ def _check_me1(cf: pd.DataFrame) -> pd.DataFrame:
     return cf
 
 
-def _check_me2(cf: pd.DataFrame) -> pd.DataFrame:
+def _check_me2(cf: pd.DataFrame, me: pd.Series) -> pd.DataFrame:
     """Identifie les descriptions ne respectant pas la règle me2.
 
     args:
         cf: Descriptions de la Common French à importer.
+        me: Filtre sur les Pharmaceutical / biological product de `cf`.
 
     returns:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle me2.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "pharmaceutical")
+    id = cf.loc[me
                 & (cf.loc[:, "fsn"].str.contains("product containing only", regex=False, case=False)) # noqa
                 & (~cf.loc[:, "term"].str.contains("produit contenant uniquement", regex=False, case=False)), # noqa
                 "id"]
@@ -651,17 +653,18 @@ def _check_me2(cf: pd.DataFrame) -> pd.DataFrame:
     return cf
 
 
-def _check_me3(cf: pd.DataFrame) -> pd.DataFrame:
+def _check_me3(cf: pd.DataFrame, me: pd.Series) -> pd.DataFrame:
     """Identifie les descriptions ne respectant pas la règle me3.
 
     args:
         cf: Descriptions de la Common French à importer.
+        me: Filtre sur les Pharmaceutical / biological product de `cf`.
 
     returns:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle me3.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "pharmaceutical")
+    id = cf.loc[me
                 & (cf.loc[:, "fsn"].str.endswith("(clinical drug)"))
                 & (~cf.loc[:, "term"].str.contains("produit contenant précisément", regex=False, case=False)), # noqa
                 "id"]
@@ -672,17 +675,18 @@ def _check_me3(cf: pd.DataFrame) -> pd.DataFrame:
     return cf
 
 
-def _check_me4(cf: pd.DataFrame) -> pd.DataFrame:
+def _check_me4(cf: pd.DataFrame, me: pd.Series) -> pd.DataFrame:
     """Identifie les descriptions ne respectant pas la règle me4.
 
     args:
         cf: Descriptions de la Common French à importer.
+        me: Filtre sur les Pharmaceutical / biological product de `cf`.
 
     returns:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle me4.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "pharmaceutical")
+    id = cf.loc[me
                 & (cf.loc[:, "term"].str.contains("libération conventionnelle", regex=False, case=False)), # noqa
                 "id"]
     if not id.empty:
@@ -1138,11 +1142,12 @@ def run_quality_control(cf: pd.DataFrame, fts: server.Fts) -> pd.DataFrame:
         cf = _check_pa9(cf)
 
     # Contrôles des règles de Pharmaceutical / biological product
+    me = (cf.loc[:, "conceptId"].isin(fts.ecl("<< 373873005")))
     if not cf.loc[cf.loc[:, "semtag"] == "pharmaceutical"].empty:
-        cf = _check_me1(cf)
-        cf = _check_me2(cf)
-        cf = _check_me3(cf)
-        cf = _check_me4(cf)
+        cf = _check_me1(cf, me)
+        cf = _check_me2(cf, me)
+        cf = _check_me3(cf, me)
+        cf = _check_me4(cf, me)
 
     # Contrôles des règles de Physical object
     if not cf.loc[cf.loc[:, "semtag"] == "physical object"].empty:
