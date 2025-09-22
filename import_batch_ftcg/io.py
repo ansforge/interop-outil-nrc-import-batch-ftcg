@@ -62,8 +62,8 @@ def read_common_french(path: str, date: str, fts: server.Fts) -> pd.DataFrame:
 
     # Retirer les traductions des hiérarchies
     # 'Environment or geographical location' et 'Organism'
-    env = fts.get_descendants("308916002")
-    org = fts.get_descendants("410607006")
+    env = fts.ecl("<< 308916002")
+    org = fts.ecl("<< 410607006")
     desc = desc.loc[(~desc.loc[:, "conceptId"].isin(env))
                     & (~desc.loc[:, "conceptId"].isin(org))]
 

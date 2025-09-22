@@ -1,5 +1,13 @@
+import os.path as op
 import pytest
 import pandas as pd
+import responses
+
+from typing import Any, Generator
+
+
+def pytest_addoption(parser):
+    parser.addoption("--endpoint", action="store")
 
 
 @pytest.fixture
@@ -374,11 +382,14 @@ def co2_output() -> pd.DataFrame:
 @pytest.fixture
 def co6() -> pd.DataFrame:
     return pd.DataFrame(
-        {"id": [str(i) for i in range(1, 10)],
+        {"id": [str(i) for i in range(1, 16)],
          "fsn": ["calcium above reference range", "protein above reference range",
                  "calcium above reference range", "calcium above reference range",
                  "calcium below reference range", "protein below reference range",
                  "calcium below reference range", "calcium below reference range",
+                 "calcium within reference range", "calcium within reference range",
+                 "calcium within reference range", "calcium outside reference range",
+                 "calcium outside reference range", "calcium outside reference range",
                  "test"],
          "term": ["calcium supérieur à l'intervalle de référence",
                   "protéine supérieure à l'intervalle de référence",
@@ -386,6 +397,10 @@ def co6() -> pd.DataFrame:
                   "calcium inférieur à l'intervalle de référence",
                   "protéine inférieure à l'intervalle de référence",
                   "calcium inférieur aux valeurs de référence", "calcium diminué",
+                  "calcium dans l'intervalle de référence",
+                  "calcium dans les valeurs de référence", "calcium normal",
+                  "calcium en dehors de l'intervalle de référence",
+                  "calcium en dehors des valeurs de référence", "calcium anormal",
                   "test"]}
     )
 
@@ -393,11 +408,14 @@ def co6() -> pd.DataFrame:
 @pytest.fixture
 def co6_output() -> pd.DataFrame:
     return pd.DataFrame(
-        {"id": [str(i) for i in range(1, 10)],
+        {"id": [str(i) for i in range(1, 16)],
          "fsn": ["calcium above reference range", "protein above reference range",
                  "calcium above reference range", "calcium above reference range",
                  "calcium below reference range", "protein below reference range",
                  "calcium below reference range", "calcium below reference range",
+                 "calcium within reference range", "calcium within reference range",
+                 "calcium within reference range", "calcium outside reference range",
+                 "calcium outside reference range", "calcium outside reference range",
                  "test"],
          "term": ["calcium supérieur à l'intervalle de référence",
                   "protéine supérieure à l'intervalle de référence",
@@ -405,9 +423,88 @@ def co6_output() -> pd.DataFrame:
                   "calcium inférieur à l'intervalle de référence",
                   "protéine inférieure à l'intervalle de référence",
                   "calcium inférieur aux valeurs de référence", "calcium diminué",
+                  "calcium dans l'intervalle de référence",
+                  "calcium dans les valeurs de référence", "calcium normal",
+                  "calcium en dehors de l'intervalle de référence",
+                  "calcium en dehors des valeurs de référence", "calcium anormal",
                   "test"],
          "co6": [float("nan"), float("nan"), float("nan"), "1", float("nan"),
+                 float("nan"), float("nan"), "1", float("nan"), float("nan"), "1",
                  float("nan"), float("nan"), "1", float("nan")]}
+    )
+
+
+@pytest.fixture
+def fts_pa3(pytestconfig) -> Generator[responses.RequestsMock, Any, None]:
+    u_skin_trauma = op.join(pytestconfig.getoption("endpoint"),
+                            "ValueSet/$expand?url=http://snomed.info/sct/900000000000207008?fhir_vs=ecl/%3C%3C%20417746004%3A%20363698007%20%3D%20%3C%3C%2039937001") # noqa
+    u_trauma = op.join(pytestconfig.getoption("endpoint"),
+                       "ValueSet/$expand?url=http://snomed.info/sct/900000000000207008?fhir_vs=ecl/%3C%3C%20417746004%3A%20363698007%20%21%3D%20%3C%3C%2039937001") # noqa
+
+    with responses.RequestsMock() as mock:
+        mock.add(method=responses.GET, url=u_skin_trauma,
+                 json={"expansion": {"contains": [{"code": "1"}]}})
+
+        mock.add(method=responses.GET, url=u_trauma,
+                 json={"expansion": {"contains": [{"code": "2"}, {"code": "3"}]}})
+
+        yield mock
+
+
+@pytest.fixture
+def pa3() -> pd.DataFrame:
+    return pd.DataFrame(
+        {"id": [str(i) for i in range(1, 13)],
+         "conceptId": ["1", "1", "1", "2", "2", "2", "2", "3", "3", "3", "3", "4"],
+         "fsn": ["traumatic skin injury", "traumatic skin injury",
+                 "traumatic skin injury", "traumatic liver injury",
+                 "traumatic liver injury", "traumatic liver injury",
+                 "traumatic liver injury", "bone crushing injury", "bone crush injury",
+                 "bone crush injury", "bone crush injury", "test"],
+         "term": ["blessure cutanée", "traumatisme cutané", "écrasement cutané",
+                  "traumatisme hépatique", "lésion traumatique hépatique",
+                  "blessure hépatique", "écrasement hépatique", "écrasement osseux",
+                  "écrasement osseux", "blessure osseuse", "traumatisme osseux",
+                  "test"]}
+    )
+
+
+@pytest.fixture
+def pa3_output() -> pd.DataFrame:
+    return pd.DataFrame(
+        {"id": [str(i) for i in range(1, 13)],
+         "conceptId": ["1", "1", "1", "2", "2", "2", "2", "3", "3", "3", "3", "4"],
+         "fsn": ["traumatic skin injury", "traumatic skin injury",
+                 "traumatic skin injury", "traumatic liver injury",
+                 "traumatic liver injury", "traumatic liver injury",
+                 "traumatic liver injury", "bone crushing injury", "bone crush injury",
+                 "bone crush injury", "bone crush injury", "test"],
+         "term": ["blessure cutanée", "traumatisme cutané", "écrasement cutané",
+                  "traumatisme hépatique", "lésion traumatique hépatique",
+                  "blessure hépatique", "écrasement hépatique", "écrasement osseux",
+                  "écrasement osseux", "blessure osseuse", "traumatisme osseux",
+                  "test"],
+         "pa3": [float("nan"), "1", "1", float("nan"), float("nan"), "1", "1",
+                 float("nan"), float("nan"), "1", "1", float("nan")]}
+    )
+
+
+@pytest.fixture
+def pa3_1() -> pd.DataFrame:
+    return pd.DataFrame(
+        {"id": [str(i) for i in range(1, 4)],
+         "fsn": ["pressure injury of ankle", "pressure injury of ankle", "test"],
+         "term": ["escarre de la hanche", "lésion de pression de la hanche", "test"]}
+    )
+
+
+@pytest.fixture
+def pa3_1_output() -> pd.DataFrame:
+    return pd.DataFrame(
+        {"id": [str(i) for i in range(1, 4)],
+         "fsn": ["pressure injury of ankle", "pressure injury of ankle", "test"],
+         "term": ["escarre de la hanche", "lésion de pression de la hanche", "test"],
+         "pa3.1": [float("nan"), "1", float("nan")]}
     )
 
 

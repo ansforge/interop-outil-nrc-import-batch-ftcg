@@ -361,17 +361,18 @@ def _check_bs13(cf: pd.DataFrame) -> pd.DataFrame:
 ###########################
 # Règles Clinical finding #
 ###########################
-def _check_co2(cf: pd.DataFrame) -> pd.DataFrame:
+def _check_co2(cf: pd.DataFrame, co: pd.Series) -> pd.DataFrame:
     """Identifie les descriptions ne respectant pas la règle co2.
 
     args:
         cf: Descriptions de la Common French à importer.
+        co: Filtre sur les Clinical finding de `cf`.
 
     returns:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle co2.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
+    id = cf.loc[co
                 & (cf.loc[:, "fsn"].str.contains(" finding", regex=False, case=False))
                 & (~cf.loc[:, "term"].str.contains("constatation", regex=False, case=False)), # noqa
                 "id"]
@@ -382,28 +383,97 @@ def _check_co2(cf: pd.DataFrame) -> pd.DataFrame:
     return cf
 
 
-def _check_co6(cf: pd.DataFrame) -> pd.DataFrame:
+def _check_co6(cf: pd.DataFrame, co: pd.Series) -> pd.DataFrame:
     """Identifie les descriptions ne respectant pas la règle co6-FR.
+
+    args:
+        cf: Descriptions de la Common French à importer.
+        co: Filtre sur les Clinical finding de `cf`.
+
+    returns:
+        DataFrame de la Common French avec une colonne identifiant les
+        descriptions ne respectant pas la règle co6-FR.
+    """
+    id = cf.loc[co
+                & (cf.loc[:, "fsn"].str.contains("above reference range", regex=False, case=False)) # noqa
+                & (~cf.loc[:, "term"].str.contains("supérieure? (?:à l'intervalle|aux valeurs) de référence", case=False)), # noqa
+                "id"]
+
+    id = pd.concat([id, cf.loc[co
+                               & (cf.loc[:, "fsn"].str.contains("below reference range", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("inférieure? (?:à l'intervalle|aux valeurs) de référence", case=False)), # noqa
+                               "id"]])
+
+    id = pd.concat([id, cf.loc[co
+                               & (cf.loc[:, "fsn"].str.contains("within reference range", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("dans (?:l'intervalle|les valeurs) de référence", case=False)), # noqa
+                               "id"]])
+
+    id = pd.concat([id, cf.loc[co
+                               & (cf.loc[:, "fsn"].str.contains("outside reference range", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("en dehors (?:de l'intervalle|des valeurs) de référence", case=False)), # noqa
+                               "id"]])
+    id = id.drop_duplicates()
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "co6": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
+
+
+def _check_pa3(cf: pd.DataFrame, fts: server.Fts) -> pd.DataFrame:
+    """Identifie les descriptions ne respectant pas la règle pa3.
+
+    args:
+        cf: Descriptions de la Common French à importer.
+        fts: Serveur de Terminologies FHIR contenant la version de l'édition
+            internationale dont dépend votre édition nationale non publiée
+
+    returns:
+        DataFrame de la Common French avec une colonne identifiant les
+        descriptions ne respectant pas la règle pa3.
+    """
+    skin_trauma = (cf.loc[:, "conceptId"].isin(fts.ecl("<< 417746004: 363698007 = << 39937001"))) # noqa
+    trauma = (cf.loc[:, "conceptId"].isin(fts.ecl("<< 417746004: 363698007 != << 39937001"))) # noqa
+    id = cf.loc[skin_trauma
+                & (cf.loc[:, "fsn"].str.contains("injury", regex=False, case=False))
+                & (~cf.loc[:, "fsn"].str.contains("(?:crush)", case=False)) # noqa
+                & (~cf.loc[:, "term"].str.contains("blessure", regex=False, case=False)), # noqa
+                "id"]
+
+    id = pd.concat([id, cf.loc[trauma
+                               & (cf.loc[:, "fsn"].str.contains("injury", regex=False, case=False)) # noqa
+                               & (~cf.loc[:, "fsn"].str.contains("(?:crush)", case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("(?:traumatisme|lésion traumatique)", case=False)), # noqa
+                               "id"]])
+
+    id = pd.concat([id, cf.loc[trauma
+                               & (cf.loc[:, "fsn"].str.contains("(?:crush(?:ing)? injury)", case=False)) # noqa
+                               & (~cf.loc[:, "term"].str.contains("écrasement", regex=False, case=False)), # noqa
+                               "id"]])
+    id = id.drop_duplicates()
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "pa3": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
+
+
+def _check_pa3_1(cf: pd.DataFrame) -> pd.DataFrame:
+    """Identifie les descriptions ne respectant pas la règle pa3.1.
 
     args:
         cf: Descriptions de la Common French à importer.
 
     returns:
         DataFrame de la Common French avec une colonne identifiant les
-        descriptions ne respectant pas la règle co6-FR.
+        descriptions ne respectant pas la règle pa3.1.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
-                & (cf.loc[:, "fsn"].str.contains("above reference range", regex=False, case=False)) # noqa
-                & (~cf.loc[:, "term"].str.contains("supérieure? (?:à l'intervalle|aux valeurs) de référence", case=False)), # noqa
+    id = cf.loc[(cf.loc[:, "fsn"].str.contains("pressure injury", regex=False, case=False)) # noqa
+                & (~cf.loc[:, "term"].str.contains("escarre", regex=False, case=False)), # noqa
                 "id"]
-
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
-                               & (cf.loc[:, "fsn"].str.contains("below reference range", regex=False, case=False)) # noqa
-                               & (~cf.loc[:, "term"].str.contains("inférieure? (?:à l'intervalle|aux valeurs) de référence", case=False)), # noqa
-                               "id"]])
-    id = id.drop_duplicates()
     if not id.empty:
-        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "co6": ["1"] * len(id)}),
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "pa3.1": ["1"] * len(id)}),
                       how="left", on="id")
 
     return cf
@@ -419,18 +489,15 @@ def _check_pa4(cf: pd.DataFrame) -> pd.DataFrame:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle pa4.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
-                & (cf.loc[:, "fsn"].str.contains("epilepsy", regex=False, case=False))
+    id = cf.loc[(cf.loc[:, "fsn"].str.contains("epilepsy", regex=False, case=False))
                 & (~cf.loc[:, "term"].str.contains("épilepsie", regex=False, case=False)), # noqa
                 "id"]
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
-                               & (cf.loc[:, "fsn"].str.contains("seizure", regex=False, case=False)) # noqa
+    id = pd.concat([id, cf.loc[(cf.loc[:, "fsn"].str.contains("seizure", regex=False, case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("(?:crise|convulsion)", case=False)), # noqa
                                "id"]])
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
-                               & (cf.loc[:, "fsn"].str.contains("convulsion", regex=False, case=False)) # noqa
+    id = pd.concat([id, cf.loc[(cf.loc[:, "fsn"].str.contains("convulsion", regex=False, case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("convulsion", regex=False, case=False)), # noqa
                                "id"]])
     id = id.drop_duplicates()
@@ -451,8 +518,7 @@ def _check_pa6(cf: pd.DataFrame) -> pd.DataFrame:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle pa6.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
-                & (cf.loc[:, "fsn"].str.contains("impairment", regex=False, case=False))
+    id = cf.loc[(cf.loc[:, "fsn"].str.contains("impairment", regex=False, case=False))
                 & (~cf.loc[:, "term"].str.contains("atteinte", regex=False, case=False)), # noqa
                 "id"]
     if not id.empty:
@@ -472,8 +538,7 @@ def _check_pa7(cf: pd.DataFrame) -> pd.DataFrame:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle pa7.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
-                & (cf.loc[:, "fsn"].str.contains("primary", regex=False, case=False))
+    id = cf.loc[(cf.loc[:, "fsn"].str.contains("primary", regex=False, case=False))
                 & (~cf.loc[:, "term"].str.contains("(?:primitif|primaire)", case=False)), # noqa
                 "id"]
     if not id.empty:
@@ -493,18 +558,15 @@ def _check_pa8(cf: pd.DataFrame) -> pd.DataFrame:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle pa8.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
-                & (cf.loc[:, "fsn"].str.contains("chilblain", regex=False, case=False))
+    id = cf.loc[(cf.loc[:, "fsn"].str.contains("chilblain", regex=False, case=False))
                 & (~cf.loc[:, "term"].str.contains("engelure", regex=False, case=False)), # noqa
                 "id"]
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
-                               & (cf.loc[:, "fsn"].str.contains("(?<!superficial) frostbite", case=False)) # noqa
+    id = pd.concat([id, cf.loc[(cf.loc[:, "fsn"].str.contains("(?<!superficial) frostbite", case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("(?:^| )gelure", case=False)), # noqa
                                "id"]])
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
-                               & (cf.loc[:, "fsn"].str.contains("superficial frostbite", regex=False, case=False)) # noqa
+    id = pd.concat([id, cf.loc[(cf.loc[:, "fsn"].str.contains("superficial frostbite", regex=False, case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("(?:^| )gelure superficielle", case=False)), # noqa
                                "id"]])
     id = id.drop_duplicates()
@@ -525,18 +587,15 @@ def _check_pa9(cf: pd.DataFrame) -> pd.DataFrame:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle pa9.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
-                & (cf.loc[:, "fsn"].str.contains("carbuncle", regex=False, case=False))
+    id = cf.loc[(cf.loc[:, "fsn"].str.contains("carbuncle", regex=False, case=False))
                 & (~cf.loc[:, "term"].str.contains("anthrax", regex=False, case=False)),
                 "id"]
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
-                               & (cf.loc[:, "fsn"].str.contains("(?:furuncle|boil)", case=False)) # noqa
+    id = pd.concat([id, cf.loc[(cf.loc[:, "fsn"].str.contains("(?:furuncle|boil)", case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("(?:furoncle|folliculite nécrotique|clou)", case=False)), # noqa
                                "id"]])
 
-    id = pd.concat([id, cf.loc[(cf.loc[:, "semtag"] == "clinical finding")
-                               & (cf.loc[:, "fsn"].str.contains("anthrax", regex=False, case=False)) # noqa
+    id = pd.concat([id, cf.loc[(cf.loc[:, "fsn"].str.contains("anthrax", regex=False, case=False)) # noqa
                                & (~cf.loc[:, "term"].str.contains("maladie du charbon", regex=False, case=False)), # noqa
                                "id"]])
     id = id.drop_duplicates()
@@ -1051,7 +1110,7 @@ def run_quality_control(cf: pd.DataFrame, fts: server.Fts) -> pd.DataFrame:
     cf = _check_ar6(cf)
 
     # Contrôles des règles de Body Structure
-    bs = (cf.loc[:, "conceptId"].isin(fts.get_descendants("123037004")))
+    bs = (cf.loc[:, "conceptId"].isin(fts.ecl("<< 123037004")))
     if not cf.loc[cf.loc[:, "semtag"] == "body structure"].empty:
         cf = _check_bs2(cf)
         cf = _check_bs3(cf, bs, pt, syn)
@@ -1066,9 +1125,12 @@ def run_quality_control(cf: pd.DataFrame, fts: server.Fts) -> pd.DataFrame:
         cf = _check_bs13(cf)
 
     # Contrôles des règles de Clinical finding
+    co = (cf.loc[:, "conceptId"].isin(fts.ecl("<< 123037004 MINUS << 64572001")))
     if not cf.loc[cf.loc[:, "semtag"] == "clinical finding"].empty:
-        cf = _check_co2(cf)
-        cf = _check_co6(cf)
+        cf = _check_co2(cf, co)
+        cf = _check_co6(cf, co)
+        cf = _check_pa3(cf)
+        cf = _check_pa3_1(cf)
         cf = _check_pa4(cf)
         cf = _check_pa6(cf)
         cf = _check_pa7(cf)
