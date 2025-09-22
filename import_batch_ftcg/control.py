@@ -43,17 +43,18 @@ def _check_ar2(cf: pd.DataFrame) -> pd.DataFrame:
     return cf
 
 
-def _check_ar6(cf: pd.DataFrame) -> pd.DataFrame:
+def _check_ar6(cf: pd.DataFrame, sb: pd.Series) -> pd.DataFrame:
     """Identifie les descriptions ne respectant pas la règle ar6.
 
     args:
         cf: Descriptions de la Common French à importer.
+        sb: Filtre sur les Physical object de `cf`.
 
     returns:
         DataFrame de la Common French avec une colonne identifiant les
         descriptions ne respectant pas la règle ar6.
     """
-    id = cf.loc[(cf.loc[:, "semtag"] == "physical object")
+    id = cf.loc[sb
                 & (cf.loc[:, "term"].str.contains(" (?:les?|la|une?|d'une?) ", case=False)), # noqa
                 "id"]
     if not id.empty:
@@ -1019,6 +1020,31 @@ def _check_pr14(cf: pd.DataFrame, pt: pd.Series, syn: pd.Series) -> pd.DataFrame
     return cf
 
 
+##########################################
+# Règles Situation with explicit context #
+##########################################
+def _check_hs1(cf: pd.DataFrame, hs: pd.Series) -> pd.DataFrame:
+    """Identifie les descriptions ne respectant pas la règle hs1.
+
+    args:
+        cf: Descriptions de la Common French à importer.
+        hs: Filtre sur les Situation with explicit context de `cf`.
+
+    returns:
+        DataFrame de la Common French avec une colonne identifiant les
+        descriptions ne respectant pas la règle hs1.
+    """
+    id = cf.loc[hs
+                & (cf.loc[:, "fsn"].str.contains("history", regex=False, case=False))
+                & (~cf.loc[:, "term"].str.contains("antécédent(?!s)", case=False)), # noqa
+                "id"]
+    if not id.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": id, "hs1": ["1"] * len(id)}),
+                      how="left", on="id")
+
+    return cf
+
+
 ###################
 # Règles Specimen #
 ###################
@@ -1095,12 +1121,13 @@ def run_quality_control(cf: pd.DataFrame, fts: server.Fts) -> pd.DataFrame:
     cf = cf.reset_index()
 
     # Contrôles des règles sur les articles
+    sb = (cf.loc[:, "conceptId"].isin(fts.ecl("<< 260787004")))
     cf = _check_ar2(cf)
-    cf = _check_ar6(cf)
+    cf = _check_ar6(cf, sb)
 
     # Contrôles des règles de Body Structure
     bs = (cf.loc[:, "conceptId"].isin(fts.ecl("<< 123037004")))
-    if not cf.loc[cf.loc[:, "semtag"] == "body structure"].empty:
+    if not cf.loc[bs].empty:
         cf = _check_bs2(cf)
         cf = _check_bs3(cf, bs, pt, syn)
         cf = _check_bs5(cf, bs)
@@ -1115,9 +1142,11 @@ def run_quality_control(cf: pd.DataFrame, fts: server.Fts) -> pd.DataFrame:
 
     # Contrôles des règles de Clinical finding
     co = (cf.loc[:, "conceptId"].isin(fts.ecl("<< 123037004 MINUS << 64572001")))
-    if not cf.loc[cf.loc[:, "semtag"] == "clinical finding"].empty:
+    pa = (cf.loc[:, "conceptId"].isin(fts.ecl("<< 64572001")))
+    if not cf.loc[co].empty:
         cf = _check_co2(cf, co)
         cf = _check_co6(cf, co)
+    if not cf.loc[pa].empty:
         cf = _check_pa3(cf)
         cf = _check_pa3_1(cf)
         cf = _check_pa4(cf)
@@ -1128,20 +1157,21 @@ def run_quality_control(cf: pd.DataFrame, fts: server.Fts) -> pd.DataFrame:
 
     # Contrôles des règles de Pharmaceutical / biological product
     me = (cf.loc[:, "conceptId"].isin(fts.ecl("<< 373873005")))
-    if not cf.loc[cf.loc[:, "semtag"] == "pharmaceutical"].empty:
+    if not cf.loc[me].empty:
         cf = _check_me1(cf, me)
         cf = _check_me2(cf, me)
         cf = _check_me3(cf, me)
         cf = _check_me4(cf, me)
 
     # Contrôles des règles de Physical object
-    if not cf.loc[cf.loc[:, "semtag"] == "physical object"].empty:
+    if not cf.loc[sb].empty:
         cf = _check_sb1(cf)
         cf = _check_sb2(cf)
         cf = _check_sb3(cf, pt, syn)
 
     # Contrôles des règles de Procedure
-    if not cf.loc[cf.loc[:, "semtag"] == "procedure"].empty:
+    pr = (cf.loc[:, "conceptId"].isin(fts.ecl("<< 71388002")))
+    if not cf.loc[pr].empty:
         cf = _check_pr2(cf)
         cf = _check_pr3(cf)
         cf = _check_pr4(cf)
@@ -1151,8 +1181,14 @@ def run_quality_control(cf: pd.DataFrame, fts: server.Fts) -> pd.DataFrame:
         cf = _check_pr13(cf)
         cf = _check_pr14(cf)
 
+    # Contrôles des règles de Situation with explicit context
+    hs = (cf.loc[:, "conceptId"].isin(fts.ecl("<< 243796009")))
+    if not cf.loc[hs].empty:
+        cf = _check_hs1(cf, hs)
+
     # Contrôles des règles de Specimen
-    if not cf.loc[cf.loc[:, "semtag"] == "specimen"].empty:
+    ec = (cf.loc[:, "conceptId"].isin(fts.ecl("<< 123038009")))
+    if not cf.loc[ec].empty:
         cf = _check_ec2(cf)
         cf = _check_ec4(cf)
 

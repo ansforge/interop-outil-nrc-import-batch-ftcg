@@ -155,7 +155,7 @@ def test_no_bs8(null: pd.DataFrame, null_pt: pd.Series, null_syn: pd.Series) -> 
         null_pt: Filtre de test sur les termes préférés de `null`
         null_pt: Filtre de test sur les synonymes acceptables de `null`
     """
-    pd.testing.assert_frame_equal(control._check_bs10(null, null_pt, null_syn), null)
+    pd.testing.assert_frame_equal(control._check_bs8(null, null_pt, null_syn), null)
 
 
 def test_check_bs8(bs8: pd.DataFrame, bs8_output: pd.DataFrame) -> None:

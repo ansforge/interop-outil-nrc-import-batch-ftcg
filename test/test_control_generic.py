@@ -41,21 +41,26 @@ def test_check_ar2(ar2: pd.DataFrame, ar2_output: pd.DataFrame) -> None:
 ################
 # Tests de ar6 #
 ################
-def test_no_ar6(null: pd.DataFrame) -> None:
+def test_no_ar6(null: pd.DataFrame, semtag: pd.Series) -> None:
     """Vérifie que la fonction control._check_ar6 renvoit le DataFrame original si
     aucune ligne ne correspond aux critères
 
     args:
-        null: DataFrame de test ne correspondant pas aux critères d'ar6
+        null: DataFrame de test ne correspondant pas aux critères de ar6
+        semtag: Filtre de test sur les Body structure de `null`
     """
-    pd.testing.assert_frame_equal(control._check_ar6(null), null)
+    bs = semtag(len(null))
+    pd.testing.assert_frame_equal(control._check_ar6(null, bs), null)
 
 
-def test_check_ar6(ar6: pd.DataFrame, ar6_output: pd.DataFrame) -> None:
+def test_check_ar6(ar6: pd.DataFrame, ar6_output: pd.DataFrame,
+                   semtag: pd.Series) -> None:
     """Vérifie le bon fonctionnement de control._check_ar6.
 
     args:
         ar6: DataFrame de test à corriger
         ar6_output: DataFrame corrigé attendu
+        semtag: Filtre de test sur les Body structure de `ar6`
     """
-    pd.testing.assert_frame_equal(control._check_ar6(ar6), ar6_output)
+    sb = semtag(len(ar6))
+    pd.testing.assert_frame_equal(control._check_ar6(ar6, sb), ar6_output)

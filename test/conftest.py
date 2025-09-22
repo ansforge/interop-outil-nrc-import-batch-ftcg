@@ -1018,6 +1018,30 @@ def pr14_output() -> pd.DataFrame:
     )
 
 
+########################################################
+# Fixtures pour règles Situation with explicit context #
+########################################################
+@pytest.fixture
+def hs1() -> pd.DataFrame:
+    return pd.DataFrame(
+        {"id": [str(i) for i in range(1, 4)],
+         "fsn": ["asthma familial history", "asthma familial history", "test"],
+         "term": ["antécédent familial d'asthme", "antécédents familial d'asthme",
+                  "test"]}
+    )
+
+
+@pytest.fixture
+def hs1_output() -> pd.DataFrame:
+    return pd.DataFrame(
+        {"id": [str(i) for i in range(1, 4)],
+         "fsn": ["asthma familial history", "asthma familial history", "test"],
+         "term": ["antécédent familial d'asthme", "antécédents familial d'asthme",
+                  "test"],
+         "hs1": [float("nan"), "1", float("nan")]}
+    )
+
+
 #################################
 # Fixtures pour règles Specimen #
 #################################
