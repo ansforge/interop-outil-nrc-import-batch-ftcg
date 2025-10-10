@@ -1142,12 +1142,12 @@ def run_quality_control(cf: pd.DataFrame, fts: server.Fts) -> pd.DataFrame:
 
     # Contrôles des règles de Clinical finding
     co = (cf.loc[:, "conceptId"].isin(fts.ecl("<< 123037004 MINUS << 64572001")))
-    pa = (cf.loc[:, "conceptId"].isin(fts.ecl("<< 64572001")))
+    pa = (cf.loc[:, "fsn"].str.endswith(" (disorder)"))
     if not cf.loc[co].empty:
         cf = _check_co2(cf, co)
         cf = _check_co6(cf, co)
     if not cf.loc[pa].empty:
-        cf = _check_pa3(cf)
+        cf = _check_pa3(cf, fts)
         cf = _check_pa3_1(cf)
         cf = _check_pa4(cf)
         cf = _check_pa6(cf)
@@ -1170,16 +1170,17 @@ def run_quality_control(cf: pd.DataFrame, fts: server.Fts) -> pd.DataFrame:
         cf = _check_sb3(cf, pt, syn)
 
     # Contrôles des règles de Procedure
-    pr = (cf.loc[:, "conceptId"].isin(fts.ecl("<< 71388002")))
+    pr = ((cf.loc[:, "fsn"].str.endswith(" (procedure)"))
+          | (cf.loc[:, "fsn"].str.endswith(" (regime/therapy)")))
     if not cf.loc[pr].empty:
-        cf = _check_pr2(cf)
+        cf = _check_pr2(cf, pt, syn)
         cf = _check_pr3(cf)
-        cf = _check_pr4(cf)
-        cf = _check_pr9(cf)
+        cf = _check_pr4(cf, pt, syn)
+        cf = _check_pr9(cf, pt, syn)
         cf = _check_pr10(cf)
-        cf = _check_pr12(cf)
-        cf = _check_pr13(cf)
-        cf = _check_pr14(cf)
+        cf = _check_pr12(cf, pt, syn)
+        cf = _check_pr13(cf, pt, syn)
+        cf = _check_pr14(cf, pt, syn)
 
     # Contrôles des règles de Situation with explicit context
     hs = (cf.loc[:, "conceptId"].isin(fts.ecl("<< 243796009")))
