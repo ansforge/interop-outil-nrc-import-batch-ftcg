@@ -115,7 +115,7 @@ def write_batch_file(cf: pd.DataFrame, path: str) -> None:
         path: Emplacement et nom du fichier d'import en batch.
     """
     # Supprimer les colonnes inutiles
-    cf = cf.drop(["id", "fsn", "semtag"], axis=1)
+    cf = cf.drop(["id", "fsn"], axis=1)
     # Ajouter les colonnes nécessaire au respect du fichier d'import en batch
     cf.insert(1, "termRef", [""] * len(cf))
     cf.insert(2, "preferredTerm", [""] * len(cf))
