@@ -41,11 +41,18 @@ def read_common_french(path: str, date: str, fts: server.Fts) -> pd.DataFrame:
                                 "caseSignificanceId"],
                        converters={"caseSignificanceId": lambda x: CASE.get(x)})
 
+    # Extraire les FSN
+    active = (desc.loc[:, "active"] == "1")
+    fsn = desc.loc[(desc.loc[:, "typeId"] == "900000000000003001") & active,
+                   ["conceptId", "term"]]
+    fsn.columns = ["conceptId", "fsn"]
+
     # Conserver seulement les synonymes actifs
-    desc = desc.loc[(desc.loc[:, "typeId"] == "900000000000013009")
-                    & (desc.loc[:, "active"] == "1")]
+    desc = desc.loc[(desc.loc[:, "typeId"] == "900000000000013009") & active]
     # Supprimer les colonnes 'active' et 'typeId' qui ne sont plus nécessaires
     desc = desc.drop(["active", "typeId"], axis=1)
+    # Ajouter la colonne des FSN
+    desc = pd.merge(desc, fsn, how="left", on="conceptId")
 
     # Lecture du refset de langue de la Common French
     p = op.join(path, f"Refset/Language/der2_cRefset_LanguageSnapshot_CommonFrench-Extension_{date}.txt") # noqa
