@@ -2,9 +2,7 @@
 
 import argparse
 
-from import_batch_ftcg import control
-from import_batch_ftcg import io
-from import_batch_ftcg import server
+from import_batch_ftcg import control, io, server
 
 if __name__ == "__main__":
     cli = argparse.ArgumentParser()
@@ -39,7 +37,7 @@ if __name__ == "__main__":
 
     # Vérification des règles pour relecture
     print("\nVérification du respect des règles éditoriales...", end="\r")
-    cf = control.run_quality_control(cf)
+    cf = control.run_quality_control(cf, fts)
     print("Vérification du respect des règles éditoriales - OK")
 
     # Ecriture du fichier d'import
