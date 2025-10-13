@@ -38,7 +38,7 @@ def _check_ar2(cf: pd.DataFrame) -> pd.DataFrame:
     sctid = cf.loc[cf.loc[:, "term"].str.contains("^(?:les?|la|une?) ", case=False), "id"] # noqa
     if not sctid.empty:
         cf = pd.merge(cf, pd.DataFrame(data={"id": sctid, "ar2": ["1"] * len(sctid)}),
-                      how="left", on="id", valide="1:1")
+                      how="left", on="id", validate="1:1")
 
     return cf
 
@@ -59,7 +59,7 @@ def _check_ar6(cf: pd.DataFrame, sb: pd.Series) -> pd.DataFrame:
                    "id"]
     if not sctid.empty:
         cf = pd.merge(cf, pd.DataFrame(data={"id": sctid, "ar6": ["1"] * len(sctid)}),
-                      how="left", on="id", valide="1:1")
+                      how="left", on="id", validate="1:1")
 
     return cf
 
@@ -82,7 +82,7 @@ def _check_bs2(cf: pd.DataFrame) -> pd.DataFrame:
                    "id"]
     if not sctid.empty:
         cf = pd.merge(cf, pd.DataFrame(data={"id": sctid, "bs2": ["1"] * len(sctid)}),
-                      how="left", on="id", valide="1:1")
+                      how="left", on="id", validate="1:1")
 
     return cf
 
@@ -123,7 +123,7 @@ def _check_bs3(cf: pd.DataFrame, bs: pd.Series, pt: pd.Series,
     sctid = id.drop_duplicates()
     if not sctid.empty:
         cf = pd.merge(cf, pd.DataFrame(data={"id": sctid, "bs3": ["1"] * len(sctid)}),
-                      how="left", on="id", valide="1:1")
+                      how="left", on="id", validate="1:1")
 
     return cf
 
@@ -145,7 +145,7 @@ def _check_bs5(cf: pd.DataFrame, bs: pd.Series) -> pd.DataFrame:
                    "id"]
     if not sctid.empty:
         cf = pd.merge(cf, pd.DataFrame(data={"id": sctid, "bs5": ["1"] * len(sctid)}),
-                      how="left", on="id", valide="1:1")
+                      how="left", on="id", validate="1:1")
 
     return cf
 
@@ -173,7 +173,7 @@ def _check_bs6(cf: pd.DataFrame, bs: pd.Series) -> pd.DataFrame:
     sctid = id.drop_duplicates()
     if not sctid.empty:
         cf = pd.merge(cf, pd.DataFrame(data={"id": sctid, "bs6": ["1"] * len(sctid)}),
-                      how="left", on="id", valide="1:1")
+                      how="left", on="id", validate="1:1")
 
     return cf
 
