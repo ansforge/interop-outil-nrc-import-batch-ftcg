@@ -52,7 +52,7 @@ def read_common_french(path: str, date: str, fts: server.Fts) -> pd.DataFrame:
     # Supprimer les colonnes 'active' et 'typeId' qui ne sont plus nécessaires
     desc = desc.drop(["active", "typeId"], axis=1)
     # Ajouter la colonne des FSN
-    desc = pd.merge(desc, fsn, how="left", on="conceptId")
+    desc = pd.merge(desc, fsn, how="left", on="conceptId", validate="1:1")
 
     # Lecture du refset de langue de la Common French
     p = op.join(path, f"Refset/Language/der2_cRefset_LanguageSnapshot_CommonFrench-Extension_{date}.txt") # noqa
@@ -63,7 +63,7 @@ def read_common_french(path: str, date: str, fts: server.Fts) -> pd.DataFrame:
 
     # Ajouter l'acceptabilité au DataFrame des descriptions
     desc = pd.merge(desc, lang, how="left", left_on="id",
-                    right_on="referencedComponentId")
+                    right_on="referencedComponentId", validate="1:1")
     # Supprimer la colonne 'referencedComponentId' qui n'est plus nécessaire
     desc = desc.drop(["referencedComponentId"], axis=1)
 

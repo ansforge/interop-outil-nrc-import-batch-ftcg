@@ -106,21 +106,21 @@ def _check_bs3(cf: pd.DataFrame, bs: pd.Series, pt: pd.Series,
                    & (cf.loc[:, "term"].str.contains("structure", regex=False, case=False)), # noqa
                    "id"]
 
-    sctid = pd.concat([id, cf.loc[bs & syn
-                                  & (cf.loc[:, "fsn"].str.contains("structure", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("structure", regex=False, case=False)), # noqa
-                                  "id"]])
+    sctid = pd.concat([sctid, cf.loc[bs & syn
+                                     & (cf.loc[:, "fsn"].str.contains("structure", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("structure", regex=False, case=False)), # noqa
+                                     "id"]])
 
-    sctid = pd.concat([id, cf.loc[bs
-                                  & (cf.loc[:, "fsn"].str.contains("entire", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("(?:entiers?|entières?)", case=False)), # noqa
-                                  "id"]])
+    sctid = pd.concat([sctid, cf.loc[bs
+                                     & (cf.loc[:, "fsn"].str.contains("entire", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("(?:entiers?|entières?)", case=False)), # noqa
+                                     "id"]])
 
-    sctid = pd.concat([id, cf.loc[bs
-                                  & (cf.loc[:, "fsn"].str.contains("part", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("partie", regex=False, case=False)), # noqa
-                                  "id"]])
-    sctid = id.drop_duplicates()
+    sctid = pd.concat([sctid, cf.loc[bs
+                                     & (cf.loc[:, "fsn"].str.contains("part", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("partie", regex=False, case=False)), # noqa
+                                     "id"]])
+    sctid = sctid.drop_duplicates()
     if not sctid.empty:
         cf = pd.merge(cf, pd.DataFrame(data={"id": sctid, "bs3": ["1"] * len(sctid)}),
                       how="left", on="id", validate="1:1")
@@ -166,11 +166,11 @@ def _check_bs6(cf: pd.DataFrame, bs: pd.Series) -> pd.DataFrame:
                    & (~cf.loc[:, "term"].str.contains("zone", regex=False, case=False)),
                    "id"]
 
-    sctid = pd.concat([id, cf.loc[bs
-                                  & (cf.loc[:, "fsn"].str.contains("area", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("(?:zone|surface|aire)", case=False)), # noqa
-                                  "id"]])
-    sctid = id.drop_duplicates()
+    sctid = pd.concat([sctid, cf.loc[bs
+                                     & (cf.loc[:, "fsn"].str.contains("area", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("(?:zone|surface|aire)", case=False)), # noqa
+                                     "id"]])
+    sctid = sctid.drop_duplicates()
     if not sctid.empty:
         cf = pd.merge(cf, pd.DataFrame(data={"id": sctid, "bs6": ["1"] * len(sctid)}),
                       how="left", on="id", validate="1:1")
@@ -217,11 +217,11 @@ def _check_bs8(cf: pd.DataFrame, pt: pd.Series, syn: pd.Series) -> pd.DataFrame:
                    & (~cf.loc[:, "term"].str.contains("apex", regex=False, case=False)),
                    "id"]
 
-    sctid = pd.concat([id, cf.loc[syn
-                                  & (cf.loc[:, "fsn"].str.contains("apex", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("(?:pointe|bout|cime)", case=False)), # noqa
-                                  "id"]])
-    sctid = id.drop_duplicates()
+    sctid = pd.concat([sctid, cf.loc[syn
+                                     & (cf.loc[:, "fsn"].str.contains("apex", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("(?:pointe|bout|cime)", case=False)), # noqa
+                                     "id"]])
+    sctid = sctid.drop_duplicates()
     if not sctid.empty:
         cf = pd.merge(cf, pd.DataFrame(data={"id": sctid, "bs8": ["1"] * len(sctid)}),
                       how="left", on="id", validate="1:1")
@@ -243,10 +243,10 @@ def _check_bs9(cf: pd.DataFrame) -> pd.DataFrame:
                    & (~cf.loc[:, "term"].str.contains("orteil excepté l'hallux", regex=False, case=False)), # noqa
                    "id"]
 
-    sctid = pd.concat([id, cf.loc[(cf.loc[:, "fsn"].str.contains("lesser toe", regex=False, case=False)) # noqa
-                                  & (cf.loc[:, "term"].str.contains("petit orteil", case=False)), # noqa
-                                  "id"]])
-    sctid = id.drop_duplicates()
+    sctid = pd.concat([sctid, cf.loc[(cf.loc[:, "fsn"].str.contains("lesser toe", regex=False, case=False)) # noqa
+                                     & (cf.loc[:, "term"].str.contains("petit orteil", case=False)), # noqa
+                                     "id"]])
+    sctid = sctid.drop_duplicates()
     if not sctid.empty:
         cf = pd.merge(cf, pd.DataFrame(data={"id": sctid, "bs9": ["1"] * len(sctid)}),
                       how="left", on="id", validate="1:1")
@@ -270,15 +270,15 @@ def _check_bs10(cf: pd.DataFrame, pt: pd.Series, syn: pd.Series) -> pd.DataFrame
                    & (~cf.loc[:, "term"].str.contains("membre inférieur", regex=False, case=False)), # noqa
                    "id"]
 
-    sctid = pd.concat([id, cf.loc[pt
-                                  & (cf.loc[:, "fsn"].str.contains("lower leg", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("partie inférieure de la jambe", case=False)), # noqa
-                                  "id"]])
+    sctid = pd.concat([sctid, cf.loc[pt
+                                     & (cf.loc[:, "fsn"].str.contains("lower leg", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("partie inférieure de la jambe", case=False)), # noqa
+                                     "id"]])
 
-    sctid = pd.concat([id, cf.loc[syn
-                                  & (cf.loc[:, "fsn"].str.contains("lower leg", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("(?:partie basse de la jambe|jambe, du genou à la cheville)", case=False)), # noqa
-                                  "id"]])
+    sctid = pd.concat([sctid, cf.loc[syn
+                                     & (cf.loc[:, "fsn"].str.contains("lower leg", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("(?:partie basse de la jambe|jambe, du genou à la cheville)", case=False)), # noqa
+                                     "id"]])
     if not sctid.empty:
         cf = pd.merge(cf, pd.DataFrame(data={"id": sctid, "bs10": ["1"] * len(sctid)}),
                       how="left", on="id", validate="1:1")
@@ -302,16 +302,16 @@ def _check_bs11(cf: pd.DataFrame, pt: pd.Series, syn: pd.Series) -> pd.DataFrame
                    & (~cf.loc[:, "term"].str.contains("membre supérieur", regex=False, case=False)), # noqa
                    "id"]
 
-    sctid = pd.concat([id, cf.loc[pt
-                                  & (cf.loc[:, "fsn"].str.contains("upper arm", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("partie supérieure du bras", regex=False, case=False)), # noqa
-                                  "id"]])
+    sctid = pd.concat([sctid, cf.loc[pt
+                                     & (cf.loc[:, "fsn"].str.contains("upper arm", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("partie supérieure du bras", regex=False, case=False)), # noqa
+                                     "id"]])
 
-    sctid = pd.concat([id, cf.loc[syn
-                                  & (cf.loc[:, "fsn"].str.contains("upper arm", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("bras, de l'épaule au coude", regex=False, case=False)), # noqa
-                                  "id"]])
-    sctid = id.drop_duplicates()
+    sctid = pd.concat([sctid, cf.loc[syn
+                                     & (cf.loc[:, "fsn"].str.contains("upper arm", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("bras, de l'épaule au coude", regex=False, case=False)), # noqa
+                                     "id"]])
+    sctid = sctid.drop_duplicates()
     if not sctid.empty:
         cf = pd.merge(cf, pd.DataFrame(data={"id": sctid, "bs11": ["1"] * len(sctid)}),
                       how="left", on="id", validate="1:1")
@@ -400,21 +400,21 @@ def _check_co6(cf: pd.DataFrame, co: pd.Series) -> pd.DataFrame:
                    & (~cf.loc[:, "term"].str.contains("supérieure? (?:à l'intervalle|aux valeurs) de référence", case=False)), # noqa
                    "id"]
 
-    sctid = pd.concat([id, cf.loc[co
-                                  & (cf.loc[:, "fsn"].str.contains("below reference range", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("inférieure? (?:à l'intervalle|aux valeurs) de référence", case=False)), # noqa
-                                  "id"]])
+    sctid = pd.concat([sctid, cf.loc[co
+                                     & (cf.loc[:, "fsn"].str.contains("below reference range", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("inférieure? (?:à l'intervalle|aux valeurs) de référence", case=False)), # noqa
+                                     "id"]])
 
-    sctid = pd.concat([id, cf.loc[co
-                                  & (cf.loc[:, "fsn"].str.contains("within reference range", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("dans (?:l'intervalle|les valeurs) de référence", case=False)), # noqa
-                                  "id"]])
+    sctid = pd.concat([sctid, cf.loc[co
+                                     & (cf.loc[:, "fsn"].str.contains("within reference range", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("dans (?:l'intervalle|les valeurs) de référence", case=False)), # noqa
+                                     "id"]])
 
-    sctid = pd.concat([id, cf.loc[co
-                                  & (cf.loc[:, "fsn"].str.contains("outside reference range", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("en dehors (?:de l'intervalle|des valeurs) de référence", case=False)), # noqa
-                                  "id"]])
-    sctid = id.drop_duplicates()
+    sctid = pd.concat([sctid, cf.loc[co
+                                     & (cf.loc[:, "fsn"].str.contains("outside reference range", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("en dehors (?:de l'intervalle|des valeurs) de référence", case=False)), # noqa
+                                     "id"]])
+    sctid = sctid.drop_duplicates()
     if not sctid.empty:
         cf = pd.merge(cf, pd.DataFrame(data={"id": sctid, "co6": ["1"] * len(sctid)}),
                       how="left", on="id", validate="1:1")
@@ -442,17 +442,17 @@ def _check_pa3(cf: pd.DataFrame, fts: server.Fts) -> pd.DataFrame:
                    & (~cf.loc[:, "term"].str.contains("blessure", regex=False, case=False)), # noqa
                    "id"]
 
-    sctid = pd.concat([id, cf.loc[trauma
-                                  & (cf.loc[:, "fsn"].str.contains("injury", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "fsn"].str.contains("(?:crush)", case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("(?:traumatisme|lésion traumatique)", case=False)), # noqa
-                                  "id"]])
+    sctid = pd.concat([sctid, cf.loc[trauma
+                                     & (cf.loc[:, "fsn"].str.contains("injury", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "fsn"].str.contains("(?:crush)", case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("(?:traumatisme|lésion traumatique)", case=False)), # noqa
+                                     "id"]])
 
-    sctid = pd.concat([id, cf.loc[trauma
-                                  & (cf.loc[:, "fsn"].str.contains("(?:crush(?:ing)? injury)", case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("écrasement", regex=False, case=False)), # noqa
-                                  "id"]])
-    sctid = id.drop_duplicates()
+    sctid = pd.concat([sctid, cf.loc[trauma
+                                     & (cf.loc[:, "fsn"].str.contains("(?:crush(?:ing)? injury)", case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("écrasement", regex=False, case=False)), # noqa
+                                     "id"]])
+    sctid = sctid.drop_duplicates()
     if not sctid.empty:
         cf = pd.merge(cf, pd.DataFrame(data={"id": sctid, "pa3": ["1"] * len(sctid)}),
                       how="left", on="id", validate="1:1")
@@ -494,14 +494,14 @@ def _check_pa4(cf: pd.DataFrame) -> pd.DataFrame:
                    & (~cf.loc[:, "term"].str.contains("épilepsie", regex=False, case=False)), # noqa
                    "id"]
 
-    sctid = pd.concat([id, cf.loc[(cf.loc[:, "fsn"].str.contains("seizure", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("(?:crise|convulsion)", case=False)), # noqa
-                                  "id"]])
+    sctid = pd.concat([sctid, cf.loc[(cf.loc[:, "fsn"].str.contains("seizure", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("(?:crise|convulsion)", case=False)), # noqa
+                                     "id"]])
 
-    sctid = pd.concat([id, cf.loc[(cf.loc[:, "fsn"].str.contains("convulsion", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("convulsion", regex=False, case=False)), # noqa
-                                  "id"]])
-    sctid = id.drop_duplicates()
+    sctid = pd.concat([sctid, cf.loc[(cf.loc[:, "fsn"].str.contains("convulsion", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("convulsion", regex=False, case=False)), # noqa
+                                     "id"]])
+    sctid = sctid.drop_duplicates()
     if not sctid.empty:
         cf = pd.merge(cf, pd.DataFrame(data={"id": sctid, "pa4": ["1"] * len(sctid)}),
                       how="left", on="id", validate="1:1")
@@ -563,14 +563,14 @@ def _check_pa8(cf: pd.DataFrame) -> pd.DataFrame:
                    & (~cf.loc[:, "term"].str.contains("engelure", regex=False, case=False)), # noqa
                    "id"]
 
-    sctid = pd.concat([id, cf.loc[(cf.loc[:, "fsn"].str.contains("(?<!superficial) frostbite", case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("(?:^| )gelure", case=False)), # noqa
-                                  "id"]])
+    sctid = pd.concat([sctid, cf.loc[(cf.loc[:, "fsn"].str.contains("(?<!superficial) frostbite", case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("(?:^| )gelure", case=False)), # noqa
+                                     "id"]])
 
-    sctid = pd.concat([id, cf.loc[(cf.loc[:, "fsn"].str.contains("superficial frostbite", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("(?:^| )gelure superficielle", case=False)), # noqa
-                                  "id"]])
-    sctid = id.drop_duplicates()
+    sctid = pd.concat([sctid, cf.loc[(cf.loc[:, "fsn"].str.contains("superficial frostbite", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("(?:^| )gelure superficielle", case=False)), # noqa
+                                     "id"]])
+    sctid = sctid.drop_duplicates()
     if not sctid.empty:
         cf = pd.merge(cf, pd.DataFrame(data={"id": sctid, "pa8": ["1"] * len(sctid)}),
                       how="left", on="id", validate="1:1")
@@ -592,14 +592,14 @@ def _check_pa9(cf: pd.DataFrame) -> pd.DataFrame:
                    & (~cf.loc[:, "term"].str.contains("anthrax", regex=False, case=False)), # noqa
                    "id"]
 
-    sctid = pd.concat([id, cf.loc[(cf.loc[:, "fsn"].str.contains("(?:furuncle|boil)", case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("(?:furoncle|folliculite nécrotique|clou)", case=False)), # noqa
-                                  "id"]])
+    sctid = pd.concat([sctid, cf.loc[(cf.loc[:, "fsn"].str.contains("(?:furuncle|boil)", case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("(?:furoncle|folliculite nécrotique|clou)", case=False)), # noqa
+                                     "id"]])
 
-    sctid = pd.concat([id, cf.loc[(cf.loc[:, "fsn"].str.contains("anthrax", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("maladie du charbon", regex=False, case=False)), # noqa
-                                  "id"]])
-    sctid = id.drop_duplicates()
+    sctid = pd.concat([sctid, cf.loc[(cf.loc[:, "fsn"].str.contains("anthrax", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("maladie du charbon", regex=False, case=False)), # noqa
+                                     "id"]])
+    sctid = sctid.drop_duplicates()
     if not sctid.empty:
         cf = pd.merge(cf, pd.DataFrame(data={"id": sctid, "pa9": ["1"] * len(sctid)}),
                       how="left", on="id", validate="1:1")
@@ -757,11 +757,11 @@ def _check_sb3(cf: pd.DataFrame, pt: pd.Series, syn: pd.Series) -> pd.DataFrame:
                    & (~cf.loc[:, "term"].str.contains("endoprothèse", regex=False, case=False)), # noqa
                    "id"]
 
-    sctid = pd.concat([id, cf.loc[syn
-                                  & (cf.loc[:, "fsn"].str.contains("stent", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("stent", regex=False, case=False)), # noqa
-                                  "id"]])
-    sctid = id.drop_duplicates()
+    sctid = pd.concat([sctid, cf.loc[syn
+                                     & (cf.loc[:, "fsn"].str.contains("stent", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("stent", regex=False, case=False)), # noqa
+                                     "id"]])
+    sctid = sctid.drop_duplicates()
     if not sctid.empty:
         cf = pd.merge(cf, pd.DataFrame(data={"id": sctid, "sb3": ["1"] * len(sctid)}),
                       how="left", on="id", validate="1:1")
@@ -789,21 +789,21 @@ def _check_pr2(cf: pd.DataFrame, pt: pd.Series, syn: pd.Series) -> pd.DataFrame:
                    & (~cf.loc[:, "term"].str.contains("(?:procédure|intervention chirurgicale)", case=False)), # noqa
                    "id"]
 
-    sctid = pd.concat([id, cf.loc[pt
-                                  & (cf.loc[:, "fsn"].str.contains("operation", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("intervention chirurgicale", regex=False, case=False)), # noqa
-                                  "id"]])
+    sctid = pd.concat([sctid, cf.loc[pt
+                                     & (cf.loc[:, "fsn"].str.contains("operation", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("intervention chirurgicale", regex=False, case=False)), # noqa
+                                     "id"]])
 
-    sctid = pd.concat([id, cf.loc[syn
-                                  & (cf.loc[:, "fsn"].str.contains(" procedure", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("(?:intervention|opération|chirurgie)", case=False)), # noqa
-                                  "id"]])
+    sctid = pd.concat([sctid, cf.loc[syn
+                                     & (cf.loc[:, "fsn"].str.contains(" procedure", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("(?:intervention|opération|chirurgie)", case=False)), # noqa
+                                     "id"]])
 
-    sctid = pd.concat([id, cf.loc[syn
-                                  & (cf.loc[:, "fsn"].str.contains("operation", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("(?:opération|chirurgie)", case=False)), # noqa
-                                  "id"]])
-    sctid = id.drop_duplicates()
+    sctid = pd.concat([sctid, cf.loc[syn
+                                     & (cf.loc[:, "fsn"].str.contains("operation", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("(?:opération|chirurgie)", case=False)), # noqa
+                                     "id"]])
+    sctid = sctid.drop_duplicates()
     if not sctid.empty:
         cf = pd.merge(cf, pd.DataFrame(data={"id": sctid, "pr2": ["1"] * len(sctid)}),
                       how="left", on="id", validate="1:1")
@@ -847,16 +847,16 @@ def _check_pr4(cf: pd.DataFrame, pt: pd.Series, syn: pd.Series) -> pd.DataFrame:
                    & (~cf.loc[:, "term"].str.contains("retrait d'un corps étranger", regex=False, case=False)), # noqa
                    "id"]
 
-    sctid = pd.concat([id, cf.loc[pt
-                                  & (cf.loc[:, "fsn"].str.contains("magnet extraction", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("extraction avec un aimant", regex=False, case=False)), # noqa
-                                  "id"]])
+    sctid = pd.concat([sctid, cf.loc[pt
+                                     & (cf.loc[:, "fsn"].str.contains("magnet extraction", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("extraction avec un aimant", regex=False, case=False)), # noqa
+                                     "id"]])
 
-    sctid = pd.concat([id, cf.loc[syn
-                                  & (cf.loc[:, "fsn"].str.contains("magnet extraction", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains(r"retrait d'un corps étranger [\w\s]+ à l'aide d'un aimant", case=False)), # noqa
-                                  "id"]])
-    sctid = id.drop_duplicates()
+    sctid = pd.concat([sctid, cf.loc[syn
+                                     & (cf.loc[:, "fsn"].str.contains("magnet extraction", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains(r"retrait d'un corps étranger [\w\s]+ à l'aide d'un aimant", case=False)), # noqa
+                                     "id"]])
+    sctid = sctid.drop_duplicates()
     if not sctid.empty:
         cf = pd.merge(cf, pd.DataFrame(data={"id": sctid, "pr4": ["1"] * len(sctid)}),
                       how="left", on="id", validate="1:1")
@@ -881,11 +881,11 @@ def _check_pr9(cf: pd.DataFrame, pt: pd.Series, syn: pd.Series) -> pd.DataFrame:
                    & (~cf.loc[:, "term"].str.contains("biopsie-exérèse", regex=False, case=False)), # noqa
                    "id"]
 
-    sctid = pd.concat([id, cf.loc[syn
-                                  & (cf.loc[:, "fsn"].str.contains("excisional biopsy", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("biopsie excisionnelle", regex=False, case=False)), # noqa
-                                  "id"]])
-    sctid = id.drop_duplicates()
+    sctid = pd.concat([sctid, cf.loc[syn
+                                     & (cf.loc[:, "fsn"].str.contains("excisional biopsy", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("biopsie excisionnelle", regex=False, case=False)), # noqa
+                                     "id"]])
+    sctid = sctid.drop_duplicates()
     if not sctid.empty:
         cf = pd.merge(cf, pd.DataFrame(data={"id": sctid, "pr9": ["1"] * len(sctid)}),
                       how="left", on="id", validate="1:1")
@@ -930,21 +930,21 @@ def _check_pr12(cf: pd.DataFrame, pt: pd.Series, syn: pd.Series) -> pd.DataFrame
                    & (~cf.loc[:, "term"].str.contains("IRM", regex=False, case=False)),
                    "id"]
 
-    sctid = pd.concat([id, cf.loc[syn
-                                  & (cf.loc[:, "fsn"].str.contains("MRI", regex=False))
-                                  & (~cf.loc[:, "term"].str.contains("imagerie par résonance magnétique", regex=False, case=False)), # noqa
-                                  "id"]])
+    sctid = pd.concat([sctid, cf.loc[syn
+                                     & (cf.loc[:, "fsn"].str.contains("MRI", regex=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("imagerie par résonance magnétique", regex=False, case=False)), # noqa
+                                     "id"]])
 
-    sctid = pd.concat([id, cf.loc[pt
-                                  & (cf.loc[:, "fsn"].str.contains("magnetic resonance angiography", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("angiographie par IRM", regex=False, case=False)), # noqa
-                                  "id"]])
+    sctid = pd.concat([sctid, cf.loc[pt
+                                     & (cf.loc[:, "fsn"].str.contains("magnetic resonance angiography", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("angiographie par IRM", regex=False, case=False)), # noqa
+                                     "id"]])
 
-    sctid = pd.concat([id, cf.loc[syn
-                                  & (cf.loc[:, "fsn"].str.contains("magnetic resonance angiography", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("angiographie par imagerie par résonance magnétique", regex=False, case=False)), # noqa
-                                  "id"]])
-    sctid = id.drop_duplicates()
+    sctid = pd.concat([sctid, cf.loc[syn
+                                     & (cf.loc[:, "fsn"].str.contains("magnetic resonance angiography", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("angiographie par imagerie par résonance magnétique", regex=False, case=False)), # noqa
+                                     "id"]])
+    sctid = sctid.drop_duplicates()
     if not sctid.empty:
         cf = pd.merge(cf, pd.DataFrame(data={"id": sctid, "pr12": ["1"] * len(sctid)}),
                       how="left", on="id", validate="1:1")
@@ -969,11 +969,11 @@ def _check_pr13(cf: pd.DataFrame, pt: pd.Series, syn: pd.Series) -> pd.DataFrame
                    & (~cf.loc[:, "term"].str.contains("guidée? par", case=False)),
                    "id"]
 
-    sctid = pd.concat([id, cf.loc[syn
-                                  & (cf.loc[:, "fsn"].str.contains("guided", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("sous guidage", regex=False, case=False)), # noqa
-                                  "id"]])
-    sctid = id.drop_duplicates()
+    sctid = pd.concat([sctid, cf.loc[syn
+                                     & (cf.loc[:, "fsn"].str.contains("guided", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("sous guidage", regex=False, case=False)), # noqa
+                                     "id"]])
+    sctid = sctid.drop_duplicates()
     if not sctid.empty:
         cf = pd.merge(cf, pd.DataFrame(data={"id": sctid, "pr13": ["1"] * len(sctid)}),
                       how="left", on="id", validate="1:1")
@@ -998,21 +998,21 @@ def _check_pr14(cf: pd.DataFrame, pt: pd.Series, syn: pd.Series) -> pd.DataFrame
                    & (~cf.loc[:, "term"].str.contains("radioscopie", case=False)),
                    "id"]
 
-    sctid = pd.concat([id, cf.loc[syn
-                                  & (cf.loc[:, "fsn"].str.contains(r"(?:fluoroscopy|fluoroscopic)(?![\w\s]*guided)", case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("fluoroscopie", regex=False, case=False)), # noqa
-                                  "id"]])
+    sctid = pd.concat([sctid, cf.loc[syn
+                                     & (cf.loc[:, "fsn"].str.contains(r"(?:fluoroscopy|fluoroscopic)(?![\w\s]*guided)", case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("fluoroscopie", regex=False, case=False)), # noqa
+                                     "id"]])
 
-    sctid = pd.concat([id, cf.loc[pt
-                                  & (cf.loc[:, "fsn"].str.contains(r"(?:fluoroscopy|fluoroscopic)[\w\s]*guided", case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("guidée? par radioscopie", case=False)), # noqa
-                                  "id"]])
+    sctid = pd.concat([sctid, cf.loc[pt
+                                     & (cf.loc[:, "fsn"].str.contains(r"(?:fluoroscopy|fluoroscopic)[\w\s]*guided", case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("guidée? par radioscopie", case=False)), # noqa
+                                     "id"]])
 
-    sctid = pd.concat([id, cf.loc[syn
-                                  & (cf.loc[:, "fsn"].str.contains(r"(?:fluoroscopy|fluoroscopic)[\w\s]*guided", case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("(?:sous guidage radioscopique|guidée? par fluoroscopie)", case=False)), # noqa
-                                  "id"]])
-    sctid = id.drop_duplicates()
+    sctid = pd.concat([sctid, cf.loc[syn
+                                     & (cf.loc[:, "fsn"].str.contains(r"(?:fluoroscopy|fluoroscopic)[\w\s]*guided", case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("(?:sous guidage radioscopique|guidée? par fluoroscopie)", case=False)), # noqa
+                                     "id"]])
+    sctid = sctid.drop_duplicates()
     if not sctid.empty:
         cf = pd.merge(cf, pd.DataFrame(data={"id": sctid, "pr14": ["1"] * len(sctid)}),
                       how="left", on="id", validate="1:1")
@@ -1062,14 +1062,14 @@ def _check_ec2(cf: pd.DataFrame) -> pd.DataFrame:
                    & (~cf.loc[:, "term"].str.contains("présentée? comme échantillon", case=False)), # noqa
                    "id"]
 
-    sctid = pd.concat([id, cf.loc[(cf.loc[:, "fsn"].str.contains("washings", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("liquide de lavage", regex=False, case=False)), # noqa
-                                  "id"]])
+    sctid = pd.concat([sctid, cf.loc[(cf.loc[:, "fsn"].str.contains("washings", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("liquide de lavage", regex=False, case=False)), # noqa
+                                     "id"]])
 
-    sctid = pd.concat([id, cf.loc[(cf.loc[:, "fsn"].str.contains("cytologic material", regex=False, case=False)) # noqa
-                                  & (~cf.loc[:, "term"].str.contains("matériel cytologique", regex=False, case=False)), # noqa
-                                  "id"]])
-    sctid = id.drop_duplicates()
+    sctid = pd.concat([sctid, cf.loc[(cf.loc[:, "fsn"].str.contains("cytologic material", regex=False, case=False)) # noqa
+                                     & (~cf.loc[:, "term"].str.contains("matériel cytologique", regex=False, case=False)), # noqa
+                                     "id"]])
+    sctid = sctid.drop_duplicates()
     if not sctid.empty:
         cf = pd.merge(cf, pd.DataFrame(data={"id": sctid, "ec2": ["1"] * len(sctid)}),
                       how="left", on="id", validate="1:1")
