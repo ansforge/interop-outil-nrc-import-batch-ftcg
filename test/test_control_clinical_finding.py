@@ -2,13 +2,13 @@ import pandas as pd
 import pytest
 
 from import_batch_ftcg import control, server
-from typing import Generator
+from typing import Callable, Generator
 
 
 ################
 # Tests de co2 #
 ################
-def test_no_co2(null: pd.DataFrame, semtag: pd.Series) -> None:
+def test_no_co2(null: pd.DataFrame, semtag: Callable[[int], pd.Series]) -> None:
     """Vérifie que la fonction control._check_co2 renvoit le DataFrame original si
     aucune ligne ne correspond aux critères
 
@@ -21,7 +21,7 @@ def test_no_co2(null: pd.DataFrame, semtag: pd.Series) -> None:
 
 
 def test_check_co2(co2: pd.DataFrame, co2_output: pd.DataFrame,
-                   semtag: pd.Series) -> None:
+                   semtag: Callable[[int], pd.Series]) -> None:
     """Vérifie le bon fonctionnement de control._check_co2.
 
     args:
@@ -36,7 +36,7 @@ def test_check_co2(co2: pd.DataFrame, co2_output: pd.DataFrame,
 ################
 # Tests de co6 #
 ################
-def test_no_co6(null: pd.DataFrame, semtag: pd.Series) -> None:
+def test_no_co6(null: pd.DataFrame, semtag: Callable[[int], pd.Series]) -> None:
     """Vérifie que la fonction control._check_co6 renvoit le DataFrame original si
     aucune ligne ne correspond aux critères
 
@@ -49,7 +49,7 @@ def test_no_co6(null: pd.DataFrame, semtag: pd.Series) -> None:
 
 
 def test_check_co6(co6: pd.DataFrame, co6_output: pd.DataFrame,
-                   semtag: pd.Series) -> None:
+                   semtag: Callable[[int], pd.Series]) -> None:
     """Vérifie le bon fonctionnement de control._check_co6.
 
     args:

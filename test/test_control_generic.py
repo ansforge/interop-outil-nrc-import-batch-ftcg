@@ -1,5 +1,7 @@
 import pandas as pd
+
 from import_batch_ftcg import control
+from typing import Callable
 
 
 ###############################
@@ -41,7 +43,7 @@ def test_check_ar2(ar2: pd.DataFrame, ar2_output: pd.DataFrame) -> None:
 ################
 # Tests de ar6 #
 ################
-def test_no_ar6(null: pd.DataFrame, semtag: pd.Series) -> None:
+def test_no_ar6(null: pd.DataFrame, semtag: Callable[[int], pd.Series]) -> None:
     """Vérifie que la fonction control._check_ar6 renvoit le DataFrame original si
     aucune ligne ne correspond aux critères
 
@@ -54,7 +56,7 @@ def test_no_ar6(null: pd.DataFrame, semtag: pd.Series) -> None:
 
 
 def test_check_ar6(ar6: pd.DataFrame, ar6_output: pd.DataFrame,
-                   semtag: pd.Series) -> None:
+                   semtag: Callable[[int], pd.Series]) -> None:
     """Vérifie le bon fonctionnement de control._check_ar6.
 
     args:

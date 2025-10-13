@@ -1,11 +1,13 @@
 import pandas as pd
+
 from import_batch_ftcg import control
+from typing import Callable
 
 
 ################
 # Tests de me1 #
 ################
-def test_no_me1(null: pd.DataFrame, semtag: pd.Series) -> None:
+def test_no_me1(null: pd.DataFrame, semtag: Callable[[int], pd.Series]) -> None:
     """Vérifie que la fonction control._check_me1 renvoit le DataFrame original si
     aucune ligne ne correspond aux critères
 
@@ -18,7 +20,7 @@ def test_no_me1(null: pd.DataFrame, semtag: pd.Series) -> None:
 
 
 def test_check_me1(me1: pd.DataFrame, me1_output: pd.DataFrame,
-                   semtag: pd.Series) -> None:
+                   semtag: Callable[[int], pd.Series]) -> None:
     """Vérifie le bon fonctionnement de control._check_me1.
 
     args:
@@ -33,7 +35,7 @@ def test_check_me1(me1: pd.DataFrame, me1_output: pd.DataFrame,
 ################
 # Tests de me2 #
 ################
-def test_no_me2(null: pd.DataFrame, semtag: pd.Series) -> None:
+def test_no_me2(null: pd.DataFrame, semtag: Callable[[int], pd.Series]) -> None:
     """Vérifie que la fonction control._check_me2 renvoit le DataFrame original si
     aucune ligne ne correspond aux critères
 
@@ -46,7 +48,7 @@ def test_no_me2(null: pd.DataFrame, semtag: pd.Series) -> None:
 
 
 def test_check_me2(me2: pd.DataFrame, me2_output: pd.DataFrame,
-                   semtag: pd.Series) -> None:
+                   semtag: Callable[[int], pd.Series]) -> None:
     """Vérifie le bon fonctionnement de control._check_me2.
 
     args:
@@ -61,7 +63,7 @@ def test_check_me2(me2: pd.DataFrame, me2_output: pd.DataFrame,
 ################
 # Tests de me3 #
 ################
-def test_no_me3(null: pd.DataFrame, semtag: pd.Series) -> None:
+def test_no_me3(null: pd.DataFrame, semtag: Callable[[int], pd.Series]) -> None:
     """Vérifie que la fonction control._check_me3 renvoit le DataFrame original si
     aucune ligne ne correspond aux critères
 
@@ -74,7 +76,7 @@ def test_no_me3(null: pd.DataFrame, semtag: pd.Series) -> None:
 
 
 def test_check_me3(me3: pd.DataFrame, me3_output: pd.DataFrame,
-                   semtag: pd.Series) -> None:
+                   semtag: Callable[[int], pd.Series]) -> None:
     """Vérifie le bon fonctionnement de control._check_me3.
 
     args:
@@ -89,7 +91,7 @@ def test_check_me3(me3: pd.DataFrame, me3_output: pd.DataFrame,
 ################
 # Tests de me4 #
 ################
-def test_no_me4(null: pd.DataFrame, semtag: pd.Series) -> None:
+def test_no_me4(null: pd.DataFrame, semtag: Callable[[int], pd.Series]) -> None:
     """Vérifie que la fonction control._check_me4 renvoit le DataFrame original si
     aucune ligne ne correspond aux critères
 
@@ -102,7 +104,7 @@ def test_no_me4(null: pd.DataFrame, semtag: pd.Series) -> None:
 
 
 def test_check_me4(me4: pd.DataFrame, me4_output: pd.DataFrame,
-                   semtag: pd.Series) -> None:
+                   semtag: Callable[[int], pd.Series]) -> None:
     """Vérifie le bon fonctionnement de control._check_me4.
 
     args:

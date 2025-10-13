@@ -1,12 +1,13 @@
 import pandas as pd
 
 from import_batch_ftcg import control
+from typing import Callable
 
 
 ################
 # Tests de hs1 #
 ################
-def test_no_hs1(null: pd.DataFrame, semtag: pd.Series) -> None:
+def test_no_hs1(null: pd.DataFrame, semtag: Callable[[int], pd.Series]) -> None:
     """Vérifie que la fonction control._check_hs1 renvoit le DataFrame original si
     aucune ligne ne correspond aux critères
 
@@ -19,7 +20,7 @@ def test_no_hs1(null: pd.DataFrame, semtag: pd.Series) -> None:
 
 
 def test_check_hs1(hs1: pd.DataFrame, hs1_output: pd.DataFrame,
-                   semtag: pd.Series) -> None:
+                   semtag: Callable[[int], pd.Series]) -> None:
     """Vérifie le bon fonctionnement de control._check_hs1.
 
     args:

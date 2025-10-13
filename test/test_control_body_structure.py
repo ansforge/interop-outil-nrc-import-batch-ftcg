@@ -1,6 +1,7 @@
 import pandas as pd
 
 from import_batch_ftcg import control
+from typing import Callable
 
 
 ################
@@ -30,7 +31,7 @@ def test_check_bs2(bs2: pd.DataFrame, bs2_output: pd.DataFrame) -> None:
 # Tests de bs3 #
 ################
 def test_no_bs3(null: pd.DataFrame, null_pt: pd.Series, null_syn: pd.Series,
-                semtag: pd.Series) -> None:
+                semtag: Callable[[int], pd.Series]) -> None:
     """Vérifie que la fonction control._check_bs3 renvoit le DataFrame original si
     aucune ligne ne correspond aux critères
 
@@ -45,7 +46,7 @@ def test_no_bs3(null: pd.DataFrame, null_pt: pd.Series, null_syn: pd.Series,
 
 
 def test_check_bs3(bs3: pd.DataFrame, bs3_output: pd.DataFrame,
-                   semtag: pd.Series) -> None:
+                   semtag: Callable[[int], pd.Series]) -> None:
     """Vérifie le bon fonctionnement de control._check_bs3.
 
     args:
@@ -62,7 +63,7 @@ def test_check_bs3(bs3: pd.DataFrame, bs3_output: pd.DataFrame,
 ################
 # Tests de bs5 #
 ################
-def test_no_bs5(null: pd.DataFrame, semtag: pd.Series) -> None:
+def test_no_bs5(null: pd.DataFrame, semtag: Callable[[int], pd.Series]) -> None:
     """Vérifie que la fonction control._check_bs5 renvoit le DataFrame original si
     aucune ligne ne correspond aux critères
 
@@ -75,7 +76,7 @@ def test_no_bs5(null: pd.DataFrame, semtag: pd.Series) -> None:
 
 
 def test_check_bs5(bs5: pd.DataFrame, bs5_output: pd.DataFrame,
-                   semtag: pd.Series) -> None:
+                   semtag: Callable[[int], pd.Series]) -> None:
     """Vérifie le bon fonctionnement de control._check_bs5.
 
     args:
@@ -90,7 +91,7 @@ def test_check_bs5(bs5: pd.DataFrame, bs5_output: pd.DataFrame,
 ################
 # Tests de bs6 #
 ################
-def test_no_bs6(null: pd.DataFrame, semtag: pd.Series) -> None:
+def test_no_bs6(null: pd.DataFrame, semtag: Callable[[int], pd.Series]) -> None:
     """Vérifie que la fonction control._check_bs6 renvoit le DataFrame original si
     aucune ligne ne correspond aux critères
 
@@ -103,7 +104,7 @@ def test_no_bs6(null: pd.DataFrame, semtag: pd.Series) -> None:
 
 
 def test_check_bs6(bs6: pd.DataFrame, bs6_output: pd.DataFrame,
-                   semtag: pd.Series) -> None:
+                   semtag: Callable[[int], pd.Series]) -> None:
     """Vérifie le bon fonctionnement de control._check_bs6.
 
     args:
@@ -118,7 +119,7 @@ def test_check_bs6(bs6: pd.DataFrame, bs6_output: pd.DataFrame,
 ################
 # Tests de bs7 #
 ################
-def test_no_bs7(null: pd.DataFrame, semtag: pd.Series) -> None:
+def test_no_bs7(null: pd.DataFrame, semtag: Callable[[int], pd.Series]) -> None:
     """Vérifie que la fonction control._check_bs7 renvoit le DataFrame original si
     aucune ligne ne correspond aux critères
 
@@ -131,7 +132,7 @@ def test_no_bs7(null: pd.DataFrame, semtag: pd.Series) -> None:
 
 
 def test_check_bs7(bs7: pd.DataFrame, bs7_output: pd.DataFrame,
-                   semtag: pd.Series) -> None:
+                   semtag: Callable[[int], pd.Series]) -> None:
     """Vérifie le bon fonctionnement de control._check_bs7.
 
     args:

@@ -30,7 +30,7 @@ def read_common_french(path: str, date: str, fts: server.Fts) -> pd.DataFrame:
     """
     # Vérification du dossier donné en paramètre
     if op.basename(op.normpath(path)) != "Snapshot":
-        ValueError("Le chemin ne pointe pas vers le dossier Snapshot")
+        raise ValueError("Le chemin ne pointe pas vers le dossier Snapshot")
 
     # Lecture des descriptions de la Common French
     p = op.join(path, f"Terminology/sct2_Description_Snapshot_CommonFrench-Extension_{date}.txt") # noqa
@@ -90,9 +90,9 @@ def get_fr_edition(path: str, unpub_path: str) -> Set[str]:
     """
     # Vérification des chemins donné en paramètre
     if not op.isfile(path) or not op.exists(path):
-        ValueError("Le chemin vers le fichier de descriptions est invalide.")
+        raise ValueError("Le chemin vers le fichier de descriptions est invalide.")
     if not op.isfile(unpub_path) or not op.exists(unpub_path):
-        ValueError("Le chemin vers le fichier de modifications est invalide.")
+        raise ValueError("Le chemin vers le fichier de modifications est invalide.")
 
     # Lecture de l'édition nationale publiée
     df = pd.read_csv(path, sep="\t", na_filter=False, dtype=str, usecols=["conceptId"])
