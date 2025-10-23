@@ -1020,6 +1020,28 @@ def _check_pr14(cf: pd.DataFrame, pt: pd.Series, syn: pd.Series) -> pd.DataFrame
     return cf
 
 
+def _check_pr15(cf: pd.DataFrame, pr: pd.Series) -> pd.DataFrame:
+    """Identifie les descriptions ne respectant pas la règle pr15-FR.
+
+    Args:
+        cf: Descriptions de la Common French à importer.
+        pr: Filtre sur les Procedure de `cf`.
+
+    returns:
+        DataFrame de la Common French avec une colonne identifiant les
+        descriptions ne respectant pas la règle pr15-FR.
+    """
+    sctid = cf.loc[pr
+                   & (cf.loc[:, "fsn"].str.contains("education", regex=False, case=False)) # noqa
+                   & (~cf.loc[:, "term"].str.contains("éducation", case=False)),
+                   "id"]
+    if not sctid.empty:
+        cf = pd.merge(cf, pd.DataFrame(data={"id": sctid, "pr15": ["1"] * len(sctid)}),
+                      how="left", on="id", validate="1:1")
+
+    return cf
+
+
 ##########################################
 # Règles Situation with explicit context #
 ##########################################
@@ -1181,6 +1203,7 @@ def run_quality_control(cf: pd.DataFrame, fts: server.Fts) -> pd.DataFrame:
         cf = _check_pr12(cf, pt, syn)
         cf = _check_pr13(cf, pt, syn)
         cf = _check_pr14(cf, pt, syn)
+        cf = _check_pr15(cf, pr, pt, syn)
 
     # Contrôles des règles de Situation with explicit context
     hs = (cf.loc[:, "conceptId"].isin(fts.ecl("<< 243796009")))

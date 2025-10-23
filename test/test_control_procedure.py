@@ -1,5 +1,7 @@
 import pandas as pd
+
 from import_batch_ftcg import control
+from typing import Callable
 
 
 ################
@@ -208,3 +210,33 @@ def test_check_pr14(pr14: pd.DataFrame, pr14_output: pd.DataFrame) -> None:
     pt = (pr14.loc[:, "acceptabilityId"] == "PREFERRED")
     syn = (pr14.loc[:, "acceptabilityId"] == "ACCEPTABLE")
     pd.testing.assert_frame_equal(control._check_pr14(pr14, pt, syn), pr14_output)
+
+
+####################
+# Tests de pr15-FR #
+####################
+def test_no_pr15(null: pd.DataFrame, semtag: Callable[[int], pd.Series]) -> None:
+    """Vérifie que la fonction control._check_pr15 renvoit le DataFrame original si
+    aucune ligne ne correspond aux critères
+
+    args:
+        null: DataFrame de test ne correspondant pas aux critères de pr15-FR
+        null_pt: Filtre de test sur les termes préférés de `null`
+        null_pt: Filtre de test sur les synonymes acceptables de `null`
+        semtag: Filtre de test sur les Procedure de `null`
+    """
+    pr = semtag(len(null))
+    pd.testing.assert_frame_equal(control._check_pr15(null, pr), null)
+
+
+def test_check_pr15(pr15: pd.DataFrame, pr15_output: pd.DataFrame,
+                    semtag: Callable[[int], pd.Series]) -> None:
+    """Vérifie le bon fonctionnement de control._check_pr15.
+
+    args:
+        pr15: DataFrame de test à corriger
+        pr15_output: DataFrame corrigé attendu
+        semtag: Callable[[int], pd.Series]
+    """
+    pr = semtag(len(pr15))
+    pd.testing.assert_frame_equal(control._check_pr15(pr15, pr), pr15_output)

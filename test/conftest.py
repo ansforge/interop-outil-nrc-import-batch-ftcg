@@ -1018,6 +1018,29 @@ def pr14_output() -> pd.DataFrame:
     )
 
 
+@pytest.fixture
+def pr15() -> pd.DataFrame:
+    return pd.DataFrame(
+        {"id": [str(i) for i in range(1, 4)],
+         "acceptabilityId": ["PREFERRED"] * 3,
+         "fsn": ["Amputation education", "Amputation education", "test"],
+         "term": ["enseignement concernant l'amputation",
+                  "éducation concernant l'amputation", "test"]}
+    )
+
+
+@pytest.fixture
+def pr15_output() -> pd.DataFrame:
+    return pd.DataFrame(
+        {"id": [str(i) for i in range(1, 4)],
+         "acceptabilityId": ["PREFERRED"] * 3,
+         "fsn": ["Amputation education", "Amputation education", "test"],
+         "term": ["enseignement concernant l'amputation",
+                  "éducation concernant l'amputation", "test"],
+         "pr15": ["1", float("nan"), float("nan")]}
+    )
+
+
 ########################################################
 # Fixtures pour règles Situation with explicit context #
 ########################################################
