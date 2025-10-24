@@ -11,10 +11,70 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture
+def fts(pytestconfig) -> Generator[responses.RequestsMock, Any, None]:
+    sb = op.join(pytestconfig.getoption("endpoint"),
+                 "ValueSet/$expand?url=http://snomed.info/sct/900000000000207008?fhir_vs=ecl/%3C%3C%20260787004") # noqa
+    bs = op.join(pytestconfig.getoption("endpoint"),
+                 "ValueSet/$expand?url=http://snomed.info/sct/900000000000207008?fhir_vs=ecl/%3C%3C%20123037004") # noqa
+    co = op.join(pytestconfig.getoption("endpoint"),
+                 "ValueSet/$expand?url=http://snomed.info/sct/900000000000207008?fhir_vs=ecl/%3C%3C%20123037004%20MINUS%20%3C%3C%2064572001") # noqa
+    pa3a = op.join(pytestconfig.getoption("endpoint"),
+                  "ValueSet/$expand?url=http://snomed.info/sct/900000000000207008?fhir_vs=ecl/%3C%3C%20417746004%3A%20363698007%20%3D%20%3C%3C%2039937001") # noqa
+    pa3b = op.join(pytestconfig.getoption("endpoint"),
+                  "ValueSet/$expand?url=http://snomed.info/sct/900000000000207008?fhir_vs=ecl/%3C%3C%20417746004%3A%20363698007%20%21%3D%20%3C%3C%2039937001") # noqa
+    me = op.join(pytestconfig.getoption("endpoint"),
+                 "ValueSet/$expand?url=http://snomed.info/sct/900000000000207008?fhir_vs=ecl/%3C%3C%20373873005") # noqa
+    hs = op.join(pytestconfig.getoption("endpoint"),
+                 "ValueSet/$expand?url=http://snomed.info/sct/900000000000207008?fhir_vs=ecl/%3C%3C%20243796009") # noqa
+    ec = op.join(pytestconfig.getoption("endpoint"),
+                 "ValueSet/$expand?url=http://snomed.info/sct/900000000000207008?fhir_vs=ecl/%3C%3C%20123038009") # noqa
+
+    with responses.RequestsMock() as mock:
+        mock.add(method=responses.GET, url=sb,
+                 json={"expansion": {"contains": [{"code": "C1"}]}})
+
+        mock.add(method=responses.GET, url=bs,
+                 json={"expansion": {"contains": [{"code": "C2"}]}})
+
+        mock.add(method=responses.GET, url=co,
+                 json={"expansion": {"contains": [{"code": "C3"}]}})
+
+        mock.add(method=responses.GET, url=pa3a,
+                 json={"expansion": {"contains": [{"code": "C4"}]}})
+
+        mock.add(method=responses.GET, url=pa3b,
+                 json={"expansion": {"contains": []}})
+
+        mock.add(method=responses.GET, url=me,
+                 json={"expansion": {"contains": [{"code": "C5"}]}})
+
+        mock.add(method=responses.GET, url=hs,
+                 json={"expansion": {"contains": [{"code": "C7"}]}})
+
+        mock.add(method=responses.GET, url=ec,
+                 json={"expansion": {"contains": [{"code": "C8"}]}})
+
+        yield mock
+
+
+@pytest.fixture
 def null() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": ["1"], "conceptId": ["C1"], "acceptabilityId": ["PREFERRED"],
          "fsn": ["test"], "term": ["test"]}
+    )
+
+
+@pytest.fixture
+def control_cf() -> pd.DataFrame:
+    return pd.DataFrame(
+        {"id": [str(i) for i in range(1, 9)],
+         "conceptId": [f"C{str(i)}" for i in range(1, 9)],
+         "acceptabilityId": ["PREFERRED"] * 8,
+         "fsn": ["test", "test", "test", "test (disorder)", "test", "test (procedure)",
+                 "test", "test"],
+         "term": ["lorem ipsum"] * 8,
+         "caseSignificanceId": ["ci"] * 8}
     )
 
 

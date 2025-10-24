@@ -1203,7 +1203,7 @@ def run_quality_control(cf: pd.DataFrame, fts: server.Fts) -> pd.DataFrame:
         cf = _check_pr12(cf, pt, syn)
         cf = _check_pr13(cf, pt, syn)
         cf = _check_pr14(cf, pt, syn)
-        cf = _check_pr15(cf, pr, pt, syn)
+        cf = _check_pr15(cf, pr)
 
     # Contrôles des règles de Situation with explicit context
     hs = (cf.loc[:, "conceptId"].isin(fts.ecl("<< 243796009")))
