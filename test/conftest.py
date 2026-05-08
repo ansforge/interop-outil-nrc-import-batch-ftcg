@@ -352,12 +352,15 @@ def bs10_output() -> pd.DataFrame:
     )
 
 
+_UPPER_ARM = "upper arm"
+
+
 @pytest.fixture
 def bs11() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 7)],
          "acceptabilityId": ["PREFERRED"] * 4 + ["ACCEPTABLE"] * 2,
-         "fsn": ["upper limb", "upper limb", "upper arm", "upper arm", "upper arm",
+         "fsn": ["upper limb", "upper limb", _UPPER_ARM, _UPPER_ARM, _UPPER_ARM,
                  "test"],
          "term": ["membre supérieur", "bras", "partie supérieure du bras",
                   "bras, de l'épaule au coude", "bras, de l'épaule au coude", "test"]}
@@ -369,7 +372,7 @@ def bs11_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 7)],
          "acceptabilityId": ["PREFERRED"] * 4 + ["ACCEPTABLE"] * 2,
-         "fsn": ["upper limb", "upper limb", "upper arm", "upper arm", "upper arm",
+         "fsn": ["upper limb", "upper limb", _UPPER_ARM, _UPPER_ARM, _UPPER_ARM,
                  "test"],
          "term": ["membre supérieur", "bras", "partie supérieure du bras",
                   "bras, de l'épaule au coude", "bras, de l'épaule au coude", "test"],
@@ -439,6 +442,9 @@ def co2_output() -> pd.DataFrame:
     )
 
 
+_CALCIUM_OUTSIDE_REF_RANGE = "calcium outside reference range"
+
+
 @pytest.fixture
 def co6() -> pd.DataFrame:
     return pd.DataFrame(
@@ -448,8 +454,8 @@ def co6() -> pd.DataFrame:
                  "calcium below reference range", "protein below reference range",
                  "calcium below reference range", "calcium below reference range",
                  "calcium within reference range", "calcium within reference range",
-                 "calcium within reference range", "calcium outside reference range",
-                 "calcium outside reference range", "calcium outside reference range",
+                 "calcium within reference range", _CALCIUM_OUTSIDE_REF_RANGE,
+                 _CALCIUM_OUTSIDE_REF_RANGE, _CALCIUM_OUTSIDE_REF_RANGE,
                  "test"],
          "term": ["calcium supérieur à l'intervalle de référence",
                   "protéine supérieure à l'intervalle de référence",
@@ -474,8 +480,8 @@ def co6_output() -> pd.DataFrame:
                  "calcium below reference range", "protein below reference range",
                  "calcium below reference range", "calcium below reference range",
                  "calcium within reference range", "calcium within reference range",
-                 "calcium within reference range", "calcium outside reference range",
-                 "calcium outside reference range", "calcium outside reference range",
+                 "calcium within reference range", _CALCIUM_OUTSIDE_REF_RANGE,
+                 _CALCIUM_OUTSIDE_REF_RANGE, _CALCIUM_OUTSIDE_REF_RANGE,
                  "test"],
          "term": ["calcium supérieur à l'intervalle de référence",
                   "protéine supérieure à l'intervalle de référence",
@@ -783,11 +789,14 @@ def sb1_output() -> pd.DataFrame:
     )
 
 
+_EVACUATED_SPECIMEN_CONTAINER = "evacuated x specimen container"
+
+
 @pytest.fixture
 def sb2() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "fsn": ["evacuated x specimen container", "evacuated x specimen container",
+         "fsn": [_EVACUATED_SPECIMEN_CONTAINER, _EVACUATED_SPECIMEN_CONTAINER,
                  "test"],
          "term": ["support sous vide x pour prélèvement", "échantillon x", "test"]}
     )
@@ -797,7 +806,7 @@ def sb2() -> pd.DataFrame:
 def sb2_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "fsn": ["evacuated x specimen container", "evacuated x specimen container",
+         "fsn": [_EVACUATED_SPECIMEN_CONTAINER, _EVACUATED_SPECIMEN_CONTAINER,
                  "test"],
          "term": ["support sous vide x pour prélèvement", "échantillon x", "test"],
          "sb2": [float("nan"), "1", float("nan")]}
@@ -1030,6 +1039,9 @@ def pr13_output() -> pd.DataFrame:
     )
 
 
+_RADIOSCOPIE_GENOU = "radioscopie d'un genou"
+
+
 @pytest.fixture
 def pr14() -> pd.DataFrame:
     return pd.DataFrame(
@@ -1042,11 +1054,11 @@ def pr14() -> pd.DataFrame:
                  "fluoroscopy of knee", "fluoroscopy guided procedure",
                  "fluoroscopic procedure guided procedure",
                  "fluoroscopy guided procedure", "test"],
-         "term": ["radioscopie d'un genou", "radioscopie d'un genou",
+         "term": [_RADIOSCOPIE_GENOU, _RADIOSCOPIE_GENOU,
                   "fluoroscopie d'un genou", "procédure guidée par radioscopie",
                   "acte guidé par radioscopie", "procédure sous guidage radioscopique",
                   "fluoroscopie d'un genou", "fluoroscopie d'un genou",
-                  "radioscopie d'un genou", "procédure sous guidage radioscopique",
+                  _RADIOSCOPIE_GENOU, "procédure sous guidage radioscopique",
                   "procédure guidée par fluoroscopie",
                   "procédure guidée par radioscopie", "test"]}
     )
@@ -1064,11 +1076,11 @@ def pr14_output() -> pd.DataFrame:
                  "fluoroscopy of knee", "fluoroscopy guided procedure",
                  "fluoroscopic procedure guided procedure",
                  "fluoroscopy guided procedure", "test"],
-         "term": ["radioscopie d'un genou", "radioscopie d'un genou",
+         "term": [_RADIOSCOPIE_GENOU, _RADIOSCOPIE_GENOU,
                   "fluoroscopie d'un genou", "procédure guidée par radioscopie",
                   "acte guidé par radioscopie", "procédure sous guidage radioscopique",
                   "fluoroscopie d'un genou", "fluoroscopie d'un genou",
-                  "radioscopie d'un genou", "procédure sous guidage radioscopique",
+                  _RADIOSCOPIE_GENOU, "procédure sous guidage radioscopique",
                   "procédure guidée par fluoroscopie",
                   "procédure guidée par radioscopie", "test"],
 

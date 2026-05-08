@@ -2,10 +2,9 @@ import pandas as pd
 import pytest
 
 from import_batch_ftcg import control, server
-from typing import Generator
 
 
-def test_no_missing_arguments(control_cf: pd.DataFrame, fts: Generator,
+def test_no_missing_arguments(control_cf: pd.DataFrame,
                               pytestconfig: pytest.Config) -> None:
     """Vérifie que la fonction `run_quality_control` lance toutes les fonctions de
     contrôles avec les bons arguments
