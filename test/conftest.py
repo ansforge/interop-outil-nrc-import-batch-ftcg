@@ -5,6 +5,8 @@ import responses
 
 from typing import Any, Generator
 
+_PRESSURE_INJURY_OF_ANKLE = "pressure injury of ankle"
+
 
 def pytest_addoption(parser):
     parser.addoption("--endpoint", action="store")
@@ -326,6 +328,9 @@ def bs9_output() -> pd.DataFrame:
     )
 
 
+_PARTIE_BASSE_DE_LA_JAMBE = "partie basse de la jambe"
+
+
 @pytest.fixture
 def bs10() -> pd.DataFrame:
     return pd.DataFrame(
@@ -333,7 +338,7 @@ def bs10() -> pd.DataFrame:
          "acceptabilityId": ["PREFERRED"] * 4 + ["ACCEPTABLE"] * 3,
          "fsn": ["lower limb"] * 2 + ["lower leg"] * 4 + ["test"],
          "term": ["membre inférieur", "jambe", "partie inférieure de la jambe",
-                  "partie basse de la jambe", "partie basse de la jambe",
+                  _PARTIE_BASSE_DE_LA_JAMBE, _PARTIE_BASSE_DE_LA_JAMBE,
                   "jambe, du genou à la cheville", "test"]}
     )
 
@@ -345,7 +350,7 @@ def bs10_output() -> pd.DataFrame:
          "acceptabilityId": ["PREFERRED"] * 4 + ["ACCEPTABLE"] * 3,
          "fsn": ["lower limb"] * 2 + ["lower leg"] * 4 + ["test"],
          "term": ["membre inférieur", "jambe", "partie inférieure de la jambe",
-                  "partie basse de la jambe", "partie basse de la jambe",
+                  _PARTIE_BASSE_DE_LA_JAMBE, _PARTIE_BASSE_DE_LA_JAMBE,
                   "jambe, du genou à la cheville", "test"],
          "bs10": [float("nan"), "1", float("nan"), "1", float("nan"), float("nan"),
                   float("nan")]}
@@ -553,7 +558,7 @@ def pa3_output() -> pd.DataFrame:
 def pa3_1() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "fsn": ["pressure injury of ankle", "pressure injury of ankle", "test"],
+         "fsn": [_PRESSURE_INJURY_OF_ANKLE, _PRESSURE_INJURY_OF_ANKLE, "test"],
          "term": ["escarre de la hanche", "lésion de pression de la hanche", "test"]}
     )
 
@@ -562,7 +567,7 @@ def pa3_1() -> pd.DataFrame:
 def pa3_1_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 4)],
-         "fsn": ["pressure injury of ankle", "pressure injury of ankle", "test"],
+         "fsn": [_PRESSURE_INJURY_OF_ANKLE, _PRESSURE_INJURY_OF_ANKLE, "test"],
          "term": ["escarre de la hanche", "lésion de pression de la hanche", "test"],
          "pa3.1": [float("nan"), "1", float("nan")]}
     )
@@ -959,6 +964,10 @@ def pr10_output() -> pd.DataFrame:
     )
 
 
+_ANGIOGRAPHIE_PAR_IRM = "angiographie par IRM"
+_ANGIOGRAPHIE_PAR_IRM_FULL = "angiographie par imagerie par résonance magnétique"
+
+
 @pytest.fixture
 def pr12() -> pd.DataFrame:
     return pd.DataFrame(
@@ -969,11 +978,11 @@ def pr12() -> pd.DataFrame:
                  "magnetic resonance angiography", "magnetic resonance angiography",
                  "test"],
          "term": ["IRM", "imagerie par résonance magnétique",
-                  "angiographie par IRM",
-                  "angiographie par imagerie par résonance magnétique",
+                  _ANGIOGRAPHIE_PAR_IRM,
+                  _ANGIOGRAPHIE_PAR_IRM_FULL,
                   "imagerie par résonance magnétique", "IRM",
-                  "angiographie par imagerie par résonance magnétique",
-                  "angiographie par IRM", "test"]}
+                  _ANGIOGRAPHIE_PAR_IRM_FULL,
+                  _ANGIOGRAPHIE_PAR_IRM, "test"]}
     )
 
 
@@ -987,11 +996,11 @@ def pr12_output() -> pd.DataFrame:
                  "magnetic resonance angiography", "magnetic resonance angiography",
                  "test"],
          "term": ["IRM", "imagerie par résonance magnétique",
-                  "angiographie par IRM",
-                  "angiographie par imagerie par résonance magnétique",
+                  _ANGIOGRAPHIE_PAR_IRM,
+                  _ANGIOGRAPHIE_PAR_IRM_FULL,
                   "imagerie par résonance magnétique", "IRM",
-                  "angiographie par imagerie par résonance magnétique",
-                  "angiographie par IRM", "test"],
+                  _ANGIOGRAPHIE_PAR_IRM_FULL,
+                  _ANGIOGRAPHIE_PAR_IRM, "test"],
          "pr12": [float("nan"), "1", float("nan"), "1", float("nan"), "1",
                   float("nan"), "1", float("nan")]}
     )
@@ -1030,15 +1039,18 @@ def pr13_output() -> pd.DataFrame:
     )
 
 
+_FLUOROSCOPIC_PROCEDURE_OF_KNEE = "fluoroscopic procedure of knee"
+
+
 @pytest.fixture
 def pr14() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 14)],
          "acceptabilityId": ["PREFERRED"] * 6 + ["ACCEPTABLE"] * 7,
-         "fsn": ["fluoroscopy of knee", "fluoroscopic procedure of knee",
+         "fsn": ["fluoroscopy of knee", _FLUOROSCOPIC_PROCEDURE_OF_KNEE,
                  "fluoroscopy of knee", "fluoroscopy guided procedure",
                  "fluoroscopic procedure guided act", "fluoroscopy guided procedure",
-                 "fluoroscopy of knee", "fluoroscopic procedure of knee",
+                 "fluoroscopy of knee", _FLUOROSCOPIC_PROCEDURE_OF_KNEE,
                  "fluoroscopy of knee", "fluoroscopy guided procedure",
                  "fluoroscopic procedure guided procedure",
                  "fluoroscopy guided procedure", "test"],
@@ -1057,10 +1069,10 @@ def pr14_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 14)],
          "acceptabilityId": ["PREFERRED"] * 6 + ["ACCEPTABLE"] * 7,
-         "fsn": ["fluoroscopy of knee", "fluoroscopic procedure of knee",
+         "fsn": ["fluoroscopy of knee", _FLUOROSCOPIC_PROCEDURE_OF_KNEE,
                  "fluoroscopy of knee", "fluoroscopy guided procedure",
                  "fluoroscopic procedure guided act", "fluoroscopy guided procedure",
-                 "fluoroscopy of knee", "fluoroscopic procedure of knee",
+                 "fluoroscopy of knee", _FLUOROSCOPIC_PROCEDURE_OF_KNEE,
                  "fluoroscopy of knee", "fluoroscopy guided procedure",
                  "fluoroscopic procedure guided procedure",
                  "fluoroscopy guided procedure", "test"],
