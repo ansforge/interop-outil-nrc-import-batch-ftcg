@@ -511,20 +511,24 @@ def fts_pa3(pytestconfig) -> Generator[responses.RequestsMock, Any, None]:
         yield mock
 
 
+_TRAUMATIC_SKIN_INJURY = "traumatic skin injury"
+_ECRASEMENT_OSSEUX = "écrasement osseux"
+
+
 @pytest.fixture
 def pa3() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 13)],
          "conceptId": ["1", "1", "1", "2", "2", "2", "2", "3", "3", "3", "3", "4"],
-         "fsn": ["traumatic skin injury", "traumatic skin injury",
-                 "traumatic skin injury", "traumatic liver injury",
+         "fsn": [_TRAUMATIC_SKIN_INJURY, _TRAUMATIC_SKIN_INJURY,
+                 _TRAUMATIC_SKIN_INJURY, "traumatic liver injury",
                  "traumatic liver injury", "traumatic liver injury",
                  "traumatic liver injury", "bone crushing injury", "bone crush injury",
                  "bone crush injury", "bone crush injury", "test"],
          "term": ["blessure cutanée", "traumatisme cutané", "écrasement cutané",
                   "traumatisme hépatique", "lésion traumatique hépatique",
-                  "blessure hépatique", "écrasement hépatique", "écrasement osseux",
-                  "écrasement osseux", "blessure osseuse", "traumatisme osseux",
+                  "blessure hépatique", "écrasement hépatique", _ECRASEMENT_OSSEUX,
+                  _ECRASEMENT_OSSEUX, "blessure osseuse", "traumatisme osseux",
                   "test"]}
     )
 
@@ -534,15 +538,15 @@ def pa3_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 13)],
          "conceptId": ["1", "1", "1", "2", "2", "2", "2", "3", "3", "3", "3", "4"],
-         "fsn": ["traumatic skin injury", "traumatic skin injury",
-                 "traumatic skin injury", "traumatic liver injury",
+         "fsn": [_TRAUMATIC_SKIN_INJURY, _TRAUMATIC_SKIN_INJURY,
+                 _TRAUMATIC_SKIN_INJURY, "traumatic liver injury",
                  "traumatic liver injury", "traumatic liver injury",
                  "traumatic liver injury", "bone crushing injury", "bone crush injury",
                  "bone crush injury", "bone crush injury", "test"],
          "term": ["blessure cutanée", "traumatisme cutané", "écrasement cutané",
                   "traumatisme hépatique", "lésion traumatique hépatique",
-                  "blessure hépatique", "écrasement hépatique", "écrasement osseux",
-                  "écrasement osseux", "blessure osseuse", "traumatisme osseux",
+                  "blessure hépatique", "écrasement hépatique", _ECRASEMENT_OSSEUX,
+                  _ECRASEMENT_OSSEUX, "blessure osseuse", "traumatisme osseux",
                   "test"],
          "pa3": [float("nan"), "1", "1", float("nan"), float("nan"), "1", "1",
                  float("nan"), float("nan"), "1", "1", float("nan")]}
@@ -825,6 +829,8 @@ def sb3_output() -> pd.DataFrame:
     )
 
 
+_INTERVENTION_CHIRURGICALE = "intervention chirurgicale"
+
 ##################################
 # Fixtures pour règles Procedure #
 ##################################
@@ -838,7 +844,7 @@ def pr2() -> pd.DataFrame:
                  "surgical procedure", "surgical procedure", "surgical procedure",
                  "operation", "operation", "operation", "test"],
          "term": ["test (procedure)", "procédure d'imagerie",
-                  "intervention chirurgicale", "imagerie", "intervention chirurgicale",
+                  _INTERVENTION_CHIRURGICALE, "imagerie", _INTERVENTION_CHIRURGICALE,
                   "opération", "intervention d'imagerie", "opération chirurgicale",
                   "chirurgie", "procédure chirurgicale", "opération", "chirurgie",
                   "procédure chirurgicale", "test"]}
@@ -855,7 +861,7 @@ def pr2_output() -> pd.DataFrame:
                  "surgical procedure", "surgical procedure", "surgical procedure",
                  "operation", "operation", "operation", "test"],
          "term": ["test (procedure)", "procédure d'imagerie",
-                  "intervention chirurgicale", "imagerie", "intervention chirurgicale",
+                  _INTERVENTION_CHIRURGICALE, "imagerie", _INTERVENTION_CHIRURGICALE,
                   "opération", "intervention d'imagerie", "opération chirurgicale",
                   "chirurgie", "procédure chirurgicale", "opération", "chirurgie",
                   "procédure chirurgicale", "test"],
@@ -997,14 +1003,18 @@ def pr12_output() -> pd.DataFrame:
     )
 
 
+_PROCEDURE_GUIDED_BY_IMAGING = "procedure guided by imaging"
+_ACT_GUIDED_BY_IMAGING = "act guided by imaging"
+
+
 @pytest.fixture
 def pr13() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 8)],
          "acceptabilityId": ["PREFERRED"] * 3 + ["ACCEPTABLE"] * 4,
-         "fsn": ["procedure guided by imaging", "act guided by imaging",
-                 "act guided by imaging", "procedure guided by imaging",
-                 "act guided by imaging", "act guided by imaging",
+         "fsn": [_PROCEDURE_GUIDED_BY_IMAGING, _ACT_GUIDED_BY_IMAGING,
+                 _ACT_GUIDED_BY_IMAGING, _PROCEDURE_GUIDED_BY_IMAGING,
+                 _ACT_GUIDED_BY_IMAGING, _ACT_GUIDED_BY_IMAGING,
                  "test"],
          "term": ["procédure guidée par imagerie", "acte guidé par imagerie",
                   "acte sous guidage par imagerie",
@@ -1018,9 +1028,9 @@ def pr13_output() -> pd.DataFrame:
     return pd.DataFrame(
         {"id": [str(i) for i in range(1, 8)],
          "acceptabilityId": ["PREFERRED"] * 3 + ["ACCEPTABLE"] * 4,
-         "fsn": ["procedure guided by imaging", "act guided by imaging",
-                 "act guided by imaging", "procedure guided by imaging",
-                 "act guided by imaging", "act guided by imaging", "test"],
+         "fsn": [_PROCEDURE_GUIDED_BY_IMAGING, _ACT_GUIDED_BY_IMAGING,
+                 _ACT_GUIDED_BY_IMAGING, _PROCEDURE_GUIDED_BY_IMAGING,
+                 _ACT_GUIDED_BY_IMAGING, _ACT_GUIDED_BY_IMAGING, "test"],
          "term": ["procédure guidée par imagerie", "acte guidé par imagerie",
                   "acte sous guidage par imagerie",
                   "procédure sous guidage par imagerie",
